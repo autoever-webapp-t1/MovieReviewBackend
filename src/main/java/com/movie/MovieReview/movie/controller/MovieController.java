@@ -3,6 +3,7 @@ package com.movie.MovieReview.movie.controller;
 import com.movie.MovieReview.movie.dto.MovieListResponse;
 import com.movie.MovieReview.movie.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/movies")
+@CrossOrigin("*")
 public class MovieController {
 
     private final MovieService movieService;
@@ -21,7 +23,6 @@ public class MovieController {
         try {
             return movieService.getPopularMovies();
         } catch (Exception e) {
-            // 로깅을 추가하여 오류 원인 파악 가능
             e.printStackTrace();
             return null;
         }
