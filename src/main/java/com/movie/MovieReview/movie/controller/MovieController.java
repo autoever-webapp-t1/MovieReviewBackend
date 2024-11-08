@@ -2,24 +2,24 @@ package com.movie.MovieReview.movie.controller;
 
 import com.movie.MovieReview.movie.dto.MovieListResponse;
 import com.movie.MovieReview.movie.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
 
-    private final MovieService movieService;
+    private MovieService movieService;
 
-    @Autowired
-    public MovieController(MovieService movieService) {
-        this.movieService = movieService;
-    }
-
-    @GetMapping("/popular")
-    public MovieListResponse getPopularMovies() {
+    @GetMapping("/top_rated")
+    public List<MovieListResponse> getPopularMovies() {
         try {
             return movieService.getPopularMovies();
         } catch (Exception e) {
@@ -27,4 +27,3 @@ public class MovieController {
         }
     }
 }
-
