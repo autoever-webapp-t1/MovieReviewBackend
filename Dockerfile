@@ -1,3 +1,4 @@
 FROM openjdk:17 
-COPY *.war app.war
-CMD ["java","-jar","/app.war"]
+ARG JAR_FILE=*.war
+COPY ${JAR_FILE} app.war
+ENTRYPOINT ["java","-jar","/app.war"]
