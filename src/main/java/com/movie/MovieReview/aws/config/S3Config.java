@@ -1,4 +1,4 @@
-package com.movie.MovieReview.s3.config;
+package com.movie.MovieReview.aws.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
