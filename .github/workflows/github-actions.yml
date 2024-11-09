@@ -58,5 +58,5 @@ jobs:
             # Run the new container
             docker run -d --name gasannes_app --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
 
-            # Remove unused images to free 
+            # Remove unused images to free space
             docker image prune -a -f
