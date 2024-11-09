@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://ec2-43-201-114-161.ap-northeast-2.compute.amazonaws.com/")
 public class SseController {
   private final SseService sseService;
 
