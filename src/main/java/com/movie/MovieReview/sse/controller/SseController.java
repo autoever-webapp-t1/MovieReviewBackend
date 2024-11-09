@@ -8,7 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/sse")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class SseController {
   private final SseService sseService;
