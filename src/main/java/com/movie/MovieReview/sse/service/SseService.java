@@ -1,11 +1,9 @@
 package com.movie.MovieReview.sse.service;
 
-import com.movie.MovieReview.sse.dto.MessageDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -30,15 +28,9 @@ public class SseService {
         return emitter;
     }
 
-    public void notify(MessageDto messageDto) {
-        String message = messageDto.getMessage();
-        Iterator<SseEmitter> iterator = emitters.iterator();
-        while (iterator.hasNext()) {
-            SseEmitter emitter = iterator.next();
             try {
                 emitter.send(SseEmitter.event().data(message));
             } catch (IOException e) {
-                iterator.remove();
             }
         }
     }
