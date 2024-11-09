@@ -1,4 +1,3 @@
-
 name: Java CI with Gradle
 
 on:
@@ -41,11 +40,23 @@ jobs:
           host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
-          # 도커 작업
-          # 사용하지 않는 이미지 삭제
           script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+            # Pull the latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
-            docker stop $(docker ps -a -q)
-            docker run -d --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
-            docker rm $(docker ps --filter 'status=exited' -a -q)
-            docker image prune -a -f 
+
+            # Stop and remove existing container if it exists
+            if [ "$(docker ps -q)" ]; then
+              docker stop $(docker ps -q)
+            fi
+
+            if [ "$(docker ps -aq --filter 'status=exited')" ]; then
+              docker rm $(docker ps -aq --filter 'status=exited')
+            fi
+
+            # Run the new container
+            docker run -d --name gasannes_app --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
+
+            # Remove unused images to free space
+            docker image prune -a -f
