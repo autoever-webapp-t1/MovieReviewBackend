@@ -1,5 +1,6 @@
 package com.movie.MovieReview.sse.controller;
 
+import com.movie.MovieReview.sse.dto.MessageDto;
 import com.movie.MovieReview.sse.service.SseService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class SseController {
   }
 
   @PostMapping("/notify")
-  public void notify(@RequestParam String message) {
-      sseService.notify(message);
+  public void notify(@RequestBody MessageDto messageDto) {
+      sseService.notify(messageDto);
   }
 }
