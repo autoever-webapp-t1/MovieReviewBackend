@@ -30,7 +30,7 @@ public class SseService {
 
         return emitter;
     }
-//    @Scheduled(cron = "0 0 21 3/14 * ") // At 09:00 PM, every 14 days, starting on day 3 of the month
+    //    @Scheduled(cron = "0 0 21 3/14 * ") // At 09:00 PM, every 14 days, starting on day 3 of the month
     @Scheduled(cron = "0 * * * *") // 매분 0초에 실행
     public void notify(MessageDto messageDto) {
         String message = messageDto.getMessage();
