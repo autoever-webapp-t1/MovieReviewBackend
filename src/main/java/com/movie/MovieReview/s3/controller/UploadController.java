@@ -1,4 +1,4 @@
-package com.movie.MovieReview.s3.controller;
+package com.movie.MovieReview.aws.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -27,7 +27,7 @@ public class UploadController {
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String fileName=file.getOriginalFilename();
-            String fileUrl= "https://" + bucket + "/test" +fileName;
+            String fileUrl= "https://" + bucket + ".s3.amazonaws.com/" +fileName;
             ObjectMetadata metadata= new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());

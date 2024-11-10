@@ -1,4 +1,7 @@
-FROM openjdk:17 
-ARG JAR_FILE=*.war
+FROM openjdk:17
+ARG JAR_FILE=build/libs/*.war
 COPY ${JAR_FILE} app.war
-ENTRYPOINT ["java","-jar","/app.war"]
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/app.war", "--spring.profiles.active=dev"]
