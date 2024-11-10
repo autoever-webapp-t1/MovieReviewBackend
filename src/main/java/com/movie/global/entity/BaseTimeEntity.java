@@ -1,4 +1,4 @@
-package com.movie.MovieReview.post.entitiy;
+package com.movie.global.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
