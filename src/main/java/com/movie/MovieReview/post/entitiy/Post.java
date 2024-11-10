@@ -26,8 +26,6 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "text")
     private String content;
 
-    private int commentCnt;
-
     @Builder
     public Post(String title, String content) {
         this.title = title;
