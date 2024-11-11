@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MovieDto {
+public class TopRatedDto {
     private Long id; //movie id
     private String title; //movie제목
     private String overview; //movie 줄거리

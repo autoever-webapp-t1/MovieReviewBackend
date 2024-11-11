@@ -29,6 +29,7 @@ public class UploadController {
             String fileName = file.getOriginalFilename();
             String fileUrl = "https://" + bucket + ".s3.amazonaws.com/" + fileName;
             ObjectMetadata metadata = new ObjectMetadata();
+          
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
