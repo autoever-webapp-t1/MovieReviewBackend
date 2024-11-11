@@ -1,6 +1,7 @@
 package com.movie.MovieReview.sse.service;
 
 import com.movie.MovieReview.sse.dto.MessageDto;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 
 @Service
+@Log4j2
 public class SseService {
     private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
 
@@ -45,6 +47,7 @@ public class SseService {
         MessageDto messageDto = messageQueue.poll();
         if (messageDto != null) {
             String message = messageDto.getMessage();
+            log.info("message: "+ message);
             Iterator<SseEmitter> iterator = emitters.iterator();
             while (iterator.hasNext()) {
                 SseEmitter emitter = iterator.next();
