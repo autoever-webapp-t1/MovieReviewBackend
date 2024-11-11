@@ -14,6 +14,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -36,7 +37,7 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }} #  EC2 인스턴스 퍼블릭 DNS
+          host: ${{ secrets.HOST }} # EC2 인스턴스 퍼블릭 DNS
           username: ubuntu
           key: ${{ secrets.PRIVATE_KEY }} # pem 키
           script: |
@@ -45,14 +46,17 @@ jobs:
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
 
+            # Define dynamic container name based on the branch name
+            CONTAINER_NAME="gasannes_app_${{ github.ref_name }}"
+
             # Stop and remove existing container if it exists
-            if [ "$(docker ps -q)" ]; then
-              docker stop $(docker ps -q)
-              docker rm gasannes_app
+            if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
+              docker stop $CONTAINER_NAME
+              docker rm $CONTAINER_NAME
             fi
 
             # Run the new container
-            docker run -d --name gasannes_app --log-driver=syslog -p 8080:8080 \
+            docker run -d --name $CONTAINER_NAME --log-driver=syslog -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=dev \
               -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
               -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
