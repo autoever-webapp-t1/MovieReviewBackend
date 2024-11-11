@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class TopRatedResponse {
-    private List<TopRatedDto> results;
+    private List<MovieCardDto> results;
 }

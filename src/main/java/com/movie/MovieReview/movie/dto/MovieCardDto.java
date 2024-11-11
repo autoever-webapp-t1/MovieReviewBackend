@@ -1,11 +1,17 @@
 package com.movie.MovieReview.movie.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class TopRatedDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class MovieCardDto {
     private Long id; //movie id
     private String title; //movie제목
     private String overview; //movie 줄거리
