@@ -1,25 +1,30 @@
 package com.movie.MovieReview.member.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import com.movie.MovieReview.exception.ExceptionHandlerFilter;
-import com.movie.MovieReview.member.enums.MemberRole;
-import com.movie.MovieReview.member.filter.JwtFilter;
 import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.member.service.MemberService;
+import com.movie.MovieReview.member.filter.JwtFilter;
+import com.movie.MovieReview.exception.ExceptionHandlerFilter;
+import com.movie.MovieReview.member.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
@@ -28,6 +33,17 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");  // Allow all origins, but you can restrict it to specific domains
+        config.addAllowedMethod("*");  // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+        config.addAllowedHeader("*");  // Allow all headers
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
