@@ -23,7 +23,7 @@ public class PostResDto {
 //                .writerNickname(post.getAuthor().getNickName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .commentCnt(post.getCommentCnt())
+//                .commentCnt(post.getCommentCnt())
                 .createdAt(LocalDate.from(post.getCreatedDate()))
                 .modifiedAt(LocalDate.from(post.getModifiedDate()))
                 .build();
