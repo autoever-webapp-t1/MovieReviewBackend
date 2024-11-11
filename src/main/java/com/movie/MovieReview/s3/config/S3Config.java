@@ -28,16 +28,13 @@ public class S3Config {
         log.info("AWS Secret Key: {}", secretKey);
         log.info("AWS Region: {}", region);
     }
+
     @Bean
     public AmazonS3Client amazonS3Client() {
-        BasicAWSCredentials awsCredentials= new BasicAWSCredentials(accessKey, secretKey);
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 66b863e (chore: ec2 instance test)

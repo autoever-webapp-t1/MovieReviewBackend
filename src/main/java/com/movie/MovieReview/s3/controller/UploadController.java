@@ -26,20 +26,16 @@ public class UploadController {
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            String fileName=file.getOriginalFilename();
-            String fileUrl= "https://" + bucket + ".s3.amazonaws.com/" +fileName;
-            ObjectMetadata metadata= new ObjectMetadata();
+            String fileName = file.getOriginalFilename();
+            String fileUrl = "https://" + bucket + ".s3.amazonaws.com/" + fileName;
+            ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
-            amazonS3Client.putObject(bucket,fileName,file.getInputStream(),metadata);
+            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
             return ResponseEntity.ok(fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 66b863e (chore: ec2 instance test)
