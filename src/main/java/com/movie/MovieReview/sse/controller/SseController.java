@@ -25,6 +25,7 @@ public class SseController {
 
     @PostMapping("/notify")
     public void notify(@RequestBody MessageDto messageDto) {
-        sseService.notify(messageDto);
+//        sseService.notify(messageDto);
+            sseService.setMessage(messageDto);
     }
 }
