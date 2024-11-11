@@ -36,4 +36,8 @@ public class S3Config {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 66b863e (chore: ec2 instance test)

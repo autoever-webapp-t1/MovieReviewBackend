@@ -38,4 +38,8 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 66b863e (chore: ec2 instance test)
