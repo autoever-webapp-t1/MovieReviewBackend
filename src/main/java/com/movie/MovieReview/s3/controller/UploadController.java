@@ -1,4 +1,4 @@
-package com.movie.MovieReview.aws.controller;
+package com.movie.MovieReview.s3.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
