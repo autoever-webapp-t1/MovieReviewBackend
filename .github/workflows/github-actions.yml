@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-    types: [closed]  # PR이 닫혔을 때만 실행 (PR이 머지되었을 때)
+
 
 jobs:
   build:
