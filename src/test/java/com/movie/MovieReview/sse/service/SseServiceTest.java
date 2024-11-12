@@ -23,6 +23,10 @@ class SseServiceTest {
 
     @Test
     void setMessage() {
+        MessageDto messageDto = new MessageDto();
+        messageDto.setMessage("test");
+
+        sseService.setMessage();
     }
 
     @Test

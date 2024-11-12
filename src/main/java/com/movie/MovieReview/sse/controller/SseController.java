@@ -8,7 +8,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://ec2-43-201-114-161.ap-northeast-2.compute.amazonaws.com/")
+@CrossOrigin(origins = "http://gasanne.site:8080/")
 public class SseController {
     private final SseService sseService;
 
