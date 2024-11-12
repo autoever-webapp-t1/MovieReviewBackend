@@ -1,5 +1,6 @@
 package com.movie.MovieReview.sse.service;
 
+import com.movie.MovieReview.sse.dto.MessageDto;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,8 @@ class SseServiceTest {
     SseService sseService = new SseService();
     @Test
     void subscribe() {
-        sseService.subscribe();
-        log.info("emitter info : " + sseService.emitter.equals(sseService.emitter.toString()));
+        String emitter = sseService.subscribe().toString();
+        log.info("emitter: " + emitter);
     }
 
     @Test

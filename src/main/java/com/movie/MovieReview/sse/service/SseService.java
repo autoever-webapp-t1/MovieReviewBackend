@@ -20,7 +20,7 @@ public class SseService {
     private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
 
     private final LinkedBlockingQueue<MessageDto> messageQueue = new LinkedBlockingQueue<>();
-    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    private SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
     public SseEmitter subscribe() {
 
         try {
