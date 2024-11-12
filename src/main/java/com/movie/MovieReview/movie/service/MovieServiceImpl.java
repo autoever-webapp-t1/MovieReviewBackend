@@ -82,7 +82,7 @@ public class MovieServiceImpl implements  MovieService{
                 String jsonResponse = response.body().string();
 
                 log.info("MovieServiceImpl: 리스폰스바디.string() 값은? " +jsonResponse);
-                // Parse JSON response
+                // 영화 상세정보 뽑아내기
                 JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
                 String title = jsonObject.get("title").getAsString();
                 int runtime = jsonObject.get("runtime").getAsInt();
@@ -92,11 +92,10 @@ public class MovieServiceImpl implements  MovieService{
                 String backdropPath = jsonObject.get("backdrop_path").getAsString();
 
                 // 이미지 리스트 설정
+                List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
                 MovieDetailsDto.Images images = new MovieDetailsDto.Images();
                 images.setPoster_path(posterPath);
                 images.setBackdrop_path(backdropPath);
-
-                List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
                 imagesList.add(images);  // Add the image paths to the list
 
                 // 장르 리스트 설정
