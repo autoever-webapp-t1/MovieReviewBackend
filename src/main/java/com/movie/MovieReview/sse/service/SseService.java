@@ -41,8 +41,8 @@ public class SseService {
     public void setMessage(MessageDto messageDto) {
         messageQueue.offer(messageDto);
     }
-        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
-//    @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
+//        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
+    @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
     public void alarm() {
         MessageDto messageDto = messageQueue.poll();
         if (messageDto != null) {
