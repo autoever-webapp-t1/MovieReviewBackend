@@ -25,8 +25,8 @@ class SseServiceTest {
     void setMessage() {
         MessageDto messageDto = new MessageDto();
         messageDto.setMessage("test");
-
-        sseService.setMessage();
+        log.info("message: "+messageDto.getMessage());
+        sseService.setMessage(messageDto);
     }
 
     @Test
