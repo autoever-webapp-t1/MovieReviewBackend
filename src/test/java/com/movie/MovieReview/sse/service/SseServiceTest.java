@@ -12,13 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class SseServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(SseServiceTest.class);
-    SseEmitter se = new SseEmitter(60 * 1000L); // 30분
+    private static final Logger log = LoggerFactory.getLogger(SseServiceTest.class);// 30분
     SseService sseService = new SseService();
     @Test
     void subscribe() {
         sseService.subscribe();
-        log.info("emitter's timeout " +sseService.emitter);
+        log.info("emitter info : " + sseService.emitter.equals(sseService.emitter.toString()));
     }
 
     @Test
