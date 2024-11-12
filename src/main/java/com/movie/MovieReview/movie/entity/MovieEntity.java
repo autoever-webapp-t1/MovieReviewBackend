@@ -1,13 +1,25 @@
 package com.movie.MovieReview.movie.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "TopRatedMovie")
 public class MovieEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; //movie id
+    private String title; //movie제목
+    @Column(columnDefinition = "LONGTEXT")
+    private String overview; //movie 줄거리
+    private String poster_path; //movie 포스터 url https://image.tmdb.org/t/p/w500/poster_path
+    //private List<Integer> genre_ids; // movie 장르 ID들
 }
