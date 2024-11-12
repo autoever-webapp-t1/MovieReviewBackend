@@ -49,15 +49,15 @@ jobs:
             # Define dynamic container name based on the branch name
             CONTAINER_NAME="gasannes_app_${{ github.ref_name }}"
 
+
             # Stop and remove existing container if it exists
-            if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then
-              docker stop $CONTAINER_NAME
-              docker rm $CONTAINER_NAME
+            if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
+              docker stop $CONTAINER_NAME || true
+              docker rm -f $CONTAINER_NAME || true
             fi
 
             # Run the new container
             docker run -d --name $CONTAINER_NAME --log-driver=syslog -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=dev \
               -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
               -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
               -e AWS_REGION=${{ secrets.AWS_REGION }} \

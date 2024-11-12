@@ -77,4 +77,17 @@ public class OauthService {
         MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
         return memberDto;
     }
+//    // 리프레시 토큰으로 액세스토큰 새로 갱신
+//    public String refreshAccessToken(String refreshToken) {
+//        MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
+//        if(memberDto == null) {
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+//        }
+//
+//        if(!jwtTokenService.validateToken(refreshToken)) {
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+//        }
+//
+//        return jwtTokenService.createAccessToken(memberDto.getMemberId().toString());
+//    }
 }
