@@ -58,9 +58,9 @@ public class MovieServiceImpl implements  MovieService{
                 TopRatedResponse movieList = gson.fromJson(jsonResponse, TopRatedResponse.class);
                 allMovies.add(movieList);
 
-                for (MovieCardDto movie : movieList.getResults()) {
-                    SaveTopRated(movie);
-                }
+//                for (MovieCardDto movie : movieList.getResults()) {
+//                    SaveTopRated(movie);
+//                }
             }
         }
         return allMovies;

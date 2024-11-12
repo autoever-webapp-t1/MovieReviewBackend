@@ -6,6 +6,7 @@ import com.movie.MovieReview.member.dto.MemberDto;
 import com.movie.MovieReview.member.dto.TokenResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -22,6 +23,12 @@ public class OauthService {
     private final KakaoOauthService kakaoOauthService;
     private final JwtTokenService jwtTokenService;
 
+    @Value("${kakao.key.client-id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+
     //카카오 사용자 토큰 받아오기
     public Map<String, Object> getKakaoToken(String code) {
         WebClient webClient = WebClient.builder().baseUrl("https://kauth.kakao.com")
@@ -29,11 +36,10 @@ public class OauthService {
 
         return webClient.post().uri("/oauth/token")
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", "d8fabac493f22b719a1bc4f29b44c9d1")
-                        .with("redirect_uri", "http://localhost:8080/login/oauth/kakao").with("code", code))
+                        .with("client_id", kakaoClientId)
+                        .with("redirect_uri", kakaoRedirectUri).with("code", code))
                 .retrieve().bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 }).block();
-
     }
 
     public String loginWithKakao(String accessToken, String refreshToken, HttpServletResponse response) {
