@@ -35,8 +35,6 @@ public class OauthController {
         // KakaoOauthService에서 Access/Refresh Token 발급받기
         Map<String, Object> tokenResponse = oauthService.getKakaoToken(code);
 
-        log.info("OauthController: ????????????" );
-
         String accessToken = (String) tokenResponse.get("access_token");
         String refreshToken = (String) tokenResponse.get("refresh_token");
 

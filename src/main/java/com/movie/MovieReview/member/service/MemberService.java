@@ -40,6 +40,16 @@ public class MemberService {
         });
     }
 
+    // refreshToken으로 Member를 찾아서 DTO로 반환
+    public MemberDto findByRefreshToken(String refreshToken) {
+        return memberRepository.findByRefreshToken(refreshToken)
+                .map(this::toDto)
+                .orElseThrow(() -> {
+                    System.out.println("#MemberService No member found for refresh token: " + refreshToken);
+                    return new CustomException(ErrorCode.BAD_REQUEST);
+                });
+    }
+
     // Optional<MemberEntity>를 MemberDto로 변환하는 메서드
     public MemberDto getMemberDtoFromRefreshToken(String refreshToken) {
         System.out.println("#MemberService Received refresh token: " + refreshToken); // 리프레시 토큰을 출력
@@ -92,4 +102,5 @@ public class MemberService {
         }
 
     }
+
 }

@@ -4,4 +4,4 @@ COPY ${JAR_FILE} app.war
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app.war", "--spring.profiles.active=dev"]
+ENTRYPOINT ["java", "-jar", "/app.war"]

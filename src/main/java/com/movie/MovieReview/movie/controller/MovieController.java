@@ -1,5 +1,6 @@
 package com.movie.MovieReview.movie.controller;
 
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.dto.TopRatedResponse;
 import com.movie.MovieReview.movie.service.MovieServiceImpl;
@@ -38,6 +39,17 @@ public class MovieController {
             return null;
         }
     }
+
+//    @PostMapping("/SaveTopRated")
+//    public Long SaveTopRated(@RequestBody MovieCardDto movieCardDto){
+//        try{
+//            Long movieId = movieService.SaveTopRated(movieCardDto);
+//            return movieId;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
 
 }
