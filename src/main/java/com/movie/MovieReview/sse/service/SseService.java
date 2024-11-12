@@ -20,9 +20,9 @@ public class SseService {
     private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
 
     private final LinkedBlockingQueue<MessageDto> messageQueue = new LinkedBlockingQueue<>();
-
+    SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
     public SseEmitter subscribe() {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
         try {
             emitter.send(SseEmitter.event()
                     .name("connect")
@@ -42,7 +42,7 @@ public class SseService {
         messageQueue.offer(messageDto);
     }
         @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
-//    @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행
+//    @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
     public void alarm() {
         MessageDto messageDto = messageQueue.poll();
         if (messageDto != null) {
