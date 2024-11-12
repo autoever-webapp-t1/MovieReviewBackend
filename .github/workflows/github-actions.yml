@@ -47,8 +47,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/gasannes:latest
 
             # Define dynamic container name based on the branch name
-            CONTAINER_NAME="gasannes_app_${{ github.ref_name }}"
-
+            CONTAINER_NAME="gasannes_app"
 
             # Stop and remove existing container if it exists
             if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
