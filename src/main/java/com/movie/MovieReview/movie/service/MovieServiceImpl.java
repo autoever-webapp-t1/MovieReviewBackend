@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
-import com.movie.MovieReview.movie.dto.TopRatedResponse;
+import com.movie.MovieReview.movie.dto.MovieCardResponse;
 import com.movie.MovieReview.movie.entity.MovieEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +14,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,17 +33,15 @@ public class MovieServiceImpl implements  MovieService{
     private final String AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMjUxYmI1M2Q5YTNkMTA0NGRiYTcwZDFiMmI2ZGEwNSIsInN1YiI6IjY2MmNmNDRlZjZmZDE4MDEyODIyNGI3MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yGcscHFGjYQq6B7s_OqCif9IH5jw8vlFboOuJZNKnTk";
 
     @Override
-    public List<TopRatedResponse> getTopRatedMovies() throws Exception {
-        List<TopRatedResponse> allMovies = new ArrayList<>();
-
+    public List<MovieCardDto> getTopRatedMovies() throws Exception {
+        List<MovieCardDto> allMovies = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
-        String NowPlaying = "now_playing?language=ko-KR&page=";
         String Popular = "popular?language=ko-KR&page=";
         String Upcoming = "upcoming?language=ko-KR&page=";
 
-        for (int page = 1; page <= 500; page++) {
+        for (int page = 1; page <= 5; page++) {
             Request request = new Request.Builder()
-                    .url(TMDB_API_URL + TopRatedUrl + page)
+                    .url(TMDB_API_URL + TopRatedUrl + page + "&region=KR")
                     .get()
                     .addHeader("accept", "application/json")
                     .addHeader("Authorization", AUTH_TOKEN )
@@ -55,9 +53,43 @@ public class MovieServiceImpl implements  MovieService{
                 }
 
                 String jsonResponse = response.body().string();
-                TopRatedResponse movieList = gson.fromJson(jsonResponse, TopRatedResponse.class);
-                allMovies.add(movieList);
+                log.info("MovieServiceImpl: "+jsonResponse);
+                // JSON 응답을 MovieCardDto 리스트로 파싱합니다
+                MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
 
+                allMovies.addAll(movieList.getResults());
+//                for (MovieCardDto movie : movieList.getResults()) {
+//                    SaveTopRated(movie);
+//                }
+            }
+        }
+        return allMovies;
+    }
+
+    @Override
+    public List<MovieCardDto> getNowPlayingMovies() throws Exception {
+        List<MovieCardDto> allMovies = new ArrayList<>();
+        String NowPlayingUrl = "now_playing?language=ko-KR&page=";
+
+        for (int page = 1; page <= 5; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN )
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
+
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: "+jsonResponse);
+                // JSON 응답을 MovieCardDto 리스트로 파싱합니다
+                MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
+
+                allMovies.addAll(movieList.getResults());
 //                for (MovieCardDto movie : movieList.getResults()) {
 //                    SaveTopRated(movie);
 //                }
@@ -121,6 +153,5 @@ public class MovieServiceImpl implements  MovieService{
         MovieEntity movieEntity = toEntity(movieCardDto);
         movieRepository.save(movieEntity);
     }
-
 
 }

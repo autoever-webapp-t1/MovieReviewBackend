@@ -2,17 +2,15 @@ package com.movie.MovieReview.movie.service;
 
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
-import com.movie.MovieReview.movie.dto.TopRatedResponse;
 import com.movie.MovieReview.movie.entity.MovieEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public interface MovieService {
-    public List<TopRatedResponse> getTopRatedMovies() throws Exception; //TopRated 100개 영화정보 가져오기
+    public List<MovieCardDto> getTopRatedMovies() throws Exception; //TopRated 100개 영화정보 가져오기
+    public List<MovieCardDto> getNowPlayingMovies() throws Exception;
     public MovieDetailsDto getMovieDetails(Long id) throws Exception; //영화상세정보 가져오기
     public void SaveTopRated(MovieCardDto movieCardDto);
 
