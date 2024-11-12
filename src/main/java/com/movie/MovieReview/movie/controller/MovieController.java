@@ -2,7 +2,6 @@ package com.movie.MovieReview.movie.controller;
 
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
-import com.movie.MovieReview.movie.dto.TopRatedResponse;
 import com.movie.MovieReview.movie.service.MovieServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,9 +19,19 @@ public class MovieController {
     private final MovieServiceImpl movieService;
 
     @GetMapping("/topRated")
-    public List<TopRatedResponse> getTopRatedMovies() {
+    public List<MovieCardDto> getTopRatedMovies() {
         try {
             return movieService.getTopRatedMovies();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/nowPlaying")
+    public List<MovieCardDto> getNowPlayingMovies(){
+        try {
+            return movieService.getNowPlayingMovies();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -39,6 +48,7 @@ public class MovieController {
             return null;
         }
     }
+
 
 //    @PostMapping("/SaveTopRated")
 //    public Long SaveTopRated(@RequestBody MovieCardDto movieCardDto){

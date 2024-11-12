@@ -73,6 +73,7 @@ public class OauthService {
         return logoutResponse; // 로그아웃 결과 응답
     }
 
+    //사용자 정보 가져와서 db에 저장
     public MemberDto UserInfo(String accessToken, String refreshToken, HttpServletResponse response) {
         MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
         return memberDto;
