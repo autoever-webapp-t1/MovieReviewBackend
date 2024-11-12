@@ -32,12 +32,8 @@ public class OauthController {
     public ResponseEntity<OauthResponseDto> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException{
         OauthResponseDto oauthResponseDto = new OauthResponseDto();
 
-        log.info("OauthController: 111111111111111????????????" );
-
         // KakaoOauthService에서 Access/Refresh Token 발급받기
         Map<String, Object> tokenResponse = oauthService.getKakaoToken(code);
-
-        log.info("OauthController: ????????????" );
 
         String accessToken = (String) tokenResponse.get("access_token");
         String refreshToken = (String) tokenResponse.get("refresh_token");
