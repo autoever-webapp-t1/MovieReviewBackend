@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReviewDto {
+public class ReviewDetailDto {
     private Long reviewId;
     private Long movieId;
     private Long memberId;
+
+    private String title;
 
     private String nickname;
     private String profile;
