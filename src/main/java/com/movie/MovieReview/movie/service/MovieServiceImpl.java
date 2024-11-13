@@ -248,10 +248,17 @@ public class MovieServiceImpl implements  MovieService{
     }
     @Override
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception{
-        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 찾는 중");
+        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
         Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
         MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
         return toDto(movieDetailEntity);
     }
 
+    @Override
+    public MovieDetailsDto searchMovie(String title) throws Exception{
+        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 이름으로 검색");
+        Optional<MovieDetailEntity> movieDetail = movieRepository.findByTitle(title);
+        MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
+        return toDto(movieDetailEntity);
+    }
 }
