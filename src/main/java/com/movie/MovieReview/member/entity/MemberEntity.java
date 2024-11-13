@@ -1,8 +1,6 @@
 package com.movie.MovieReview.member.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +14,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 public class MemberEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long memberId; //카카오 고유 사용자 ID
 
     private String nickname; //카카오 사용자 이름
