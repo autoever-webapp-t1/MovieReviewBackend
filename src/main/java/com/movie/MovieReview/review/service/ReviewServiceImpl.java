@@ -4,9 +4,10 @@ import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
-import com.movie.MovieReview.review.dto.ReviewDto;
+import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.repository.ReviewRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 public class ReviewServiceImpl implements ReviewService{
 
@@ -30,7 +32,7 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     @Transactional
-    public Long createReview(ReviewDto dto) {
+    public Long createReview(ReviewDetailDto dto) {
         Long memberId = dto.getMemberId();
         Long movieId = dto.getMovieId();
 
@@ -49,14 +51,15 @@ public class ReviewServiceImpl implements ReviewService{
         MovieDetailEntity foundMovie = movie.orElseThrow(() -> new IllegalArgumentException("Movie not found"));
 
         ReviewEntity reviewEntity = toEntity(dto, foundMember,foundMovie);
-        ReviewEntity result = reviewRepository.save(reviewEntity);
 
+        ReviewEntity result = reviewRepository.save(reviewEntity);
+        log.info("result: " + result.getMember().getMemberId() );
         return result.getReviewId();
     }
 
     @Override
     @Transactional
-    public void modifyReview(ReviewDto dto) {
+    public void modifyReview(ReviewDetailDto dto) {
         Long memberId = dto.getMemberId();
         Long movieId = dto.getMovieId();
         Long reviewId = dto.getReviewId();
@@ -115,7 +118,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewDto getReview(Long reviewId) {
+    public ReviewDetailDto getReview(Long reviewId) {
         ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found"));
 
@@ -123,7 +126,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public List<ReviewDto> getAllReviews() {
+    public List<ReviewDetailDto> getAllReviews() {
         List<ReviewEntity> reviews = reviewRepository.findAll();
         return reviews.stream().map(this::toDto).collect(Collectors.toList());
     }
@@ -137,18 +140,30 @@ public class ReviewServiceImpl implements ReviewService{
         reviewRepository.save(reviewEntity);
     }
 
+    @Override
     public Map<String, Object> getAverageSkillsByMemberId(Long memberId) {
         return reviewRepository.findAverageSkillsByMemberId(memberId);
     }
 
-    public ReviewDto toDto(ReviewEntity reviewEntity){
-        return ReviewDto.builder()
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReviewEntity> getMemberReviews(Long memberId) {
+
+        return reviewRepository.findAllReviewsByMemberId(memberId);
+    }
+
+    public ReviewDetailDto toDto(ReviewEntity reviewEntity){
+        return ReviewDetailDto.builder()
                 .reviewId(reviewEntity.getReviewId())
                 .nickname(reviewEntity.getMember().getNickname())
                 .profile(reviewEntity.getMember().getProfile())
+                .memberId(reviewEntity.getMember().getMemberId())
                 .movieId(reviewEntity.getMovie().getId())
+                .title(reviewEntity.getMovie().getTitle())
                 .content(reviewEntity.getContent())
                 .createdDate(reviewEntity.getCreatedDate())
+                .modifyDate(reviewEntity.getModifiedDate())
                 .totalHeart(reviewEntity.getTotalHeart())
                 .myHeart(reviewEntity.isMyHeart())
                 .actorSkill(reviewEntity.getActorSkill())
@@ -161,20 +176,20 @@ public class ReviewServiceImpl implements ReviewService{
                 .build();
     }
 
-    public ReviewEntity toEntity(ReviewDto reviewDto, MemberEntity member, MovieDetailEntity movie){
+    public ReviewEntity toEntity(ReviewDetailDto reviewDetailDto, MemberEntity member, MovieDetailEntity movie){
         return ReviewEntity.builder()
-                .reviewId(reviewDto.getReviewId())
+                .reviewId(reviewDetailDto.getReviewId())
                 .movie(movie)
                 .member(member)
-                .content(reviewDto.getContent())
-                .totalHeart(reviewDto.getTotalHeart())
-                .myHeart(reviewDto.isMyHeart())
-                .actorSkill(reviewDto.getActorSkill())
-                .directorSkill(reviewDto.getDirectorSkill())
-                .sceneSkill(reviewDto.getSceneSkill())
-                .musicSkill(reviewDto.getMusicSkill())
-                .storySkill(reviewDto.getStorySkill())
-                .lineSkill(reviewDto.getLineSkill())
+                .content(reviewDetailDto.getContent())
+                .totalHeart(reviewDetailDto.getTotalHeart())
+                .myHeart(reviewDetailDto.isMyHeart())
+                .actorSkill(reviewDetailDto.getActorSkill())
+                .directorSkill(reviewDetailDto.getDirectorSkill())
+                .sceneSkill(reviewDetailDto.getSceneSkill())
+                .musicSkill(reviewDetailDto.getMusicSkill())
+                .storySkill(reviewDetailDto.getStorySkill())
+                .lineSkill(reviewDetailDto.getLineSkill())
                 .build();
     }
 }

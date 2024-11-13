@@ -32,7 +32,7 @@ public class MemberController {
             @RequestParam String newname) {
         try {
             memberService.updateNickname(memberId, newname);
-            return ResponseEntity.ok("Nickname updated successfully.");
+            return ResponseEntity.ok(newname);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data: " + e.getMessage());
         } catch (Exception e) {

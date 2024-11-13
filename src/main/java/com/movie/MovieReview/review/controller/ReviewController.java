@@ -1,20 +1,24 @@
 package com.movie.MovieReview.review.controller;
 
 import com.movie.MovieReview.movie.service.MovieService;
-import com.movie.MovieReview.review.dto.ReviewDto;
+import com.movie.MovieReview.review.dto.ReviewDetailDto;
+import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @CrossOrigin("*")
+@Log4j2
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -26,7 +30,7 @@ public class ReviewController {
     public ResponseEntity<?> createReview(
             @PathVariable("movieId") Long movieId,
             @RequestParam Long memberId,
-            @Validated @RequestBody ReviewDto dto) {
+            @Validated @RequestBody ReviewDetailDto dto) {
         try {
             if (movieId == null || memberId == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Movie ID and Member ID must not be null.");
@@ -34,6 +38,8 @@ public class ReviewController {
 
             dto.setMovieId(movieId);
             dto.setMemberId(memberId);
+
+            log.info("memberId: " + dto.getMemberId());
 
             Long reviewId = reviewService.createReview(dto);
 
@@ -49,7 +55,7 @@ public class ReviewController {
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
             @RequestParam Long memberId,
-            @Validated @RequestBody ReviewDto dto) {
+            @Validated @RequestBody ReviewDetailDto dto) {
         try {
             dto.setMovieId(id);
             dto.setReviewId(reviewId);
@@ -82,8 +88,8 @@ public class ReviewController {
     @GetMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable("reviewId") Long reviewId) {
         try {
-            ReviewDto reviewDto = reviewService.getReview(reviewId);
-            return ResponseEntity.ok(reviewDto);
+            ReviewDetailDto reviewDetailDto = reviewService.getReview(reviewId);
+            return ResponseEntity.ok(reviewDetailDto);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found.");
         } catch (Exception e) {
@@ -103,9 +109,17 @@ public class ReviewController {
         }
     }
 
+    //member 당 평균값 내기
     @GetMapping("/user/{memberId}/averageSkills")
     public ResponseEntity<Map<String, Object>> getAverageSkillsByMemberId(@PathVariable Long memberId){
         Map<String, Object> averageSkills = reviewService.getAverageSkillsByMemberId(memberId);
         return ResponseEntity.ok(averageSkills);
+    }
+
+    //member의 모든 리뷰 조회
+    @GetMapping("/user/{memberId}/reviews")
+    public ResponseEntity<List<ReviewEntity>> getMemberReviews(@PathVariable Long memberId){
+        List<ReviewEntity> reviews = reviewService.getMemberReviews(memberId);
+        return ResponseEntity.ok(reviews);
     }
 }
