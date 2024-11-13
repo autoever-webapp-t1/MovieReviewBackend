@@ -6,9 +6,9 @@ import com.movie.MovieReview.member.dto.MemberDto;
 import com.movie.MovieReview.member.service.MemberService;
 import com.movie.MovieReview.member.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +24,20 @@ public class MemberController {
             throw new CustomException(ErrorCode.NOT_EXIST_USER);
         }
         return memberDto;
+    }
+
+    @PutMapping("/{memberId}/nickname")
+    public ResponseEntity<?> updateNickname(
+            @PathVariable("memberId") Long memberId,
+            @RequestParam String newname) {
+        try {
+            memberService.updateNickname(memberId, newname);
+            return ResponseEntity.ok("Nickname updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
     }
 
 }

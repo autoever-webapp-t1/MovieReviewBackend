@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/movie")
+@RequestMapping("/api")
 @CrossOrigin("*")
 public class ReviewController {
 
@@ -20,7 +22,7 @@ public class ReviewController {
     private final MovieService movieService;
 
     //리뷰 생성
-    @PostMapping("/{movieId}/review")
+    @PostMapping("/movie/{movieId}/review")
     public ResponseEntity<?> createReview(
             @PathVariable("movieId") Long movieId,
             @RequestParam Long memberId,
@@ -42,7 +44,7 @@ public class ReviewController {
     }
 
     // 리뷰 수정
-    @PutMapping("/{id}/review/{reviewId}")
+    @PutMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> modifyReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
@@ -62,7 +64,7 @@ public class ReviewController {
     }
 
     // 리뷰 삭제
-    @DeleteMapping("/{id}/review/{reviewId}")
+    @DeleteMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> removeReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId) {
@@ -77,7 +79,7 @@ public class ReviewController {
     }
 
     // 리뷰 조회
-    @GetMapping("/{id}/review/{reviewId}")
+    @GetMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable("reviewId") Long reviewId) {
         try {
             ReviewDto reviewDto = reviewService.getReview(reviewId);
@@ -92,12 +94,18 @@ public class ReviewController {
 
 
     // 모든 리뷰 조회
-    @GetMapping("/{id}/review")
+    @GetMapping("/movie/{id}/review")
     public ResponseEntity<?> getAllReviews() {
         try {
             return ResponseEntity.ok(reviewService.getAllReviews());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
+    }
+
+    @GetMapping("/user/{memberId}/averageSkills")
+    public ResponseEntity<Map<String, Object>> getAverageSkillsByMemberId(@PathVariable Long memberId){
+        Map<String, Object> averageSkills = reviewService.getAverageSkillsByMemberId(memberId);
+        return ResponseEntity.ok(averageSkills);
     }
 }
