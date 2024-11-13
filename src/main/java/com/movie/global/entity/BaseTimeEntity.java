@@ -14,11 +14,10 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // 원하는 형식으로 설정
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")  // 원하는 형식으로 설정
+    private LocalDateTime modifiedDate;
 }
-
