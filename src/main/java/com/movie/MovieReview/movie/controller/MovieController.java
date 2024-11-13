@@ -88,4 +88,15 @@ public class MovieController {
             return null;
         }
     }
+
+    @GetMapping("/{name}") //영화 제목으로 검색
+    public MovieDetailsDto searchMovie(@PathVariable ("name") String name){
+        try{
+            return movieService.searchMovie(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
+
