@@ -10,7 +10,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Data
-@Setter(AccessLevel.NONE)
 @Builder
 public class CommentResDto {
     private Long commentId;
@@ -20,7 +19,7 @@ public class CommentResDto {
     private Long memberId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    public CommentResDto entityToResDto(Comment comment) {
+    public static CommentResDto entityToResDto(Comment comment) {
         return CommentResDto.builder()
                 .commentId(comment.getCommentId())
                 .postId(comment.getPost().getPostId())
