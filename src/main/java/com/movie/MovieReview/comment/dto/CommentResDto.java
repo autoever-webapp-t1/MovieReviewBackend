@@ -26,8 +26,8 @@ public class CommentResDto {
                 .nickname(comment.getWriter().getNickname())
                 .content(comment.getContent())
                 .memberId(comment.getWriter().getMemberId())
-                .createdAt(comment.getCreatedAt())
-                .updatedAt(comment.getUpdatedAt())
+                .createdAt(comment.getCreatedDate())
+                .updatedAt(comment.getModifiedDate())
                 .build();
     }
 }
