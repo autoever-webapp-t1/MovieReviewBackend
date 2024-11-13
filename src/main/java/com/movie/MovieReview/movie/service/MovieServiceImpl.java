@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -127,6 +128,7 @@ public class MovieServiceImpl implements  MovieService{
 
     @Override
     public MovieDetailsDto getMovieDetails(Long id) throws Exception {
+        log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
         String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=videos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
 
         Request request = new Request.Builder()
@@ -139,8 +141,7 @@ public class MovieServiceImpl implements  MovieService{
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String jsonResponse = response.body().string();
-
-                log.info("MovieServiceImpl: 리스폰스바디.string() 값은? " +jsonResponse);
+                
                 // 영화 상세정보 뽑아내기
                 JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
                 String title = jsonObject.get("title").getAsString();
@@ -183,19 +184,12 @@ public class MovieServiceImpl implements  MovieService{
 
 
                 MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson);
-                movieRepository.save(toEntity(movieDetailsDto)); //db에 저장
                 return movieDetailsDto; //화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());
             }
         }
     }
-
-//    @Override
-//    public void SaveMovieDetail(MovieDetailsDto movieDetailsDto) {
-//        MovieDetailEntity movieDetailEntity = toEntity(movieDetailsDto);
-//        movieRepository.save(movieDetailEntity);
-//    }
 
     @Override
     public List<Long> SaveTopRatedId() throws Exception {
@@ -246,10 +240,18 @@ public class MovieServiceImpl implements  MovieService{
         // 각 ID에 대해 영화 상세 정보 요청
         for (Long id : movieIds) {
             MovieDetailsDto movieDetails = getMovieDetails(id);
+            movieRepository.save(toEntity(movieDetails)); //db에 저장
             movieDetailsList.add(movieDetails);
         }
 
         return movieDetailsList;
+    }
+    @Override
+    public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception{
+        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 찾는 중");
+        Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
+        MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
+        return toDto(movieDetailEntity);
     }
 
 }
