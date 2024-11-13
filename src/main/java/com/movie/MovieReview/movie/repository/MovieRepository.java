@@ -1,7 +1,7 @@
 package com.movie.MovieReview.movie.repository;
 
-import com.movie.MovieReview.movie.entity.MovieEntity;
+import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MovieRepository extends JpaRepository<MovieEntity,Long> {
+public interface MovieRepository extends JpaRepository<MovieDetailEntity,Long> {
 }

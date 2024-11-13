@@ -2,11 +2,12 @@ package com.movie.MovieReview.movie.controller;
 
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
-import com.movie.MovieReview.movie.service.MovieServiceImpl;
+import com.movie.MovieReview.movie.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ import java.util.List;
 @Log4j2
 public class MovieController {
 
-    private final MovieServiceImpl movieService;
+    private final MovieService movieService;
 
     @GetMapping("/topRated")
     public List<MovieCardDto> getTopRatedMovies() {
@@ -38,6 +39,25 @@ public class MovieController {
         }
     }
 
+    @GetMapping("/upComing")
+    public List<MovieCardDto> getUpComingMovies(){
+        try {
+            return movieService.getUpComingMovies();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
+    public List<Long> SaveTopRatedId(){
+        try{
+            return movieService.SaveTopRatedId();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @GetMapping("/{id}")
     public MovieDetailsDto getMovieDetails(@PathVariable ("id") Long id) {
         try{
@@ -49,17 +69,13 @@ public class MovieController {
         }
     }
 
-
-//    @PostMapping("/SaveTopRated")
-//    public Long SaveTopRated(@RequestBody MovieCardDto movieCardDto){
-//        try{
-//            Long movieId = movieService.SaveTopRated(movieCardDto);
-//            return movieId;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
-
+    @GetMapping("/topRatedDetails")
+    public List<MovieDetailsDto> getTopRatedMovieDetails() {
+        try {
+            return movieService.getTopRatedMovieDetails();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }
