@@ -1,6 +1,7 @@
 package com.movie.MovieReview.review.controller;
 
 import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.service.ReviewService;
@@ -110,7 +111,7 @@ public class ReviewController {
     }
 
     //member 당 평균값 내기
-    @GetMapping("/user/{memberId}/averageSkills")
+    @GetMapping("/user/{memberId}/rate")
     public ResponseEntity<Map<String, Object>> getAverageSkillsByMemberId(@PathVariable Long memberId){
         Map<String, Object> averageSkills = reviewService.getAverageSkillsByMemberId(memberId);
         return ResponseEntity.ok(averageSkills);
@@ -118,8 +119,9 @@ public class ReviewController {
 
     //member의 모든 리뷰 조회
     @GetMapping("/user/{memberId}/reviews")
-    public ResponseEntity<List<ReviewEntity>> getMemberReviews(@PathVariable Long memberId){
-        List<ReviewEntity> reviews = reviewService.getMemberReviews(memberId);
-        return ResponseEntity.ok(reviews);
+    public ResponseEntity<List<MyReviewsDto>> getMemberReviews(@PathVariable Long memberId) {
+        List<MyReviewsDto> reviews = reviewService.getMemberReviews(memberId);
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
+
 }
