@@ -74,7 +74,11 @@ public class ReviewServiceImpl implements ReviewService{
 
         // 멤버와 영화가 존재하는지 확인
         MemberEntity foundMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+                .orElseThrow(() -> {
+                    // 멤버가 존재하지 않으면 오류를 발생시킴
+                    System.out.println("Member not found for ID: " + memberId);  // 로그 추가
+                    return new IllegalArgumentException("Member not found");
+                });
         MovieDetailEntity foundMovie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
 
@@ -135,7 +139,8 @@ public class ReviewServiceImpl implements ReviewService{
     public ReviewDto toDto(ReviewEntity reviewEntity){
         return ReviewDto.builder()
                 .reviewId(reviewEntity.getReviewId())
-                .memberId(reviewEntity.getReviewId())
+                .nickname(reviewEntity.getMember().getNickname())
+                .profile(reviewEntity.getMember().getProfile())
                 .movieId(reviewEntity.getMovie().getId())
                 .content(reviewEntity.getContent())
                 .createdDate(reviewEntity.getCreatedDate())

@@ -15,8 +15,15 @@ public class ReviewDto {
     private Long reviewId;
     private Long movieId;
     private Long memberId;
+
+    private String nickname;
+    private String profile;
+
     private String content;
+
     private LocalDateTime createdDate;
+    private LocalDateTime modifyDate;
+
     private int totalHeart;
     private boolean myHeart;
 
