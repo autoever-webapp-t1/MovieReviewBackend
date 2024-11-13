@@ -37,7 +37,7 @@ public class ReviewController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Review created with ID: " + reviewId);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("뭐지");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data: " + e.getMessage());
         }
     }
 
@@ -88,6 +88,8 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
+
+
 
     // 모든 리뷰 조회
     @GetMapping("/{id}/review")
