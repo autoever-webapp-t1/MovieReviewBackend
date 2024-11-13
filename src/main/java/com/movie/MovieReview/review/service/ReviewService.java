@@ -1,5 +1,6 @@
 package com.movie.MovieReview.review.service;
 
+import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,6 @@ public interface ReviewService {
     void toggleLike(Long reviewId); // 좋아요 토글
 
     public Map<String, Object> getAverageSkillsByMemberId(Long memberId); //회원의 통계 평균
-    public List<ReviewEntity> getMemberReviews(Long memberId); //
+    public List<MyReviewsDto> getMemberReviews(Long memberId);
 }
 
