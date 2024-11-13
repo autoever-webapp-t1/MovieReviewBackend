@@ -103,4 +103,14 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public void updateNickname(Long memberId, String newNickname) {
+
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        member.setNickname(newNickname);
+        memberRepository.save(member);
+    }
+
 }
