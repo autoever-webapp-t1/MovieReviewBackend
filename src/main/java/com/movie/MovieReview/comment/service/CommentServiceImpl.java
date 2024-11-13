@@ -15,7 +15,6 @@ public class CommentServiceImpl implements CommentService{
         if (commentRepository.findById(commentId)!=null){
             commentRepository.delete(commentRepository.getReferenceById(commentId));
         }
-        commentRepository.deleteById(commentId);
     }
 
     @Override
