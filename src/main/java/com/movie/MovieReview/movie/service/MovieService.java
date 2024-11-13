@@ -10,12 +10,11 @@ import java.util.List;
 @Service
 public interface MovieService {
     public List<MovieCardDto> getTopRatedMovies() throws Exception; //TopRated 100개 영화정보 가져오기
-    public List<MovieCardDto> getNowPlayingMovies() throws Exception;
-    public List<MovieCardDto> getUpComingMovies() throws Exception;
+    public List<MovieCardDto> getNowPlayingMovies() throws Exception; //NowPlaying 100개 영화정보 가져오기
+    public List<MovieCardDto> getUpComingMovies() throws Exception; //UpComing 100개 영화정보 가져오기
     public MovieDetailsDto getMovieDetails(Long id) throws Exception; //영화상세정보 가져오기
-    //public void SaveMovieDetail(MovieDetailsDto movieDetailsDto);
-    public List<Long> SaveTopRatedId() throws Exception;
-    public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception;
+    public List<Long> SaveTopRatedId() throws Exception; //TopRated ID들 저장
+    public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception; //TopRated 상세정보들 저장
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity){
         return MovieDetailsDto.builder()
@@ -42,4 +41,5 @@ public interface MovieService {
     }
 
 
+    public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception;
 }
