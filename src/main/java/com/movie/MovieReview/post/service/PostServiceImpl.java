@@ -9,10 +9,15 @@ import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
 import com.movie.MovieReview.post.excepiton.PostNotFoundException;
 import com.movie.MovieReview.post.repository.PostRepository;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -87,6 +92,23 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
         return postDetailDto(post);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto) {
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1,pageRequestDto.getSize());
+        Page<Post> postPage = (Page<Post>) postRepository.findAll();
+        List<PostDetailDto> posts = postPage.getContent().stream()
+                .map(this::postDetailDto)
+                .collect(Collectors.toList());
+
+        return PageResponseDto.<PostDetailDto>withAll()
+                .dtoList(posts)
+                .pageRequestDto(pageRequestDto)
+                .total(postPage.getTotalElements())
+                .build();
+    }
+
 
     public PostDetailDto postDetailDto(Post post) {
         return PostDetailDto.builder()

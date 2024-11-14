@@ -4,6 +4,8 @@ import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,4 +18,5 @@ public interface PostService {
     PostResDto updatePost(Long postId, PostResDto postResDto);
     List<PostResDto> findPostByMemberId(Long memberId);
     PostDetailDto getPost(Long postId);
+    PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto);
 }
