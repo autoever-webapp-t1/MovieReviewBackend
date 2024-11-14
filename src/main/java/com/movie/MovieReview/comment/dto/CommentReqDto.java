@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 public class CommentReqDto {
     private Long commentId;
     private String content;
-    private LocalDateTime localDateTime;
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private PostDto postDto;
     @JsonInclude(JsonInclude.Include.NON_NULL)
