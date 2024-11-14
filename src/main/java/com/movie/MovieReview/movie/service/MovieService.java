@@ -39,6 +39,7 @@ public interface MovieService {
                 .runtime(movieDetailsDto.getRuntime())
                 .images(movieDetailsDto.getImages())
                 .videos(movieDetailsDto.getVideos())
+                .genres(movieDetailsDto.getGenres())
                 .build();
     }
 

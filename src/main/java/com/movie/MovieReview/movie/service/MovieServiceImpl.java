@@ -1,11 +1,10 @@
 package com.movie.MovieReview.movie.service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.movie.MovieReview.movie.dto.MovieCardDto;
-import com.movie.MovieReview.movie.dto.MovieDetailsDto;
-import com.movie.MovieReview.movie.dto.MovieCardResponse;
+import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
@@ -29,6 +28,8 @@ import java.util.stream.Collectors;
 public class MovieServiceImpl implements  MovieService{
     private final MovieRepository movieRepository;
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
+    private final MovieRecommendService movieRecommendService;
+    private final MovieCreditService movieCreditService;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -60,9 +61,6 @@ public class MovieServiceImpl implements  MovieService{
                 MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
 
                 allMovies.addAll(movieList.getResults());
-//                for (MovieCardDto movie : movieList.getResults()) {
-//                    SaveTopRated(movie);
-//                }
             }
         }
         return allMovies;
@@ -129,7 +127,7 @@ public class MovieServiceImpl implements  MovieService{
     @Override
     public MovieDetailsDto getMovieDetails(Long id) throws Exception {
         log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
-        String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=videos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
+        String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=credits%2Cvideos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
 
         Request request = new Request.Builder()
                 .url(MovieDetailUrl)
@@ -178,12 +176,48 @@ public class MovieServiceImpl implements  MovieService{
                     videosList.add(video);
                 });
 
+                // credit 리스트 설정 배우 상위 10명
+                List<MovieDetailsDto.Credits> credits = new ArrayList<>();
+                JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
+
+                for (int i = 0; i < Math.min(10, castArray.size()); i++) {
+                    JsonObject creditObject = castArray.get(i).getAsJsonObject();
+                    MovieDetailsDto.Credits credit = new MovieDetailsDto.Credits();
+
+                    // 각 필드에 대해 null 검사 후 기본값 설정
+                    credit.setType(creditObject.has("known_for_department") && !creditObject.get("known_for_department").isJsonNull()
+                            ? creditObject.get("known_for_department").getAsString()
+                            : "Unknown");
+
+                    credit.setName(creditObject.has("name") && !creditObject.get("name").isJsonNull()
+                            ? creditObject.get("name").getAsString()
+                            : "Unknown");
+
+                    credit.setProfile(creditObject.has("profile_path") && !creditObject.get("profile_path").isJsonNull()
+                            ? creditObject.get("profile_path").getAsString()
+                            : null);
+
+                    credits.add(credit);
+                }
+
+
+                // recommendations 리스트
+                List<MovieDetailsDto.Recommends> recommends = new ArrayList<>();
+                jsonObject.getAsJsonObject("recommendations").getAsJsonArray("results").forEach(recommendsElement -> {
+                    JsonObject recommendsObject = recommendsElement.getAsJsonObject();
+                    MovieDetailsDto.Recommends recommend = new MovieDetailsDto.Recommends();
+                    recommend.setId(recommendsObject.get("id").getAsLong());
+                    recommends.add(recommend);
+                });
+
+
                 // JSON 문자열로 변환
                 String imagesJson = gson.toJson(imagesList);
                 String videosJson = gson.toJson(videosList);
+                String genresJson = gson.toJson(genres);
 
 
-                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson);
+                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
                 return movieDetailsDto; //화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());
@@ -196,7 +230,7 @@ public class MovieServiceImpl implements  MovieService{
         List<Long> TopRatedMoviesId = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
 
-        for (int page = 1; page <= 5; page++) {
+        for (int page = 1; page <= 500; page++) {
             Request request = new Request.Builder()
                     .url(TMDB_API_URL + TopRatedUrl + page + "&region=KR")
                     .get()
@@ -241,8 +275,31 @@ public class MovieServiceImpl implements  MovieService{
         for (Long id : movieIds) {
             MovieDetailsDto movieDetails = getMovieDetails(id);
             movieRepository.save(toEntity(movieDetails)); //db에 저장
+
+            // recommendations 저장
+            for (MovieDetailsDto.Recommends recommId : movieDetails.getRecommendations()) {
+                MovieRecommendDto recommendDto = MovieRecommendDto.builder()
+                        .movieId(id)
+                        .recommendationMovieId(recommId.getId())
+                        .build();
+                movieRecommendService.saveRecommendations(recommendDto);
+            }
+
+            // credits 저장
+            for (MovieDetailsDto.Credits creditId : movieDetails.getCredits()) {
+                MovieCreditsDto movieCreditsDto = MovieCreditsDto.builder()
+                        .creditId(creditId.getId())
+                        .movieId(id)
+                        .name(creditId.getName())
+                        .type(creditId.getType())
+                        .profile(creditId.getProfile())
+                        .build();
+                movieCreditService.saveMovieCredit(movieCreditsDto);
+            }
+
             movieDetailsList.add(movieDetails);
         }
+
 
         return movieDetailsList;
     }

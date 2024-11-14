@@ -19,8 +19,10 @@ public class MovieDetailsDto {
     private int runtime;
     private String images;
     private String videos;
-    //private List<Genres> genres;
-//    private List<String> recommendations;
+    private String genres;
+
+    private List<Credits> credits;
+    private List<Recommends> recommendations;
 
     @Data
     public static class Images{
@@ -38,5 +40,18 @@ public class MovieDetailsDto {
     public static class Genres {
         private int id;
         private String name;
+    }
+
+    @Data
+    public static class Credits {
+        private Long id;
+        private String type;
+        private String name;
+        private String profile;
+    }
+
+    @Data
+    public static class Recommends{
+        private Long id;
     }
 }
