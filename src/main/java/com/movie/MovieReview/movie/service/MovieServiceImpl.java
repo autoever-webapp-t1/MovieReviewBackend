@@ -179,11 +179,12 @@ public class MovieServiceImpl implements  MovieService{
                 // credit 리스트 설정 배우 상위 10명
                 List<MovieDetailsDto.Credits> credits = new ArrayList<>();
                 JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
-                for (int i = 0; i < Math.min(10, castArray.size()); i++) {
+                for (int i = 0; i < Math.min(1, castArray.size()); i++) {
                     JsonObject creditObject = castArray.get(i).getAsJsonObject();
                     MovieDetailsDto.Credits credit = new MovieDetailsDto.Credits();
                     credit.setType(creditObject.get("known_for_department").getAsString());
                     credit.setName(creditObject.get("name").getAsString());
+                    credit.setProfile(creditObject.get("profile_path").getAsString());
                     credits.add(credit);
                 }
 
@@ -200,9 +201,10 @@ public class MovieServiceImpl implements  MovieService{
                 // JSON 문자열로 변환
                 String imagesJson = gson.toJson(imagesList);
                 String videosJson = gson.toJson(videosList);
+                String genresJson = gson.toJson(genres);
 
 
-                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genres, credits, recommends);
+                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
                 return movieDetailsDto; //화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());

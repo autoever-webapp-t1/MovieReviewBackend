@@ -30,4 +30,8 @@ public class MovieDetailEntity {
 
     @Column(columnDefinition = "TEXT")
     private String videos; // movie 비디오 리스트
+
+    @Column(columnDefinition = "TEXT")
+    private String genres; // movie 장르 리스트
+
 }
