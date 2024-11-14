@@ -179,14 +179,27 @@ public class MovieServiceImpl implements  MovieService{
                 // credit 리스트 설정 배우 상위 10명
                 List<MovieDetailsDto.Credits> credits = new ArrayList<>();
                 JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
-                for (int i = 0; i < Math.min(1, castArray.size()); i++) {
+
+                for (int i = 0; i < Math.min(10, castArray.size()); i++) {
                     JsonObject creditObject = castArray.get(i).getAsJsonObject();
                     MovieDetailsDto.Credits credit = new MovieDetailsDto.Credits();
-                    credit.setType(creditObject.get("known_for_department").getAsString());
-                    credit.setName(creditObject.get("name").getAsString());
-                    credit.setProfile(creditObject.get("profile_path").getAsString());
+
+                    // 각 필드에 대해 null 검사 후 기본값 설정
+                    credit.setType(creditObject.has("known_for_department") && !creditObject.get("known_for_department").isJsonNull()
+                            ? creditObject.get("known_for_department").getAsString()
+                            : "Unknown");
+
+                    credit.setName(creditObject.has("name") && !creditObject.get("name").isJsonNull()
+                            ? creditObject.get("name").getAsString()
+                            : "Unknown");
+
+                    credit.setProfile(creditObject.has("profile_path") && !creditObject.get("profile_path").isJsonNull()
+                            ? creditObject.get("profile_path").getAsString()
+                            : null);
+
                     credits.add(credit);
                 }
+
 
                 // recommendations 리스트
                 List<MovieDetailsDto.Recommends> recommends = new ArrayList<>();
