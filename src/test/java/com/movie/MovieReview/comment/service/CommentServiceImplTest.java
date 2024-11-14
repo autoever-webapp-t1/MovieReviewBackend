@@ -52,7 +52,7 @@ public class CommentServiceImplTest {
     @BeforeEach
     void set() {
         mockMember = new MemberEntity();
-        mockPost = new Post("테스트 제목입니다","테스트 내용임");
+        mockPost = new Post(mockMember,"테스트 제목입니다","테스트 내용임");
         mockMember.setEmail("user@example.com");
         mockMember.setNickname("churu");
         mockComment = new Comment(mockMember, mockPost, "테스트 댓글");
@@ -81,7 +81,7 @@ public class CommentServiceImplTest {
         MemberEntity mockMember = new MemberEntity();
         mockMember.setEmail("user@example.com");
 
-        Post mockPost = new Post("테스트 제목", "테스트 내용");
+        Post mockPost = new Post(mockMember,"테스트 제목", "테스트 내용");
         Comment mockComment = new Comment(mockMember, mockPost, "테스트 댓글");
 
         Mockito.when(commentRepository.findById(commentId)).thenReturn(Optional.of(mockComment));
