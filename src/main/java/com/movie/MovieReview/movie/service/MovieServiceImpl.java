@@ -362,15 +362,8 @@ public class MovieServiceImpl implements  MovieService{
                 .id(movieDetailEntity.getId())
                 .title(movieDetailEntity.getTitle())
                 .overview(movieDetailEntity.getOverview())
-                .poster_path(movieDetailEntity.getImages()) // or use another field for poster_path
+                .poster_path(movieDetailEntity.getImages())
                 .release_date(movieDetailEntity.getRelease_date())
                 .build();
-    }
-
-    private List<Integer> parseGenres(String genres) {
-        // Assuming genres are stored as a comma-separated string of genre IDs, e.g., "1,2,3"
-        return Arrays.stream(genres.split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
     }
 }
