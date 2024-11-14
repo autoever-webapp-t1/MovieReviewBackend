@@ -36,9 +36,11 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostResDto createPost(PostDto postDto) {
+        MemberEntity member = getLoginMember();
         String title = postDto.getTitle();
         String content = postDto.content();
         Post post = Post.builder()
+                .writer(member)
                 .title(title)
                 .content(content)
                 .build();

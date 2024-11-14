@@ -53,7 +53,7 @@ public class CommentServiceImpl implements CommentService{
         MemberEntity member = getLoginMember();
         Post post = postRepository.findById(postId).orElseThrow(()->new RuntimeException("post not found"));
         Comment comment = Comment.builder()
-                .writer(getLoginMember())
+                .writer(member)
                 .content(commentReqDto.getContent())
                 .post(post)
                 .build();

@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,7 +21,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne()
     @JoinColumn(name = "member_id")
-    private MemberEntity member;
+    private MemberEntity writer;
 
     @Column(nullable = false)
     private String title;
@@ -45,7 +44,8 @@ public class Post extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Post(String title, String content) {
+    public Post(MemberEntity writer, String title, String content) {
+        this.writer = writer;
         this.title = title;
         this.content = content;
     }

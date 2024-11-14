@@ -22,7 +22,7 @@ public class PostResDto implements PostDtoInterface{
     public static PostResDto entityToResDto(Post post) {
         return PostResDto.builder()
                 .postId(post.getPostId())
-                .nickname(post.getMember().getNickname())
+                .nickname(post.getWriter().getNickname())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCnt(post.getCommentCnt())
