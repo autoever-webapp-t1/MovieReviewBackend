@@ -1,5 +1,6 @@
 package com.movie.MovieReview.post.service;
 
+import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
@@ -14,4 +15,5 @@ public interface PostService {
     void deletePost(Long postId);
     PostResDto updatePost(Long postId, PostResDto postResDto);
     List<PostResDto> findPostByMemberId(Long memberId);
+    PostDetailDto getPost(Long postId);
 }
