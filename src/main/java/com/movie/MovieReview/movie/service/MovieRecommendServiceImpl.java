@@ -19,7 +19,6 @@ public class MovieRecommendServiceImpl implements MovieRecommendService{
     @Override
     public void saveRecommendations(MovieRecommendDto movieRecommendDto) {
         Long movieId = movieRecommendDto.getMovieId();
-
         Optional<MovieDetailEntity> movie = movieRepository.findById(movieId);
         MovieDetailEntity movieDetailEntity = movie.orElseThrow(() -> new IllegalArgumentException("Movie not found"));
 

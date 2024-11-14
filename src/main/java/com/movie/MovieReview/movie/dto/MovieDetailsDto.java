@@ -19,7 +19,8 @@ public class MovieDetailsDto {
     private int runtime;
     private String images;
     private String videos;
-    private List<Genres> genres;
+    private String genres;
+
     private List<Credits> credits;
     private List<Recommends> recommendations;
 
