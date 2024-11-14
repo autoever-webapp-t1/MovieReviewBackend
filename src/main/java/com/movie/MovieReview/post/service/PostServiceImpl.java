@@ -3,6 +3,7 @@ package com.movie.MovieReview.post.service;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
+import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
@@ -78,5 +79,25 @@ public class PostServiceImpl implements PostService{
     @Override
     public List<PostResDto> findPostByMemberId(Long memberId) {
         return List.of();
+    }
+
+    @Override
+    public PostDetailDto getPost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
+        return postDetailDto(post);
+    }
+
+    public PostDetailDto postDetailDto(Post post) {
+        return PostDetailDto.builder()
+                .postId(post.getPostId())
+                .memberId(post.getWriter().getMemberId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .nickname(post.getWriter().getNickname())
+                .likesCount(post.getLikesCount())
+                .isLiked(post.isLiked())
+                .createdDate(post.getCreatedDate())
+                .updatedDate(post.getModifiedDate())
+                .build();
     }
 }

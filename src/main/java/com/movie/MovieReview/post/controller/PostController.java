@@ -1,6 +1,7 @@
 package com.movie.MovieReview.post.controller;
 
 import com.movie.MovieReview.comment.dto.CommentResDto;
+import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.service.PostService;
@@ -36,6 +37,13 @@ public class PostController {
         postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("delete success"));
     }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PostDetailDto> getPost(@PathVariable Long postId) {
+            PostDetailDto postDetailDto = postService.getPost(postId);
+            return ResponseEntity.status(HttpStatus.OK).body(postDetailDto);
+    }
+
 
 
 
