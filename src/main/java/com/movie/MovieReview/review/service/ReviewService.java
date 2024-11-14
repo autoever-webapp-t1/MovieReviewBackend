@@ -24,6 +24,7 @@ public interface ReviewService {
     void toggleLike(Long reviewId); // 좋아요 토글
 
     public Map<String, Object> getAverageSkillsByMemberId(Long memberId); //회원의 통계 평균
+    public Map<String, Object> getAverageSkillsByMovieId(Long movieId);
     public List<MyReviewsDto> getMemberReviews(Long memberId);
 }
 

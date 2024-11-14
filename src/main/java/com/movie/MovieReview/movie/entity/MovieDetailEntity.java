@@ -34,4 +34,5 @@ public class MovieDetailEntity {
     @Column(columnDefinition = "TEXT")
     private String genres; // movie 장르 리스트
 
+    private Double totalAverageSkill; // 영화 육각형 통계의 평균
 }

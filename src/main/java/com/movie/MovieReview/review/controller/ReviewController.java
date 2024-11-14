@@ -135,6 +135,27 @@ public class ReviewController {
         return ResponseEntity.ok(averageSkills);
     }
 
+    //movie 당 평균값 내기
+    @GetMapping("/movie/{movieId}/rate")
+    public ResponseEntity<Map<String, Object>> getAverageSkillsByMovieId(@PathVariable Long movieId) {
+        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieId(movieId);
+
+        if (avgSkills.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "No reviews found for this movie"));
+        }
+
+        // 개별 스킬 평균값들을 더해 전체 평균 계산
+        double totalAvg = avgSkills.values().stream()
+                .mapToDouble(value -> (double) value)
+                .average()
+                .orElse(0.0);
+
+        double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+        return ResponseEntity.ok(Map.of("totalAverageSkill", roundedTotalAvg));
+    }
+
+
     //member의 모든 리뷰 조회
     /*@GetMapping("/user/{memberId}/reviews")
     public ResponseEntity<List<MyReviewsDto>> getMemberReviews(@PathVariable Long memberId) {
