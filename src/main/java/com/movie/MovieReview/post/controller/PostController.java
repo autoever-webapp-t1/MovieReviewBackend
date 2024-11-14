@@ -43,10 +43,4 @@ public class PostController {
             PostDetailDto postDetailDto = postService.getPost(postId);
             return ResponseEntity.status(HttpStatus.OK).body(postDetailDto);
     }
-
-
-
-
-
-
 }
