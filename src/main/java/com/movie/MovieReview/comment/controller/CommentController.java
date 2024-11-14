@@ -40,6 +40,6 @@ public class CommentController {
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<CommentResDto>> findAllCommentsByPostId(@PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(commentService.findCommentPyPostId(postId));
+                .body(commentService.findCommentByPostId(postId));
     }
 }

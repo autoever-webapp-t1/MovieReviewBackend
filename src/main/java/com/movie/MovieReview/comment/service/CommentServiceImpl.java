@@ -76,7 +76,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public List<CommentResDto> findCommentPyPostId(Long postId) {
+    public List<CommentResDto> findCommentByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPost_PostId(postId);
 
         return comments.stream()

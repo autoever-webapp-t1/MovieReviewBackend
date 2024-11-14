@@ -8,6 +8,6 @@ public interface CommentService {
     void deleteComment(Long commentId);
     CommentResDto addComment(Long postId, CommentReqDto commentReqDto);
     CommentResDto updateComment(Long commentId, CommentResDto commentResDto);
-    List<CommentResDto> findCommentPyPostId(Long postId);
+    List<CommentResDto> findCommentByPostId(Long postId);
     Integer countComment(Long postId);
 }
