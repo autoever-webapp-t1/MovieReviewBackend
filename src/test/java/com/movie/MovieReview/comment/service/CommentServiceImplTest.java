@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,7 +112,7 @@ public class CommentServiceImplTest {
 
         System.out.println("num: "+ num);
         commentResDto.setCommentId(num);
-        comment.patch(commentResDto);
+        comment.update(commentResDto);
         System.out.println("after update: " + comment.getContent());
     }
 }
