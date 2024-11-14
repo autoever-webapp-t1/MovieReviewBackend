@@ -63,8 +63,8 @@ class PostServiceImplTest {
         PostDto postDto = new PostDto(mockPost.getPostId(),mockPost.getTitle(),mockPost.getContent());
         PostResDto result = postService.createPost(postDto);
         assertNotNull(result);
-        assertEquals(title,result.getTitle());
-        assertEquals(content,result.getContent());
+        assertEquals(title,result.title());
+        assertEquals(content,result.content());
         verify(postRepository).save(any(Post.class));
         verify(postRepository, times(1)).save(any(Post.class));
     }
@@ -85,7 +85,22 @@ class PostServiceImplTest {
     }
 
     @Test
-    void updatePost() {
+    void updatePost() throws Exception {
+        Long postId = 1L;
+        when(userPrincipal.getEmail()).thenReturn("user@example.com");
+        when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockMember));
+
+        PostDto postDto = new PostDto(postId, "탈주","구교환 짱");
+        PostResDto postResDto = postService.createPost(postDto);
+        Post post = new Post(mockMember, postResDto.title(),postResDto.content());
+        postResDto.setPostId(postId);
+        System.out.println("before update : " + post.getContent());
+        postResDto.setContent("이제훈 짱");
+
+        Long num = post.getPostId();
+        postResDto.setPostId(num);
+        post.update(postResDto);
+        System.out.println("after update: "+post.getContent());
     }
 
     @Test

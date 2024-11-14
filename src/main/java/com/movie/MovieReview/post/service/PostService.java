@@ -12,6 +12,6 @@ public interface PostService {
     Post findByPostId(Long postId);
     PostResDto createPost(PostDto postDto);
     void deletePost(Long postId);
-    PostResDto updatePost(Long postId);
+    PostResDto updatePost(Long postId, PostResDto postResDto);
     List<PostResDto> findPostByMemberId(Long memberId);
 }
