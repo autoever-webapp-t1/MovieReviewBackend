@@ -37,7 +37,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("comment delete success"));
     }
 
-    @GetMapping("/post/{postId}")
+    @GetMapping("/post/{postId}/comments")
     public ResponseEntity<List<CommentResDto>> findAllCommentsByPostId(@PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentService.findCommentByPostId(postId));

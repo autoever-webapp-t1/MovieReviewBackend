@@ -64,6 +64,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional
     public PostResDto updatePost(Long postId, PostResDto postDto) {
         MemberEntity member = getLoginMember();
         Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
