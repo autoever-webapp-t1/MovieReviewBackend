@@ -62,6 +62,7 @@ class PostServiceImplTest {
         when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockMember));
         mockPost = new Post(mockMember, title,content);
         PostDto postDto = new PostDto(mockPost.getPostId(),mockPost.getTitle(),mockPost.getContent());
+        System.out.println("postId"+mockPost.getPostId());
         PostResDto result = postService.createPost(postDto);
         assertNotNull(result);
         assertEquals(title,result.title());
@@ -103,12 +104,4 @@ class PostServiceImplTest {
         post.update(postResDto);
         System.out.println("after update: "+post.getContent());
     }
-
-    @Test
-    void getPost() throws Exception {
-    }
-
-
-
-
 }

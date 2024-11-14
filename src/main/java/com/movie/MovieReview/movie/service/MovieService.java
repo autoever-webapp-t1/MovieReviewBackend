@@ -6,6 +6,7 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public interface MovieService {
@@ -17,8 +18,17 @@ public interface MovieService {
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception; //TopRated 상세정보들 TMDB에서 가지고 와서 DB에 저장
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception; //DB에서 영화 상세정보 ID로 검색
     public MovieDetailsDto searchMovie(String name) throws Exception; //DB에서 영화 제목으로 DB에서 검색
+    public List<MovieCardDto> searchByQuery(String query);
 
-    default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity){
+    default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
+        List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
+                .map(credit -> new MovieDetailsDto.Credits(credit.getType(), credit.getName(), credit.getProfile()))
+                .collect(Collectors.toList());
+
+        List<MovieDetailsDto.Recommends> recommendDtos = movieDetailEntity.getRecommendations().stream()
+                .map(recommend -> new MovieDetailsDto.Recommends(recommend.getRecommendationId()))
+                .collect(Collectors.toList());
+
         return MovieDetailsDto.builder()
                 .id(movieDetailEntity.getId())
                 .title(movieDetailEntity.getTitle())
@@ -27,8 +37,12 @@ public interface MovieService {
                 .runtime(movieDetailEntity.getRuntime())
                 .images(movieDetailEntity.getImages())
                 .videos(movieDetailEntity.getVideos())
+                .genres(movieDetailEntity.getGenres())
+                .credits(creditDtos)
+                .recommendations(recommendDtos)
                 .build();
     }
+
 
     default MovieDetailEntity toEntity(MovieDetailsDto movieDetailsDto){
         return MovieDetailEntity.builder()
@@ -44,5 +58,5 @@ public interface MovieService {
     }
 
 
-    
+
 }

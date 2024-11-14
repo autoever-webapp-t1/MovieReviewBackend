@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -33,6 +35,12 @@ public class MovieDetailEntity {
 
     @Column(columnDefinition = "TEXT")
     private String genres; // movie 장르 리스트
+
+    @OneToMany(mappedBy = "movieDetailEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MovieCreditsEntity> credits;
+
+    @OneToMany(mappedBy = "movieDetailEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MovieRecommendEntity> recommendations;
 
     private Double totalAverageSkill; // 영화 육각형 통계의 평균
 }
