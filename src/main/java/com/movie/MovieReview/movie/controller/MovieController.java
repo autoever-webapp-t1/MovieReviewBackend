@@ -100,5 +100,10 @@ public class MovieController {
             return null;
         }
     }
+
+    @GetMapping("/search")
+    public List<MovieCardDto> search(@RequestParam String query) {
+        return movieService.searchByQuery(query); // 이름에 query가 포함된 제품을 검색
+    }
 }
 

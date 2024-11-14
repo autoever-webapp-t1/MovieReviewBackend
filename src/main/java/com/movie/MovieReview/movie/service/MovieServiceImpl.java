@@ -15,9 +15,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -179,12 +181,16 @@ public class MovieServiceImpl implements  MovieService{
                 // credit 리스트 설정 배우 상위 10명
                 List<MovieDetailsDto.Credits> credits = new ArrayList<>();
                 JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
+                JsonArray crewArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("crew");
 
-                for (int i = 0; i < Math.min(10, castArray.size()); i++) {
+                // 배우 정보: 기본적으로 최대 10명, 10명 미만일 경우 전체 배우 추가
+                int castCount = Math.min(10, castArray.size());
+                for (int i = 0; i < castArray.size(); i++) {
+                    if (i >= castCount) break;
+
                     JsonObject creditObject = castArray.get(i).getAsJsonObject();
                     MovieDetailsDto.Credits credit = new MovieDetailsDto.Credits();
 
-                    // 각 필드에 대해 null 검사 후 기본값 설정
                     credit.setType(creditObject.has("known_for_department") && !creditObject.get("known_for_department").isJsonNull()
                             ? creditObject.get("known_for_department").getAsString()
                             : "Unknown");
@@ -199,6 +205,28 @@ public class MovieServiceImpl implements  MovieService{
 
                     credits.add(credit);
                 }
+
+                // 감독 정보: crewArray에서 job 필드가 "Director"인 인물 1명을 찾아서 리스트에 추가
+                for (int i = 0; i < crewArray.size(); i++) {
+                    JsonObject crewObject = crewArray.get(i).getAsJsonObject();
+
+                    if (crewObject.has("job") && !crewObject.get("job").isJsonNull() && "Director".equals(crewObject.get("job").getAsString())) {
+                        MovieDetailsDto.Credits director = new MovieDetailsDto.Credits();
+
+                        director.setType("Director");
+                        director.setName(crewObject.has("name") && !crewObject.get("name").isJsonNull()
+                                ? crewObject.get("name").getAsString()
+                                : "Unknown");
+
+                        director.setProfile(crewObject.has("profile_path") && !crewObject.get("profile_path").isJsonNull()
+                                ? crewObject.get("profile_path").getAsString()
+                                : null);
+
+                        credits.add(director); // 감독 정보를 배우 리스트에 추가
+                        break; // 감독을 찾았으므로 루프 종료
+                    }
+                }
+
 
 
                 // recommendations 리스트
@@ -288,7 +316,6 @@ public class MovieServiceImpl implements  MovieService{
             // credits 저장
             for (MovieDetailsDto.Credits creditId : movieDetails.getCredits()) {
                 MovieCreditsDto movieCreditsDto = MovieCreditsDto.builder()
-                        .creditId(creditId.getId())
                         .movieId(id)
                         .name(creditId.getName())
                         .type(creditId.getType())
@@ -303,7 +330,9 @@ public class MovieServiceImpl implements  MovieService{
 
         return movieDetailsList;
     }
+
     @Override
+    @Transactional
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception{
         log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
         Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
@@ -317,5 +346,30 @@ public class MovieServiceImpl implements  MovieService{
         Optional<MovieDetailEntity> movieDetail = movieRepository.findByTitle(title);
         MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
         return toDto(movieDetailEntity);
+    }
+
+    @Override
+    public List<MovieCardDto> searchByQuery(String query) {
+        List<MovieDetailEntity> movieDetail = movieRepository.findByTitleContaining(query);
+        return movieDetail.stream()
+                .map(this::toMovieCardDto)
+                .collect(Collectors.toList());
+    }
+
+    private MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
+        return MovieCardDto.builder()
+                .id(movieDetailEntity.getId())
+                .title(movieDetailEntity.getTitle())
+                .overview(movieDetailEntity.getOverview())
+                .poster_path(movieDetailEntity.getImages()) // or use another field for poster_path
+                .release_date(movieDetailEntity.getRelease_date())
+                .build();
+    }
+
+    private List<Integer> parseGenres(String genres) {
+        // Assuming genres are stored as a comma-separated string of genre IDs, e.g., "1,2,3"
+        return Arrays.stream(genres.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
     }
 }

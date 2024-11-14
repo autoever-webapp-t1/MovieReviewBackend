@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 public class MemberEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long memberId; //카카오 고유 사용자 ID
 

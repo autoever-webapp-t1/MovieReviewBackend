@@ -19,7 +19,7 @@ public class MovieRecommendEntity {
 
     @ManyToOne
     @JoinColumn(name = "id")
-    MovieDetailEntity movieDetailEntity;
+    private MovieDetailEntity movieDetailEntity;
 
     @Column(nullable = false)
     private Long recommendationId;
