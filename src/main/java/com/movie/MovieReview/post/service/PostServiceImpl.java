@@ -1,15 +1,19 @@
 package com.movie.MovieReview.post.service;
 
+import com.movie.MovieReview.exception.ErrorCode;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.excepiton.PostNotFoundException;
 import com.movie.MovieReview.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -50,8 +54,14 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void deletePost() {
-
+    @Transactional
+    public void deletePost(Long postId) {
+        MemberEntity member = getLoginMember();
+        Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
+        if (!post.getWriter().equals(member)) {
+            throw new RuntimeException("no permisson");
+        }
+        postRepository.delete(post);
     }
 
     @Override
