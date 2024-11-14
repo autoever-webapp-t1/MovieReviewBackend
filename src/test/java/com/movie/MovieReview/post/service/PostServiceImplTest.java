@@ -3,6 +3,7 @@ package com.movie.MovieReview.post.service;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
+import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entitiy.Post;
@@ -104,6 +105,10 @@ class PostServiceImplTest {
     }
 
     @Test
-    void findPostByMemberId() {
+    void getPost() throws Exception {
     }
+
+
+
+
 }
