@@ -37,8 +37,8 @@ public class MovieDetailEntity {
     private String genres; // movie 장르 리스트
 
     @OneToMany(mappedBy = "movieDetailEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MovieCreditsEntity> credits;
+    private List<MovieCreditsEntity> credits; //movie 배우, 감독 리스트
 
     @OneToMany(mappedBy = "movieDetailEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MovieRecommendEntity> recommendations;
+    private List<MovieRecommendEntity> recommendations; //movie 추천 영화 ID리스트
 }
