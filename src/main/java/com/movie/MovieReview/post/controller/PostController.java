@@ -6,6 +6,8 @@ import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.service.PostService;
 import com.movie.MovieReview.post.service.PostServiceImpl;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,4 +45,17 @@ public class PostController {
             PostDetailDto postDetailDto = postService.getPost(postId);
             return ResponseEntity.status(HttpStatus.OK).body(postDetailDto);
     }
+
+    @GetMapping("/posts")
+    public ResponseEntity<PageResponseDto<PostDetailDto>> getAllPosts(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size) {
+        PageRequestDto pageRequestDto = PageRequestDto.builder()
+                .page(page)
+                .size(size)
+                .build();
+        PageResponseDto<PostDetailDto> response = postService.getAllPosts(pageRequestDto);
+        return ResponseEntity.ok(response);
+    }
+
 }
