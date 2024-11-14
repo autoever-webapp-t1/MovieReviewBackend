@@ -1,6 +1,8 @@
 package com.movie.MovieReview.review.repository;
 
 import com.movie.MovieReview.review.entity.ReviewEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,10 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Query("SELECT r FROM ReviewEntity r WHERE r.member.id = :memberId")
     List<ReviewEntity> findAllReviewsByMemberId(@Param("memberId") Long memberId);
+
+    Page<ReviewEntity> findByMovieId(Long movieId, Pageable pageable);
+
+    @Query("SELECT r FROM ReviewEntity r WHERE r.member.id = :memberId")
+    Page<ReviewEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }
+
