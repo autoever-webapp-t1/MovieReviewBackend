@@ -42,14 +42,17 @@ public class MovieDetailsDto {
         private String name;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
     public static class Credits {
-        private Long id;
         private String type;
         private String name;
         private String profile;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
     public static class Recommends{
         private Long id;
