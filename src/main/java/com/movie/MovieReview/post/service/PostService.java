@@ -11,7 +11,7 @@ import java.util.List;
 public interface PostService {
     Post findByPostId(Long postId);
     PostResDto createPost(PostDto postDto);
-    void deletePost();
+    void deletePost(Long postId);
     PostResDto updatePost(Long postId);
     List<PostResDto> findPostByMemberId(Long memberId);
 }
