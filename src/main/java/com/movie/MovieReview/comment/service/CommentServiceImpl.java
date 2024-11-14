@@ -69,7 +69,7 @@ public class CommentServiceImpl implements CommentService{
     public CommentResDto updateComment(Long commentId, CommentResDto commentResDto) {
        Comment target = commentRepository.findById(commentId)
                .orElseThrow(()->new IllegalArgumentException("대상 댓글이 없습니다."));
-       target.patch(commentResDto);
+       target.update(commentResDto);
        Comment updated = commentRepository.save(target);
 
        return CommentResDto.entityToResDto(target);

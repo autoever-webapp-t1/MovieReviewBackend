@@ -34,7 +34,7 @@ public class Comment extends BaseTimeEntity {
     }
 
 
-    public void patch(CommentResDto dto) {
+    public void update(CommentResDto dto) {
         if(this.commentId != dto.getCommentId()) {
             throw new IllegalArgumentException("댓글 수정 실패. 잘못된 id가 입력되었습니다.");
         }

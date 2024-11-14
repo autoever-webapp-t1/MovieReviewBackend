@@ -3,6 +3,7 @@ package com.movie.MovieReview.post.entitiy;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.movie.MovieReview.comment.entity.Comment;
 import com.movie.MovieReview.member.entity.MemberEntity;
+import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,5 +68,15 @@ public class Post extends BaseTimeEntity {
         if (this.commentCnt > 0) {
             this.commentCnt--;
         }
+    }
+
+    public void update(PostResDto dto) {
+        if(this.postId!= dto.getPostId()) {
+            throw new IllegalArgumentException("게시글 수정 실패. 잘못된 id가 입력되었습니다.");
+        }
+        if(dto.getTitle() != null)
+            this.title = dto.getTitle();
+        if (dto.getContent() != null)
+            this.content = dto.getContent();
     }
 }

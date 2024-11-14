@@ -1,23 +1,22 @@
 package com.movie.MovieReview.post.dto;
 
 import com.movie.MovieReview.post.entitiy.Post;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class PostResDto implements PostDtoInterface{
-    private final Long postId;
-    private final String nickname;
-    private final String title;
-    private final String content;
-    private final Integer commentCnt;
+    private Long postId;
+    private String nickname;
+    private String title;
+    private String content;
+    private Integer commentCnt;
     private boolean isLiked;
-    private final Integer likesCount;
-    private final LocalDateTime createdDate;
-    private final LocalDateTime modifiedDate;
+    private Integer likesCount;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     public static PostResDto entityToResDto(Post post) {
         return PostResDto.builder()

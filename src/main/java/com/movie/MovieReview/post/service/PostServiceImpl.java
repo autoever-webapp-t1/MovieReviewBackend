@@ -1,6 +1,5 @@
 package com.movie.MovieReview.post.service;
 
-import com.movie.MovieReview.exception.ErrorCode;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -59,14 +57,22 @@ public class PostServiceImpl implements PostService{
         MemberEntity member = getLoginMember();
         Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
         if (!post.getWriter().equals(member)) {
-            throw new RuntimeException("no permisson");
+            throw new RuntimeException("접근 권한이 없습니다");
         }
         postRepository.delete(post);
     }
 
     @Override
-    public PostResDto updatePost(Long postId) {
-        return null;
+    public PostResDto updatePost(Long postId, PostResDto postDto) {
+        MemberEntity member = getLoginMember();
+        Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
+        if (!targetPost.getWriter().equals(member)) {
+            throw new RuntimeException("접근 권한이 없습니다");
+        }
+        targetPost.update(postDto);
+
+        Post updatedPost = postRepository.save(targetPost);
+        return PostResDto.entityToResDto(targetPost);
     }
 
     @Override
