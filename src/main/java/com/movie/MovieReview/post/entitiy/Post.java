@@ -32,8 +32,9 @@ public class Post extends BaseTimeEntity {
 
     @Transient
     private boolean isLiked;
+
     @Transient
-    private Long likesCount;
+    private int likesCount;
 
     @Setter
     private int commentCnt;
