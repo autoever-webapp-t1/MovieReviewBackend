@@ -171,6 +171,13 @@ public class ReviewServiceImpl implements ReviewService{
         return reviewRepository.findAverageSkillsByMemberId(memberId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getAverageSkillsByMovieId(Long movieId) {
+        return reviewRepository.findAverageSkillsByMovieId(movieId);
+    }
+
+
 
     @Override
     @Transactional(readOnly = true)
