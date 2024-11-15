@@ -24,7 +24,7 @@ public class MovieDetailsDto {
     private List<Credits> credits;
     private List<Recommends> recommendations;
 
-    private Double totalAverageSkill; // 영화 육각형 통계의 평균
+    //private Double totalAverageSkill; // 영화 육각형 통계의 평균
 
     @Data
     public static class Images{
