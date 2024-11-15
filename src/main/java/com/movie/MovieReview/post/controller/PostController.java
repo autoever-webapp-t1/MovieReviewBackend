@@ -1,17 +1,14 @@
 package com.movie.MovieReview.post.controller;
 
-import com.movie.MovieReview.comment.dto.CommentResDto;
 import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
-import com.movie.MovieReview.post.service.PostService;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
