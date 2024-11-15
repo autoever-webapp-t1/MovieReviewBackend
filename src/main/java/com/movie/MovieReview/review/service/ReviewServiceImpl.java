@@ -206,33 +206,66 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     @Transactional
-    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate){
-        // 리뷰 평균 데이터를 가져오기
-        Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieIdWithinDateRange(movieId,startDate, endDate);
+    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate) {
+        // Repository에서 데이터 조회
+        Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieIdWithinDateRange(movieId, startDate, endDate);
 
-        if (avgSkills.isEmpty()) {
-            return avgSkills;
+        // 결과가 비어 있는 경우 빈 Map 반환
+        if (avgSkills == null || avgSkills.isEmpty()) {
+            return Collections.emptyMap();
         }
 
         // 평균값들을 더해 전체 평균 계산
         double totalAvg = avgSkills.values().stream()
-                .mapToDouble(value -> value != null ? (double) value : 0.0)  // null 처리
+                .filter(Objects::nonNull) // null 값 제외
+                .mapToDouble(value -> (double) value)
                 .average()
                 .orElse(0.0);
 
         // 소수점 둘째 자리까지 반올림
         double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
-
-        // Movie 엔티티에 totalAverageSkill 업데이트
+        // Movie 엔티티의 totalAverageSkill 업데이트
         MovieDetailEntity movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
-        movie.setTotalAverageSkill(roundedTotalAvg);
+        movie.setAwardsTotalAverageSkill(roundedTotalAvg);
         movieRepository.save(movie); // 변경 사항 저장
 
-        // 결과 반환
+        // 최종 결과 반환
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
     }
+
+//    @Override
+//    @Transactional
+//    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate){
+//        // 리뷰 평균 데이터를 가져오기
+//        Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieIdWithinDateRange(movieId,startDate, endDate);
+//
+//        if (avgSkills == null || avgSkills.isEmpty()) {
+//            return Collections.emptyMap();
+//        }
+//
+////        Map<String, Object> avgSkills = new HashMap<>();
+//
+//        // 평균값들을 더해 전체 평균 계산
+//        double totalAvg = avgSkills.values().stream()
+//                .mapToDouble(value -> value != null ? ((Number) value).doubleValue() : 0.0)  // null 처리
+//                .average()
+//                .orElse(0.0);
+//
+//        // 소수점 둘째 자리까지 반올림
+//        double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+//
+//        // Movie 엔티티에 totalAverageSkill 업데이트
+//        MovieDetailEntity movie = movieRepository.findById(movieId)
+//                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+//        movie.setAwardsTotalAverageSkill(roundedTotalAvg);
+//        movieRepository.save(movie) ; // 변경 사항 저장
+//
+//        // 결과 반환
+//        avgSkills.put("totalAverageSkill", roundedTotalAvg);
+//        return avgSkills;
+//    }
 
     @Override
     @Transactional(readOnly = true)

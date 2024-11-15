@@ -42,4 +42,6 @@ public class MovieDetailEntity {
     @OneToMany(mappedBy = "movieDetailEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MovieRecommendEntity> recommendations; //movie 추천 영화 ID리스트
     private Double totalAverageSkill; // 영화 육각형 통계의 평균
+    
+    private Double awardsTotalAverageSkill; //어워즈 기간 내 작성한 리뷰의 육각형 통계의 평균
 }
