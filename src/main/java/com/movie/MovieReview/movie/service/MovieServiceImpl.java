@@ -486,7 +486,7 @@ public class MovieServiceImpl implements  MovieService{
                 .collect(Collectors.toList());
     }
 
-    private MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
+    public MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
         return MovieCardDto.builder()
                 .id(movieDetailEntity.getId())
                 .title(movieDetailEntity.getTitle())

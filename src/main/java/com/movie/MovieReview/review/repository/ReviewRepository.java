@@ -1,5 +1,6 @@
 package com.movie.MovieReview.review.repository;
 
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +32,21 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             "FROM ReviewEntity r WHERE r.movie.id = :movieId")
     Map<String, Object> findAverageSkillsByMovieId(@Param("movieId") Long movieId);
 
-    @Query("SELECT new map(AVG(r.actorSkill) as avgActorSkill, AVG(r.directorSkill) as avgDirectorSkill, " +
-            "AVG(r.lineSkill) as avgLineSkill, AVG(r.musicSkill) as avgMusicSkill, " +
-            "AVG(r.sceneSkill) as avgSceneSkill, AVG(r.storySkill) as avgStorySkill) " +
+    @Query("SELECT new map(" +
+            "AVG(r.actorSkill) as avgActorSkill, " +
+            "AVG(r.directorSkill) as avgDirectorSkill, " +
+            "AVG(r.lineSkill) as avgLineSkill, " +
+            "AVG(r.musicSkill) as avgMusicSkill, " +
+            "AVG(r.sceneSkill) as avgSceneSkill, " +
+            "AVG(r.storySkill) as avgStorySkill " +
             "FROM ReviewEntity r " +
             "WHERE r.movie.id = :movieId " +
-            "AND r.createdDate BETWEEN :startDate AND :endDate")
+            "AND ((r.createdDate BETWEEN :startDate AND :endDate) " +
+            "OR (r.modifyDate BETWEEN :startDate AND :endDate))")
     Map<String, Object> findAverageSkillsByMovieIdWithinDateRange(
             @Param("movieId") Long movieId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
 }
 
