@@ -7,6 +7,8 @@ import com.movie.MovieReview.movie.service.MovieService;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,12 +48,24 @@ public class MovieController {
     }
 
     @GetMapping("/upComing") //upComing가져오기
-    public List<MovieCardDto> getUpComingMovies(){
+    public ResponseEntity<?> getUpComingMovies(){
         try {
-            return movieService.getUpComingMovies();
+            List<MovieCardDto> result = movieService.getUpComingMovies();
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
+    @GetMapping("/popular") //popular가져오기
+    public ResponseEntity<?> getPopularMovies(){
+        try {
+            List<MovieCardDto> result = movieService.getPopularMovies();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
 
@@ -71,16 +85,16 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/{id}") //영화 상세정보 tmdb에서 가져옴
-    public MovieDetailsDto getMovieDetails(@PathVariable ("id") Long id) {
-        try{
-            log.info("MovieController: 영화아이디 값은?" + id);
-            return movieService.getMovieDetails(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    @GetMapping("/{id}") //영화 상세정보 tmdb에서 가져옴
+//    public MovieDetailsDto getMovieDetails(@PathVariable ("id") Long id) {
+//        try{
+//            log.info("MovieController: 영화아이디 값은?" + id);
+//            return movieService.getMovieDetails(id);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     @GetMapping("/topRatedDetails") //DB에 저장된 id바탕으로 상세정보 저장
     public List<MovieDetailsDto> getTopRatedMovieDetails() {

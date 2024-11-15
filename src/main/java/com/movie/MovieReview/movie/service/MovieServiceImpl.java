@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -98,7 +97,7 @@ public class MovieServiceImpl implements  MovieService{
                     .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
                     .get()
                     .addHeader("accept", "application/json")
-                    .addHeader("Authorization", AUTH_TOKEN )
+                    .addHeader("Authorization", AUTH_TOKEN)
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -107,15 +106,47 @@ public class MovieServiceImpl implements  MovieService{
                 }
 
                 String jsonResponse = response.body().string();
-                log.info("MovieServiceImpl: "+jsonResponse);
-                // JSON -> MovieCardDto 파싱
-                MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
+                log.info("MovieServiceImpl: " + jsonResponse);
 
-                allMovies.addAll(movieList.getResults());
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = getJsonString(movieObject, "title");
+                    String overview = getJsonString(movieObject, "overview");
+                    String posterPath = getJsonString(movieObject, "poster_path");
+                    String releaseDate = getJsonString(movieObject, "release_date");
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    if (genreIdsArray != null) {
+                        for (JsonElement genreElement : genreIdsArray) {
+                            genreIdsList.add(genreElement.getAsInt());
+                        }
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
     }
+
+    // JSON 값이 null일때
+    private String getJsonString(JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject.get(key);
+        if (element != null && !element.isJsonNull()) {
+            return element.getAsString();
+        }
+        return "";
+    }
+
 
     @Override
     public List<MovieCardDto> getUpComingMovies() throws Exception {
@@ -136,11 +167,80 @@ public class MovieServiceImpl implements  MovieService{
                 }
 
                 String jsonResponse = response.body().string();
-                log.info("MovieServiceImpl: "+jsonResponse);
-                // JSON -> MovieCardDto 파싱
-                MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
+                log.info("MovieServiceImpl: " + jsonResponse);
 
-                allMovies.addAll(movieList.getResults());
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    allMovies.add(movieCardDto);
+                }
+            }
+        }
+        return allMovies;
+    }
+
+    @Override
+    public List<MovieCardDto> getPopularMovies() throws Exception {
+        List<MovieCardDto> allMovies = new ArrayList<>();
+        String PopularUrl = "popular?language=ko-KR&page=";
+
+        for (int page = 1; page <= 5; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + PopularUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN )
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
+
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: " + jsonResponse);
+
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
