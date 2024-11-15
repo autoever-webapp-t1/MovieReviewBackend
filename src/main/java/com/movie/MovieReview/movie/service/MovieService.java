@@ -84,7 +84,4 @@ public interface MovieService {
                 .genre_ids(movieDetailEntity.getGenres())
                 .build();
     }
-
-
-
 }

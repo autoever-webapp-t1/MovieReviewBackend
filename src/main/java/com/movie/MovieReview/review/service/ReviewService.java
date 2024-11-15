@@ -1,12 +1,13 @@
 package com.movie.MovieReview.review.service;
 
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
-import com.movie.MovieReview.review.entity.ReviewEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,5 +27,10 @@ public interface ReviewService {
     public Map<String, Object> getAverageSkillsByMemberId(Long memberId); //회원의 통계 평균
     public Map<String, Object> getAverageSkillsByMovieId(Long movieId);
     public List<MyReviewsDto> getMemberReviews(Long memberId);
+    public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId);
+
+    //for awards
+    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate);
 }
+
 
