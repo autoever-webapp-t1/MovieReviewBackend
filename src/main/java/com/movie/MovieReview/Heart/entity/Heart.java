@@ -4,6 +4,7 @@ import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.post.entitiy.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,5 +25,11 @@ public class Heart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public Heart(MemberEntity member, Post post) {
+        this.member = member;
+        this.post = post;
+    }
 
 }

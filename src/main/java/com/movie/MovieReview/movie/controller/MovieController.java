@@ -4,6 +4,7 @@ import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.service.MovieRecommendService;
 import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,6 +24,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final MovieRecommendService movieRecommendService;
+    private final ReviewService reviewService;
 
     @GetMapping("/topRated") //topRated가져오기
     public ResponseEntity<?> getTopRatedMovies() {

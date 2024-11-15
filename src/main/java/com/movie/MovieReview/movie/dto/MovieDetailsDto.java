@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +26,22 @@ public class MovieDetailsDto {
     private List<Recommends> recommendations;
 
     //private Double totalAverageSkill; // 영화 육각형 통계의 평균
+
+    private Map<String, Object> score; // 평균 스킬 데이터 + totalAvgSkill을 저장할 score 필드
+
+    public MovieDetailsDto(Long id, String title, String overview, String release_date, int runtime, String images,
+                           String videos, String genres, List<Credits> credits, List<Recommends> recommendations) {
+        this.id = id;
+        this.title = title;
+        this.overview = overview;
+        this.release_date = release_date;
+        this.runtime = runtime;
+        this.images = images;
+        this.videos = videos;
+        this.genres = genres;
+        this.credits = credits;
+        this.recommendations = recommendations;
+    }
 
     @Data
     public static class Images{
