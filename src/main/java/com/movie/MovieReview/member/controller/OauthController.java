@@ -22,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin( origins = "http://localhost:5173", allowCredentials = "true")
 @Log4j2
 public class OauthController {
     private final OauthService oauthService;
@@ -44,17 +44,20 @@ public class OauthController {
         oauthResponseDto.setRefreshToken(refreshToken);
 
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(false);
         accessTokenCookie.setPath("/");
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setHttpOnly(false);
+        refreshTokenCookie.setSecure(false);
         refreshTokenCookie.setPath("/");
 
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+        System.out.println(accessTokenCookie.getValue());
+        System.out.println(refreshTokenCookie.getValue());
+
+        response.addHeader("Set-Cookie", "accessToken=" + accessToken + "; HttpOnly; Path=/");
+        response.addHeader("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/");
 
         String redirectUrl = "http://localhost:5173";
         response.sendRedirect(redirectUrl);
