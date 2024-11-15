@@ -202,19 +202,17 @@ public class ReviewServiceImpl implements ReviewService{
         return avgSkills;
     }
 
-
-
-
     @Override
     @Transactional(readOnly = true)
     public List<MyReviewsDto> getMemberReviews(Long memberId) {
 
-        List<ReviewEntity> reviewEntities = reviewRepository.findAllReviewsByMemberId(memberId);
+        List<ReviewEntity> reviewEntities = reviewRepository.findByMemberId(memberId);
 
         return reviewEntities.stream()
                 .map(this::toMyPageDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     @Transactional(readOnly = true)
     public PageResponseDto<ReviewDetailDto> getAllReviewsByMemberId(Long memberId, PageRequestDto pageRequestDto) {
