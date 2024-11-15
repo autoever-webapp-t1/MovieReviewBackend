@@ -1,9 +1,6 @@
 package com.movie.MovieReview.movie.service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
@@ -49,7 +46,7 @@ public class MovieServiceImpl implements  MovieService{
                     .url(TMDB_API_URL + TopRatedUrl + page + "&region=KR")
                     .get()
                     .addHeader("accept", "application/json")
-                    .addHeader("Authorization", AUTH_TOKEN )
+                    .addHeader("Authorization", AUTH_TOKEN)
                     .build();
 
             try (Response response = client.newCall(request).execute()) {
@@ -58,11 +55,31 @@ public class MovieServiceImpl implements  MovieService{
                 }
 
                 String jsonResponse = response.body().string();
-                log.info("MovieServiceImpl: "+jsonResponse);
-                // JSON -> MovieCardDto 파싱
-                MovieCardResponse movieList = gson.fromJson(jsonResponse, MovieCardResponse.class);
+                log.info("MovieServiceImpl: " + jsonResponse);
 
-                allMovies.addAll(movieList.getResults());
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
@@ -150,7 +167,7 @@ public class MovieServiceImpl implements  MovieService{
                 String releaseDate = jsonObject.get("release_date").getAsString();
                 String posterPath = jsonObject.get("poster_path").getAsString();
                 String backdropPath = jsonObject.get("backdrop_path").getAsString();
-                Double totalAverageSkill = jsonObject.get("totalAverageSkill").getAsDouble();
+                //Double totalAverageSkill = jsonObject.get("totalAverageSkill").getAsDouble();
 
                 // 이미지 리스트 설정
                 List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
@@ -228,8 +245,6 @@ public class MovieServiceImpl implements  MovieService{
                     }
                 }
 
-
-
                 // recommendations 리스트
                 List<MovieDetailsDto.Recommends> recommends = new ArrayList<>();
                 jsonObject.getAsJsonObject("recommendations").getAsJsonArray("results").forEach(recommendsElement -> {
@@ -246,7 +261,7 @@ public class MovieServiceImpl implements  MovieService{
                 String genresJson = gson.toJson(genres);
 
 
-                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends, totalAverageSkill);
+                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
                 return movieDetailsDto; //화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());
@@ -364,6 +379,7 @@ public class MovieServiceImpl implements  MovieService{
                 .overview(movieDetailEntity.getOverview())
                 .poster_path(movieDetailEntity.getImages())
                 .release_date(movieDetailEntity.getRelease_date())
+                .genre_ids(movieDetailEntity.getGenres())
                 .build();
     }
 }
