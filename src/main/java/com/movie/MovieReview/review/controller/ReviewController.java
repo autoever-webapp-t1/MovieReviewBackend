@@ -155,6 +155,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }*/
 
+    //mypage에서 리뷰 리스트 보여주는거
     @GetMapping("/user/{memberId}/reviews")
     public ResponseEntity<PageResponseDto<ReviewDetailDto>> getAllReviewsByMemberId(
             @PathVariable("memberId") Long memberId,
@@ -171,5 +172,7 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    //main용
+    //memberId로 movieId를 찾아서 List<MovieCardsDto>로 반환
 
 }

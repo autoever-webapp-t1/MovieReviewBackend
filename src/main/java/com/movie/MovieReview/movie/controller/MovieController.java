@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -27,13 +28,12 @@ public class MovieController {
     private final ReviewService reviewService;
 
     @GetMapping("/topRated") //topRated가져오기
-    public ResponseEntity<?> getTopRatedMovies() {
+    public List<MovieCardDto> getTopRatedMovies() {
         try {
-            List<MovieCardDto> result = movieService.getTopRatedMovies();
-            return ResponseEntity.ok(result);
+            return movieService.getTopRatedMovies();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+            return null;
         }
     }
 
@@ -67,6 +67,13 @@ public class MovieController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
+    }
+
+    //내가 본 영화 리스트
+    @GetMapping("/{memberId}/myMovies")
+    public ResponseEntity<List<MovieCardDto>> getMoviesByMemberId(@PathVariable("memberId") Long memberId) {
+        List<MovieCardDto> movies = movieService.getMoviesByMemberId(memberId);
+        return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장

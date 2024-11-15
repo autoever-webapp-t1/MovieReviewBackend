@@ -6,6 +6,8 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
+import com.movie.MovieReview.review.entity.ReviewEntity;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +28,7 @@ public class MovieServiceImpl implements  MovieService{
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
     private final MovieRecommendService movieRecommendService;
     private final MovieCreditService movieCreditService;
+    private final ReviewRepository reviewRepository;
 
     private final ReviewService reviewService;
 
@@ -479,6 +482,28 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieDetailEntity> movieDetail = movieRepository.findByTitleContaining(query);
         return movieDetail.stream()
                 .map(this::toMovieCardDto)
+                .collect(Collectors.toList());
+    }
+
+    //hj
+    @Override
+    public List<MovieCardDto> getMoviesByMemberId(Long memberId) {
+        List<ReviewEntity> reviews = reviewRepository.findByMemberId(memberId); // 회원이 작성한 리뷰들
+        return reviews.stream()
+                .map(review -> {
+                    // MovieDetailEntity에서 영화 정보를 가져옵니다.
+                    MovieDetailEntity movie = movieRepository.findById(review.getMovie().getId())
+                            .orElseThrow(() -> new RuntimeException("영화 정보 없음"));
+
+                    return MovieCardDto.builder()
+                            .id(movie.getId())
+                            .title(movie.getTitle())
+                            .overview(movie.getOverview())
+                            .poster_path(movie.getImages())
+                            .release_date(movie.getRelease_date())
+                            .genre_ids(movie.getGenres())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
