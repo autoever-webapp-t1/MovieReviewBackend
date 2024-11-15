@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -482,28 +483,6 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieDetailEntity> movieDetail = movieRepository.findByTitleContaining(query);
         return movieDetail.stream()
                 .map(this::toMovieCardDto)
-                .collect(Collectors.toList());
-    }
-
-    //hj
-    @Override
-    public List<MovieCardDto> getMoviesByMemberId(Long memberId) {
-        List<ReviewEntity> reviews = reviewRepository.findByMemberId(memberId); // 회원이 작성한 리뷰들
-        return reviews.stream()
-                .map(review -> {
-                    // MovieDetailEntity에서 영화 정보를 가져옵니다.
-                    MovieDetailEntity movie = movieRepository.findById(review.getMovie().getId())
-                            .orElseThrow(() -> new RuntimeException("영화 정보 없음"));
-
-                    return MovieCardDto.builder()
-                            .id(movie.getId())
-                            .title(movie.getTitle())
-                            .overview(movie.getOverview())
-                            .poster_path(movie.getImages())
-                            .release_date(movie.getRelease_date())
-                            .genre_ids(movie.getGenres())
-                            .build();
-                })
                 .collect(Collectors.toList());
     }
 

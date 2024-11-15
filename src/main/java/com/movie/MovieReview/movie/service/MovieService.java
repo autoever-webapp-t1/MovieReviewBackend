@@ -21,7 +21,7 @@ public interface MovieService {
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception; //DB에서 영화 상세정보 ID로 검색
     public MovieDetailsDto searchMovie(String name) throws Exception; //DB에서 영화 제목으로 DB에서 검색
     public List<MovieCardDto> searchByQuery(String query);
-    public List<MovieCardDto> getMoviesByMemberId(Long memberId);
+    //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
         List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
