@@ -4,6 +4,8 @@ import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.service.MovieRecommendService;
 import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -99,7 +101,7 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/DetailDB/{id}") //우리 DB에서 영화 상세정보 검색
+    @GetMapping("/{id}") //우리 DB에서 영화 상세정보 검색
     public MovieDetailsDto getTopRatedMovieDetailsInDB(@PathVariable ("id") Long id) {
         try{
             return movieService.getTopRatedMovieDetailsInDB(id);
@@ -109,19 +111,34 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/search/{name}") //영화 제목으로 검색
-    public MovieDetailsDto searchMovie(@PathVariable ("name") String name){
-        try{
-            return movieService.searchMovie(name);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    @GetMapping("/search/{name}") //영화 제목으로 검색
+//    public MovieDetailsDto searchMovie(@PathVariable ("name") String name){
+//        try{
+//            return movieService.searchMovie(name);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//    @GetMapping("/search")
+//    public List<MovieCardDto> search(@RequestParam String query) {
+//        return movieService.searchByQuery(query); // 이름에 query가 포함된 제품을 검색
+//    }
 
-    @GetMapping("/search")
-    public List<MovieCardDto> search(@RequestParam String query) {
-        return movieService.searchByQuery(query); // 이름에 query가 포함된 제품을 검색
+    @GetMapping("/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션
+    public ResponseEntity<PageResponseDto<MovieCardDto>> getKeywordResult(
+            @PathVariable("keyword") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size){
+
+        PageRequestDto pageRequestDto = PageRequestDto.builder()
+                .page(page)
+                .size(size)
+                .build();
+        PageResponseDto<MovieCardDto> response = movieService.getAllMovieByKeyword(keyword, pageRequestDto);
+
+        return ResponseEntity.ok(response);
     }
 }
 

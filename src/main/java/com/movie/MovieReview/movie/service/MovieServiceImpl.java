@@ -6,6 +6,8 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
@@ -14,6 +16,8 @@ import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -486,14 +490,20 @@ public class MovieServiceImpl implements  MovieService{
                 .collect(Collectors.toList());
     }
 
-    public MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
-        return MovieCardDto.builder()
-                .id(movieDetailEntity.getId())
-                .title(movieDetailEntity.getTitle())
-                .overview(movieDetailEntity.getOverview())
-                .poster_path(movieDetailEntity.getImages())
-                .release_date(movieDetailEntity.getRelease_date())
-                .genre_ids(movieDetailEntity.getGenres())
+    @Override
+    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String title, PageRequestDto pageRequestDto) {
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
+
+        Page<MovieDetailEntity> searchPage = movieRepository.findByTitleContaining(title, pageable);
+
+        List<MovieCardDto> movieList = searchPage.getContent().stream()
+                .map(this::toCardDto)
+                .collect(Collectors.toList());
+
+        return  PageResponseDto.<MovieCardDto>withAll()
+                .dtoList(movieList)
+                .pageRequestDto(pageRequestDto)
+                .total(searchPage.getTotalElements())
                 .build();
     }
 }
