@@ -465,11 +465,8 @@ public class MovieServiceImpl implements  MovieService{
 
         // 평균 스킬 데이터 가져오기
         Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieId(movieId);
-        if (avgSkills == null || avgSkills.isEmpty()) {
-            avgSkills = Map.of(); // 빈 Map으로 설정
-        }
 
-        movieDetailsDto.setScore(avgSkills); // avgSkills를 score에 설정
+        movieDetailsDto.setScore(avgSkills);
 
         return movieDetailsDto;
     }
