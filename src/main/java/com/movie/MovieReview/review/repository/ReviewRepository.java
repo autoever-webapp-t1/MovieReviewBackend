@@ -23,5 +23,12 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Query("SELECT r FROM ReviewEntity r WHERE r.member.id = :memberId")
     Page<ReviewEntity> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+    @Query("SELECT new map(AVG(r.actorSkill) as avgActorSkill, AVG(r.directorSkill) as avgDirectorSkill, " +
+            "AVG(r.lineSkill) as avgLineSkill, AVG(r.musicSkill) as avgMusicSkill, " +
+            "AVG(r.sceneSkill) as avgSceneSkill, AVG(r.storySkill) as avgStorySkill) " +
+            "FROM ReviewEntity r WHERE r.movie.id = :movieId")
+    Map<String, Object> findAverageSkillsByMovieId(@Param("movieId") Long movieId);
+
 }
 

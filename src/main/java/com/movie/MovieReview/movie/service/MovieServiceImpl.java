@@ -150,6 +150,7 @@ public class MovieServiceImpl implements  MovieService{
                 String releaseDate = jsonObject.get("release_date").getAsString();
                 String posterPath = jsonObject.get("poster_path").getAsString();
                 String backdropPath = jsonObject.get("backdrop_path").getAsString();
+                Double totalAverageSkill = jsonObject.get("totalAverageSkill").getAsDouble();
 
                 // 이미지 리스트 설정
                 List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
@@ -245,7 +246,7 @@ public class MovieServiceImpl implements  MovieService{
                 String genresJson = gson.toJson(genres);
 
 
-                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
+                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends, totalAverageSkill);
                 return movieDetailsDto; //화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());

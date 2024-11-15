@@ -18,4 +18,5 @@ public class MovieCardDto {
     private String poster_path; //movie 포스터 url https://image.tmdb.org/t/p/w500/poster_path
     private String release_date; //movie 개봉 날ㅉ
     private List<Integer> genre_ids; // movie 장르 ID들
+    private Double totalAverageSkill; // 영화 육각형 통계의 평균
 }
