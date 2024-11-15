@@ -15,7 +15,7 @@ import java.util.Date;
 public class AwardsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long awardId;
+    private Long awardsId;
 
     private int status;
 
@@ -32,4 +32,6 @@ public class AwardsEntity {
     private Date startDateTime;
 
     private Date endDateTime;
+
+    private Long topMovieId; //일등 작품의 movieId
 }
