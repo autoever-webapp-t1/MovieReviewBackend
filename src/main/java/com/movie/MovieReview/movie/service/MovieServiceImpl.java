@@ -342,8 +342,6 @@ public class MovieServiceImpl implements  MovieService{
 
             movieDetailsList.add(movieDetails);
         }
-
-
         return movieDetailsList;
     }
 

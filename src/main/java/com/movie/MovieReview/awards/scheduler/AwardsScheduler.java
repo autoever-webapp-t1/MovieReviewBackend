@@ -11,7 +11,7 @@ public class AwardsScheduler {
     private final AwardsService awardsService;
 
     //서버 키자마자 2 -> 1, 1 -> 0
-    @Scheduled(fixedRate = 60000) // 1분 마다 실행
+    @Scheduled(fixedRate = 600000000) // 1분 마다 실행
     public void updateAwardsStatus() {
         awardsService.changeStatus();
     }
