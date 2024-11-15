@@ -59,7 +59,4 @@ public interface MovieService {
                 .genres(movieDetailsDto.getGenres())
                 .build();
     }
-
-
-
 }

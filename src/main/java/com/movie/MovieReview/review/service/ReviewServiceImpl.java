@@ -2,8 +2,11 @@ package com.movie.MovieReview.review.service;
 
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.repository.MemberRepository;
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
+import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.movie.service.MovieServiceImpl;
 import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
@@ -19,9 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -203,6 +205,36 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
+    @Transactional
+    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate){
+        // 리뷰 평균 데이터를 가져오기
+        Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieIdWithinDateRange(movieId,startDate, endDate);
+
+        if (avgSkills.isEmpty()) {
+            return avgSkills;
+        }
+
+        // 평균값들을 더해 전체 평균 계산
+        double totalAvg = avgSkills.values().stream()
+                .mapToDouble(value -> value != null ? (double) value : 0.0)  // null 처리
+                .average()
+                .orElse(0.0);
+
+        // 소수점 둘째 자리까지 반올림
+        double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+        // Movie 엔티티에 totalAverageSkill 업데이트
+        MovieDetailEntity movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+        movie.setTotalAverageSkill(roundedTotalAvg);
+        movieRepository.save(movie); // 변경 사항 저장
+
+        // 결과 반환
+        avgSkills.put("totalAverageSkill", roundedTotalAvg);
+        return avgSkills;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<MyReviewsDto> getMemberReviews(Long memberId) {
 
@@ -211,6 +243,45 @@ public class ReviewServiceImpl implements ReviewService{
         return reviewEntities.stream()
                 .map(this::toMyPageDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId) {
+        List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
+
+        List<MovieCardDto> movieCardDtos = new ArrayList<>();
+        Set<Long> addedMovieIds = new HashSet<>();
+
+        for (ReviewEntity review : reviews) {
+            Long movieId = review.getMovie().getId();
+
+            // 이미 리스트에 추가된 영화는 건너뜀
+            if (addedMovieIds.contains(movieId)) {
+                continue;
+            }
+            Map<String, Object> avgSkills = getAverageSkillsByMovieId(review.getMovie().getId());
+
+            // score가 비어있으면 기본 값 설정
+            if (avgSkills == null || avgSkills.isEmpty()) {
+                avgSkills = Map.of(); // 빈 Map으로 설정
+            }
+
+            MovieCardDto movieCardDto = MovieCardDto.builder()
+                    .id(review.getMovie().getId())
+                    .title(review.getMovie().getTitle())
+                    .overview(review.getMovie().getOverview())
+                    .poster_path(review.getMovie().getImages())
+                    .release_date(review.getMovie().getRelease_date())
+                    .genre_ids(review.getMovie().getGenres())
+                    .score(avgSkills)
+                    .build();
+
+            movieCardDtos.add(movieCardDto);
+            addedMovieIds.add(movieId);
+        }
+
+        return movieCardDtos;
     }
 
     @Override
@@ -307,6 +378,17 @@ public class ReviewServiceImpl implements ReviewService{
                 .musicSkill(reviewDetailDto.getMusicSkill())
                 .storySkill(reviewDetailDto.getStorySkill())
                 .lineSkill(reviewDetailDto.getLineSkill())
+                .build();
+    }
+
+    public MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
+        return MovieCardDto.builder()
+                .id(movieDetailEntity.getId())
+                .title(movieDetailEntity.getTitle())
+                .overview(movieDetailEntity.getOverview())
+                .poster_path(movieDetailEntity.getImages())
+                .release_date(movieDetailEntity.getRelease_date())
+                .genre_ids(movieDetailEntity.getGenres())
                 .build();
     }
 }

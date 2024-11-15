@@ -1,11 +1,10 @@
 package com.movie.MovieReview.review.controller;
 
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.service.MovieService;
-import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
-import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -147,6 +147,21 @@ public class ReviewController {
         return ResponseEntity.ok(totalAvgSkills); // totalAverageSkill 포함된 avgSkills 반환
     }
 
+    //awards 기간 마다에 movie 당 평균값 내기 (여섯개 skill의 avg + totalAvg)
+    @GetMapping("/movie/{movieId}/rate")
+    public ResponseEntity<Map<String, Object>> getAverageSkillsByMovieIdDateRange(
+            @PathVariable("movieId") Long movieId,
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate) {
+        Map<String, Object> totalAvgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId,startDate,endDate);
+
+        if (totalAvgSkills.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "No reviews found for this movie"));
+        }
+
+        return ResponseEntity.ok(totalAvgSkills); // totalAverageSkill 포함된 avgSkills 반환
+    }
+
 
     //member의 모든 리뷰 조회
     /*@GetMapping("/user/{memberId}/reviews")
@@ -174,5 +189,9 @@ public class ReviewController {
 
     //main용
     //memberId로 movieId를 찾아서 List<MovieCardsDto>로 반환
-
+    @GetMapping("/member/{memberId}/movie-cards")
+    public ResponseEntity<List<MovieCardDto>> getMovieCardDtosByMemberId(@PathVariable("memberId") Long memberId) {
+        List<MovieCardDto> movieCards = reviewService.getMovieCardDtosByMemberId(memberId);
+        return ResponseEntity.ok(movieCards);
+    }
 }
