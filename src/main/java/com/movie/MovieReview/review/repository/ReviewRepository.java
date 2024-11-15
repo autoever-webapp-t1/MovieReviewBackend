@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,5 +31,15 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             "FROM ReviewEntity r WHERE r.movie.id = :movieId")
     Map<String, Object> findAverageSkillsByMovieId(@Param("movieId") Long movieId);
 
+    @Query("SELECT new map(AVG(r.actorSkill) as avgActorSkill, AVG(r.directorSkill) as avgDirectorSkill, " +
+            "AVG(r.lineSkill) as avgLineSkill, AVG(r.musicSkill) as avgMusicSkill, " +
+            "AVG(r.sceneSkill) as avgSceneSkill, AVG(r.storySkill) as avgStorySkill) " +
+            "FROM ReviewEntity r " +
+            "WHERE r.movie.id = :movieId " +
+            "AND r.createdDate BETWEEN :startDate AND :endDate")
+    Map<String, Object> findAverageSkillsByMovieIdWithinDateRange(
+            @Param("movieId") Long movieId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
 
