@@ -1,15 +1,13 @@
 package com.movie.MovieReview.awards.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,15 +17,17 @@ public class AwardsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long awardId;
 
+    private int status;
+
     private String awardName;
 
-    private int nominated1;
+    private Long nominated1;
 
-    private int nominated2;
+    private Long nominated2;
 
-    private int nominated3;
+    private Long nominated3;
 
-    private int nominated4;
+    private Long nominated4;
 
     private Date startDateTime;
 
