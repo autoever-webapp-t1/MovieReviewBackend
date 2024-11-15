@@ -25,7 +25,7 @@ public class AwardsServiceImpl implements AwardsService{
         AwardsEntity award = awardsRepository.findById(awardId)
                 .orElseThrow(() -> new RuntimeException("Award not found"));
 
-        // nominated1, nominated2, nominated3, nominated4 값을 가져옵니다.
+        // nominated1, nominated2, nominated3, nominated4 무비 아이디 가져오기
         List<Long> movieIds = Arrays.asList(award.getNominated1(), award.getNominated2(), award.getNominated3(), award.getNominated4());
 
         // 영화정보 가져오기
