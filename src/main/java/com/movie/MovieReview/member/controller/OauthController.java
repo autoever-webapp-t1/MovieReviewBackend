@@ -7,6 +7,7 @@ import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.member.service.KakaoOauthService;
 import com.movie.MovieReview.member.service.MemberService;
 import com.movie.MovieReview.member.service.OauthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,22 @@ public class OauthController {
         // 응답 객체에 Access Token, Refresh Token 저장
         oauthResponseDto.setAccessToken(accessToken);
         oauthResponseDto.setRefreshToken(refreshToken);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        String redirectUrl = "http://localhost:5173";
+        response.sendRedirect(redirectUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(oauthResponseDto);
     }
