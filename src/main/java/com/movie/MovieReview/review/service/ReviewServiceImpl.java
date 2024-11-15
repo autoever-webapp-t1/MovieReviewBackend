@@ -202,9 +202,6 @@ public class ReviewServiceImpl implements ReviewService{
         return avgSkills;
     }
 
-
-
-
     @Override
     @Transactional(readOnly = true)
     public List<MyReviewsDto> getMemberReviews(Long memberId) {
@@ -215,6 +212,7 @@ public class ReviewServiceImpl implements ReviewService{
                 .map(this::toMyPageDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     @Transactional(readOnly = true)
     public PageResponseDto<ReviewDetailDto> getAllReviewsByMemberId(Long memberId, PageRequestDto pageRequestDto) {

@@ -6,6 +6,8 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
+import com.movie.MovieReview.review.entity.ReviewEntity;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +29,7 @@ public class MovieServiceImpl implements  MovieService{
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
     private final MovieRecommendService movieRecommendService;
     private final MovieCreditService movieCreditService;
+    private final ReviewRepository reviewRepository;
 
     private final ReviewService reviewService;
 
