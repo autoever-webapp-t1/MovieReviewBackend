@@ -3,8 +3,6 @@ package com.movie.MovieReview.awards.dto;
 import java.util.Date;
 
 public class AwardsDto {
-    //private Long awardId;
-
     private String awardName;
 
     private int nominated1;
