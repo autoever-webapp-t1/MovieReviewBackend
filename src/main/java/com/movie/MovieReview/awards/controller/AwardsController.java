@@ -16,6 +16,7 @@ import java.util.List;
 @CrossOrigin("*")
 public class AwardsController {
     private final AwardsService awardsService;
+
     @GetMapping("/{awardId}") //nominated된 영화들 4개 정보 보여줌
     public List<MovieDetailsDto> getAwardMovieDetails(@PathVariable("awardId") Long awardId) {
         try {

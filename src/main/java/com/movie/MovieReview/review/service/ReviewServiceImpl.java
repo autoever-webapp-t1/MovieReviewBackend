@@ -177,16 +177,24 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     @Transactional
     public Map<String, Object> getAverageSkillsByMovieId(Long movieId) {
+
         // 리뷰 평균 데이터를 가져오기
         Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieId(movieId);
 
-        if (avgSkills.isEmpty()) {
-            return avgSkills;
+        // 결과가 비어 있는 경우 빈 Map 반환
+        if (avgSkills == null || avgSkills.isEmpty()) {
+            return Collections.emptyMap();
         }
+
+        // 각 평균값들을 소수점 둘째 자리까지 반올림
+        avgSkills.replaceAll((key, value) ->
+                value != null ? Math.round(((double) value) * 100.0) / 100.0 : null
+        );
 
         // 평균값들을 더해 전체 평균 계산
         double totalAvg = avgSkills.values().stream()
-                .mapToDouble(value -> value != null ? (double) value : 0.0)  // null 처리
+                .filter(Objects::nonNull) // null 값 제외
+                .mapToDouble(value -> (double) value)
                 .average()
                 .orElse(0.0);
 
