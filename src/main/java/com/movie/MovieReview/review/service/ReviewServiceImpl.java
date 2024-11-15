@@ -206,7 +206,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Transactional(readOnly = true)
     public List<MyReviewsDto> getMemberReviews(Long memberId) {
 
-        List<ReviewEntity> reviewEntities = reviewRepository.findByMemberId(memberId);
+        List<ReviewEntity> reviewEntities = reviewRepository.findAllReviewsByMemberId(memberId);
 
         return reviewEntities.stream()
                 .map(this::toMyPageDto)

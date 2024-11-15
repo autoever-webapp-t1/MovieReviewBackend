@@ -69,13 +69,6 @@ public class MovieController {
         }
     }
 
-    //내가 본 영화 리스트
-    @GetMapping("/{memberId}/myMovies")
-    public ResponseEntity<List<MovieCardDto>> getMoviesByMemberId(@PathVariable("memberId") Long memberId) {
-        List<MovieCardDto> movies = movieService.getMoviesByMemberId(memberId);
-        return ResponseEntity.ok(movies);
-    }
-
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
     public List<Long> SaveTopRatedId(){
         try{
