@@ -1,6 +1,7 @@
 package com.movie.MovieReview.member.controller;
 
 import com.movie.MovieReview.member.entity.WishEntity;
+import com.movie.MovieReview.member.service.WishService;
 import com.movie.MovieReview.member.service.WishServiceImpl;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.List;
 public class WishController {
 
     @Autowired
-    private WishServiceImpl wishServiceImpl;
+    private WishService wishService;
 
     /**
      * 위시리스트에 영화를 추가하거나 삭제하는 API
@@ -26,7 +27,7 @@ public class WishController {
     public ResponseEntity<String> toggleWishlist(@RequestParam Long memberId, @RequestParam Long movieId) {
         try {
             // 위시리스트에 추가 또는 삭제 처리
-            wishServiceImpl.addToWishlist(memberId, movieId);
+            wishService.addToWishlist(memberId, movieId);
             return ResponseEntity.ok("위시리스트가 업데이트되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("오류가 발생했습니다: " + e.getMessage());
@@ -39,7 +40,7 @@ public class WishController {
      */
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<MovieCardDto>> getWishlistByMemberId(@PathVariable("memberId") Long memberId) {
-        List<MovieCardDto> wishlist = wishServiceImpl.getWishlistByMemberId(memberId);
+        List<MovieCardDto> wishlist = wishService.getWishlistByMemberId(memberId);
         return ResponseEntity.ok(wishlist);
     }
 
