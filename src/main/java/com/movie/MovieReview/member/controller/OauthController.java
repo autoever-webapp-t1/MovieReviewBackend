@@ -7,6 +7,7 @@ import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.member.service.KakaoOauthService;
 import com.movie.MovieReview.member.service.MemberService;
 import com.movie.MovieReview.member.service.OauthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin( origins = "http://localhost:5173", allowCredentials = "true")
 @Log4j2
 public class OauthController {
     private final OauthService oauthService;
@@ -41,6 +42,25 @@ public class OauthController {
         // 응답 객체에 Access Token, Refresh Token 저장
         oauthResponseDto.setAccessToken(accessToken);
         oauthResponseDto.setRefreshToken(refreshToken);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(false);
+        accessTokenCookie.setPath("/");
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(false);
+        refreshTokenCookie.setSecure(false);
+        refreshTokenCookie.setPath("/");
+
+        System.out.println(accessTokenCookie.getValue());
+        System.out.println(refreshTokenCookie.getValue());
+
+        response.addHeader("Set-Cookie", "accessToken=" + accessToken + "; HttpOnly; Path=/; Domain=localhost; SameSite=None");
+        response.addHeader("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/; Domain=localhost SameSite=None;");
+
+        String redirectUrl = "http://localhost:5173";
+        response.sendRedirect(redirectUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(oauthResponseDto);
     }

@@ -30,7 +30,7 @@ public class OauthService {
     private String kakaoRedirectUri;
 
     //카카오 사용자 토큰 받아오기
-    public Map<String, Object> getKakaoToken(String code) {
+    public Map<String, Object>  getKakaoToken(String code) {
         WebClient webClient = WebClient.builder().baseUrl("https://kauth.kakao.com")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
 
