@@ -8,6 +8,7 @@ import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -148,11 +149,11 @@ public class ReviewController {
     }
 
     //awards 기간 마다에 movie 당 평균값 내기 (여섯개 skill의 avg + totalAvg)
-    @GetMapping("/movie/{movieId}/rate")
+    @GetMapping("/movie/{movieId}/awards-rate")
     public ResponseEntity<Map<String, Object>> getAverageSkillsByMovieIdDateRange(
             @PathVariable("movieId") Long movieId,
-            @RequestParam LocalDateTime startDate,
-            @RequestParam LocalDateTime endDate) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")  LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")  LocalDateTime endDate) {
         Map<String, Object> totalAvgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId,startDate,endDate);
 
         if (totalAvgSkills.isEmpty()) {
