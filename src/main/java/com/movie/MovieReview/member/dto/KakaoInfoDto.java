@@ -11,7 +11,7 @@ public class KakaoInfoDto {
     private Long id; // 카카오 사용자 고유 아이디
     private String email; // 카카오 사용자 이메일
     private String nickname; // 카카오 사용자 이름
-    private String profileImage; // 카카오 사용자 프로필 사진
+    private String profileImage; // 카카오 사용자 프사
 
     public KakaoInfoDto(Map<String, Object> attributes) {
         this.id = Long.valueOf(attributes.get("id").toString());
