@@ -184,7 +184,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         // 평균값들을 더해 전체 평균 계산
         double totalAvg = avgSkills.values().stream()
-                .mapToDouble(value -> (double) value)
+                .mapToDouble(value -> value != null ? (double) value : 0.0)  // null 처리
                 .average()
                 .orElse(0.0);
 

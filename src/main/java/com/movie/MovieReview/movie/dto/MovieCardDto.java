@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -18,10 +19,19 @@ public class MovieCardDto {
     private String poster_path; //movie 포스터 url https://image.tmdb.org/t/p/w500/poster_path
     private String release_date; //movie 개봉 날짜
     private String genre_ids; // movie 장르 ID들
-    //private Double totalAverageSkill; // 영화 육각형 통계의 평균
+    private Map<String, Object> score; // 평균 스킬 데이터 + totalAvgSkill을 저장할 score 필드
 
     @Data
     public static class Genres {
         private int id;
+    }
+
+    public MovieCardDto(Long id, String title, String overview, String posterPath, String releaseDate, String genreIds) {
+        this.id = id;
+        this.title = title;
+        this.overview = overview;
+        this.poster_path = posterPath;
+        this.release_date = releaseDate;
+        this.genre_ids = genreIds;
     }
 }

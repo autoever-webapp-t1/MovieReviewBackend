@@ -6,6 +6,7 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
+import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -29,6 +27,8 @@ public class MovieServiceImpl implements  MovieService{
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
     private final MovieRecommendService movieRecommendService;
     private final MovieCreditService movieCreditService;
+
+    private final ReviewService reviewService;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -351,7 +351,19 @@ public class MovieServiceImpl implements  MovieService{
         log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
         Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
         MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
-        return toDto(movieDetailEntity);
+
+        // 영화 상세 정보를 DTO로 변환
+        MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
+
+        // 평균 스킬 데이터 가져오기
+        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieId(movieId);
+        if (avgSkills == null || avgSkills.isEmpty()) {
+            avgSkills = Map.of(); // 빈 Map으로 설정
+        }
+
+        movieDetailsDto.setScore(avgSkills); // avgSkills를 score에 설정
+
+        return movieDetailsDto;
     }
 
     @Override
