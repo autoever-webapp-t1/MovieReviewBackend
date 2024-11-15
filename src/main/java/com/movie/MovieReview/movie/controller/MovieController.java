@@ -60,16 +60,16 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/{id}") //영화 상세정보 tmdb에서 가져옴
-    public MovieDetailsDto getMovieDetails(@PathVariable ("id") Long id) {
-        try{
-            log.info("MovieController: 영화아이디 값은?" + id);
-            return movieService.getMovieDetails(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    @GetMapping("/{id}") //영화 상세정보 tmdb에서 가져옴
+//    public MovieDetailsDto getMovieDetails(@PathVariable ("id") Long id) {
+//        try{
+//            log.info("MovieController: 영화아이디 값은?" + id);
+//            return movieService.getMovieDetails(id);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     @GetMapping("/topRatedDetails") //DB에 저장된 id바탕으로 상세정보 저장
     public List<MovieDetailsDto> getTopRatedMovieDetails() {
