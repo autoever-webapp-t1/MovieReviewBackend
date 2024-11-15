@@ -3,6 +3,7 @@ package com.movie.MovieReview.awards.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -29,9 +30,9 @@ public class AwardsEntity {
 
     private Long nominated4;
 
-    private Date startDateTime;
+    private LocalDateTime startDateTime;
 
-    private Date endDateTime;
+    private LocalDateTime endDateTime;
 
     private Long topMovieId; //일등 작품의 movieId
 }
