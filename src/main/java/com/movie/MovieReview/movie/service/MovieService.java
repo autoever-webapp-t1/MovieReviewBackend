@@ -3,6 +3,8 @@ package com.movie.MovieReview.movie.service;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
+import com.movie.MovieReview.review.dto.PageRequestDto;
+import com.movie.MovieReview.review.dto.PageResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public interface MovieService {
     public MovieDetailsDto searchMovie(String name) throws Exception; //DB에서 영화 제목으로 DB에서 검색
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
+    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String keyword, PageRequestDto pageRequestDto);
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
         List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
@@ -57,6 +60,28 @@ public interface MovieService {
                 .images(movieDetailsDto.getImages())
                 .videos(movieDetailsDto.getVideos())
                 .genres(movieDetailsDto.getGenres())
+                .build();
+    }
+
+    default MovieCardDto toCardDto(MovieDetailEntity movieDetailEntity){
+        return MovieCardDto.builder()
+                .id(movieDetailEntity.getId())
+                .title(movieDetailEntity.getTitle())
+                .overview(movieDetailEntity.getOverview())
+                .poster_path(movieDetailEntity.getImages())
+                .release_date(movieDetailEntity.getRelease_date())
+                .genre_ids(movieDetailEntity.getGenres())
+                .build();
+    }
+
+    default MovieCardDto toMovieCardDto(MovieDetailEntity movieDetailEntity) {
+        return MovieCardDto.builder()
+                .id(movieDetailEntity.getId())
+                .title(movieDetailEntity.getTitle())
+                .overview(movieDetailEntity.getOverview())
+                .poster_path(movieDetailEntity.getImages())
+                .release_date(movieDetailEntity.getRelease_date())
+                .genre_ids(movieDetailEntity.getGenres())
                 .build();
     }
 }
