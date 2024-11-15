@@ -1,14 +1,36 @@
 package com.movie.MovieReview.awards.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.movie.MovieReview.awards.entity.AwardsEntity;
+import com.movie.MovieReview.awards.service.AwardsService;
+import com.movie.MovieReview.movie.dto.MovieDetailsDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/awards")
+@RequestMapping("/api/awards")
 @CrossOrigin("*")
 public class AwardsController {
-//    @GetMapping("/{awardsId}")
-//    public
+    private final AwardsService awardsService;
+    @GetMapping("/{awardId}") //nominated된 영화들 4개 정보 보여줌
+    public List<MovieDetailsDto> getAwardMovieDetails(@PathVariable("awardId") Long awardId) {
+        try {
+            return awardsService.getNominatedMoviesDetails(awardId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("")
+    public List<AwardsEntity> getPastAwards() {
+        List<AwardsEntity> pastAwards = awardsService.getPastAwards();
+        return pastAwards;
+    }
+
+
 }

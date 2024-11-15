@@ -10,6 +10,7 @@ import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.repository.ReviewRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -172,10 +173,35 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Map<String, Object> getAverageSkillsByMovieId(Long movieId) {
-        return reviewRepository.findAverageSkillsByMovieId(movieId);
+        // 리뷰 평균 데이터를 가져오기
+        Map<String, Object> avgSkills = reviewRepository.findAverageSkillsByMovieId(movieId);
+
+        if (avgSkills.isEmpty()) {
+            return avgSkills;
+        }
+
+        // 평균값들을 더해 전체 평균 계산
+        double totalAvg = avgSkills.values().stream()
+                .mapToDouble(value -> (double) value)
+                .average()
+                .orElse(0.0);
+
+        // 소수점 둘째 자리까지 반올림
+        double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+        // Movie 엔티티에 totalAverageSkill 업데이트
+        MovieDetailEntity movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+        movie.setTotalAverageSkill(roundedTotalAvg);
+        movieRepository.save(movie); // 변경 사항 저장
+
+        // 결과 반환
+        avgSkills.put("totalAverageSkill", roundedTotalAvg);
+        return avgSkills;
     }
+
 
 
 
