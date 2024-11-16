@@ -4,7 +4,7 @@ public interface PostDtoInterface {
     Long getPostId();
     String title();
     String content();
-    boolean isLiked();
+    boolean liked();
     Integer likesCount();
     LocalDateTime createdDate();
     LocalDateTime modifiedDate();

@@ -1,7 +1,7 @@
 package com.movie.MovieReview.Heart.entity;
 
 import com.movie.MovieReview.member.entity.MemberEntity;
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

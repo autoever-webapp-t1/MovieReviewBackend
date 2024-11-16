@@ -3,7 +3,7 @@ package com.movie.MovieReview.post.service;
 import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import org.springframework.data.domain.Page;

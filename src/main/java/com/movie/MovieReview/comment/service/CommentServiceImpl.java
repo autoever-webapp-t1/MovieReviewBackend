@@ -7,7 +7,7 @@ import com.movie.MovieReview.comment.exception.CommentNotFoundException;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import org.springframework.stereotype.Service;

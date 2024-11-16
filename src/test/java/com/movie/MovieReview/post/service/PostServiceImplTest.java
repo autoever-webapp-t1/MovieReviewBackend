@@ -5,7 +5,7 @@ import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
