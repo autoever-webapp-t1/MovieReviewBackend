@@ -59,8 +59,8 @@ public class OauthController {
         response.addHeader("Set-Cookie", "accessToken=" + accessToken + "; HttpOnly; Path=/; Domain=localhost; SameSite=None");
         response.addHeader("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/; Domain=localhost SameSite=None;");
 
-        String redirectUrl = "http://localhost:5173";
-        response.sendRedirect(redirectUrl);
+//        String redirectUrl = "http://localhost:5173";
+//        response.sendRedirect(redirectUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(oauthResponseDto);
     }
@@ -71,13 +71,13 @@ public class OauthController {
 
         OauthResponseDto oauthResponseDto = new OauthResponseDto();
         String jwtToken = "";
-        MemberDto memberDto = null; // MemberDto를 초기화합니다.
+        MemberDto memberDto = null; // MemberDto를 초기화
 
         switch (provider) {
             case "kakao":
-                // loginWithKakao 메서드가 TokenResponseDto 객체를 반환한다고 가정
-                jwtToken = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken(),
-                        response);
+                // loginWithKakao 메서드가 TokenResponseDto 객체를 반환
+//                jwtToken = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken(),
+//                        response);
                 memberDto = oauthService.UserInfo(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken(),
                         response);
                 break;
@@ -86,9 +86,9 @@ public class OauthController {
                 throw new IllegalArgumentException("#OauthController: Unsupported provider: " + provider);
         }
 
-        // jwtToken을 키로, memberDto를 값으로 갖는 Map을 생성합니다.
-        Map<String, MemberDto> responseMap = new HashMap<>();
-        responseMap.put(jwtToken, memberDto); // jwtToken을 키로 사용
+        // jwtToken을 키로, memberDto를 값으로 갖는 Map을 생성
+//        Map<String, MemberDto> responseMap = new HashMap<>();
+//        responseMap.put(jwtToken, memberDto); // jwtToken을 키로 사용
 
         return ResponseEntity.status(HttpStatus.OK).body(memberDto);
     }
