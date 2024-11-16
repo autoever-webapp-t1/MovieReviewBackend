@@ -29,7 +29,7 @@ public class MovieController {
     private final MovieRecommendService movieRecommendService;
     private final ReviewService reviewService;
 
-    @GetMapping("/topRated") //topRated가져오기
+    @GetMapping("/topRated/{memberId} ") //topRated가져오기
     public ResponseEntity<?> getTopRatedMovies() {
         try {
             List<MovieCardDto> result = movieService.getTopRatedMovies();
