@@ -32,7 +32,7 @@ public class AwardsServiceImpl implements AwardsService{
         List<MovieDetailsDto> movieDetailsList = new ArrayList<>();
         for (Long movieId : movieIds) {
             if (movieId != null) {
-                MovieDetailsDto movieDetails = movieService.getTopRatedMovieDetailsInDB(movieId);
+                MovieDetailsDto movieDetails = movieService.getTopRatedMovieDetailsInDBForAwards(movieId);
                 if (movieDetails != null) {
                     movieDetailsList.add(movieDetails);
                 }

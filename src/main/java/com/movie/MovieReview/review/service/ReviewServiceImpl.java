@@ -296,15 +296,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         // 결과가 비어 있는 경우 빈 Map 반환
         if (result.isEmpty() || result.get(0).isEmpty()) {
-            Map<String, Object> emptySkills = new HashMap<>();
-            emptySkills.put("actorSkill", 0);
-            emptySkills.put("directorSkill", 0);
-            emptySkills.put("lineSkill", 0);
-            emptySkills.put("musicSkill", 0);
-            emptySkills.put("sceneSkill", 0);
-            emptySkills.put("storySkill", 0);
-            emptySkills.put("avgSkill", 0.0); // avgSkill 기본값 설정
-            return emptySkills;
+            new HashMap<>();
         }
 
         Map<String, Object> mySkills = result.get(0);
