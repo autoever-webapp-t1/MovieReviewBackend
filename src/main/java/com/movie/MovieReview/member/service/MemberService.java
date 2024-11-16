@@ -29,7 +29,7 @@ public class MemberService {
     public MemberEntity toEntity(MemberDto memberDto) {
         return MemberEntity.builder().memberId(memberDto.getMemberId()).email(memberDto.getEmail())
                 .nickname(memberDto.getNickname()).profile(memberDto.getProfile())
-                .refreshToken(memberDto.getRefreshToken()).build();
+                .refreshToken(memberDto.getRefreshToken()).isExisted(memberDto.isExisted()).build();
     }
 
     // memberId로 찾은 후 DTO로 변환

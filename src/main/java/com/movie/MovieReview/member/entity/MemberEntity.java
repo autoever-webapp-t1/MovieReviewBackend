@@ -24,4 +24,6 @@ public class MemberEntity {
     private String profile; //카카오 사용자 프로필사진
 
     private String refreshToken; //카카오 사용자 refreshToken
+
+    private Boolean isExisted;
 }

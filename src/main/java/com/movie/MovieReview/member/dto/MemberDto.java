@@ -19,4 +19,6 @@ public class MemberDto {
     private String profile; //카카오 사용자 프로필사진
 
     private String refreshToken; //카카오 사용자 refreshToken
+
+    private boolean isExisted; //로그인 한 적 있다 -> True(세개 선택한 적 있음), 로그인 처음이다 -> False(세개 선택해야함)
 }
