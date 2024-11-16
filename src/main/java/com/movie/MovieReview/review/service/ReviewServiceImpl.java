@@ -233,13 +233,13 @@ public class ReviewServiceImpl implements ReviewService{
 
         // 소수점 둘째 자리까지 반올림
         double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
         // Movie 엔티티의 totalAverageSkill 업데이트
         MovieDetailEntity movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
         movie.setAwardsTotalAverageSkill(roundedTotalAvg);
         movieRepository.save(movie); // 변경 사항 저장
 
-        // 최종 결과 반환
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
     }

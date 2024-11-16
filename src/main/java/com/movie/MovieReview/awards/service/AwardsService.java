@@ -14,4 +14,6 @@ public interface AwardsService {
     public void changeStatus();
 
     public List<AwardsEntity> getPastAwards();
+
+    public void updateAwardsStatusAndTopMovie();
 }
