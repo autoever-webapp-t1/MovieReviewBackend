@@ -636,6 +636,18 @@ public class MovieServiceImpl implements  MovieService{
                         }
 
                         MovieDetailEntity movieDetail = movieDetailOptional.get();
+
+                        Map<String, Object> score = new HashMap<>();
+                        Map<String, Object> myScore = new HashMap<>();
+                        try {
+                            score = reviewService.getAverageSkillsByMovieId(movieId);
+                            myScore = reviewService.getLatestReviewSkills(memberId, movieId);
+                        } catch (Exception e) {
+                            log.warn("Review data not found for movie ID: {}", movieId, e);
+                            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                            myScore = null;
+                        }
+
                         return MovieCardDto.builder()
                                 .id(movieDetail.getId())
                                 .title(movieDetail.getTitle())
@@ -643,6 +655,8 @@ public class MovieServiceImpl implements  MovieService{
                                 .poster_path(movieDetail.getImages())
                                 .release_date(movieDetail.getRelease_date())
                                 .genre_ids(movieDetail.getGenres())
+                                .score(score)
+                                .myScore(myScore)
                                 .build();
                     })
                     .filter(Objects::nonNull) // Null 값 제거

@@ -141,8 +141,9 @@ public class MovieController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{memberId}/recommendations")
+    @GetMapping("/recommendations/{memberId}")
     public ResponseEntity<List<MovieCardDto>> getMemberRecommendByMemberId(@PathVariable("memberId") Long memberId) {
+        log.info("Request received for memberId: {}", memberId);  // memberId 확인 로그
         List<MovieCardDto> movieCards = movieService.getMovieMemberRecommendations(memberId);
         return ResponseEntity.ok(movieCards);
     }
