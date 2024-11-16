@@ -6,9 +6,6 @@ import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.sse.dto.MessageDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -24,17 +21,13 @@ public class SseService {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
     private UserPrincipal userPrincipal;
     private MemberRepository memberRepository;
-
-    private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
-        return memberRepository.findByEmail(loginMemberEmail)
-                .orElseThrow(()->new RuntimeException("member not found"));
-    }
-
+    private String loginMemberName;
     private final LinkedBlockingQueue<MessageDto> messageQueue = new LinkedBlockingQueue<>();
     private SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-    public SseEmitter subscribe() {
-        Long memberId = getLoginMember().getMemberId();
+    public SseEmitter subscribe(String memberName) {
+        MemberEntity member = memberRepository.findByEmail(memberName).orElseThrow(()->new RuntimeException("no member"));
+        Long memberId = member.getMemberId();
+        loginMemberName = memberName;
         emitters.put(memberId, emitter);
         try {
             emitter.send(SseEmitter.event()
@@ -57,13 +50,8 @@ public class SseService {
 //        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
     @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
     public void alarm() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication.getPrincipal() instanceof UserPrincipal)) {
-            log.warn("사용자 인증정보가 없습니다");
-            return;
-        }
-        UserPrincipal userPrincipal1 = (UserPrincipal) authentication.getPrincipal();
-        Long memberId = userPrincipal1.getId();
+        MemberEntity member = memberRepository.findByEmail(loginMemberName).orElseThrow(()->new RuntimeException("no member"));
+        Long memberId = member.getMemberId();
         MessageDto messageDto = messageQueue.poll();
         if (messageDto != null) {
             String message = messageDto.getMessage();
@@ -75,9 +63,8 @@ public class SseService {
                 } catch (IOException e) {
                     emitters.remove(memberId);
                 }
-            } else  {
-                log.warn("이 사용자에 대한 emitter가 존재하지 않습니다. userId: {}", memberId);
             }
+
         }
     }
 
