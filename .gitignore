@@ -39,3 +39,6 @@ application-dev.properties
 
 ### VS Code ###
 .vscode/
+
+### Query Dsl ###
+/src/main/generated/
