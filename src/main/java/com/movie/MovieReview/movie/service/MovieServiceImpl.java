@@ -33,7 +33,6 @@ public class MovieServiceImpl implements  MovieService{
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
     private final MovieRecommendService movieRecommendService;
     private final MovieCreditService movieCreditService;
-    private final ReviewRepository reviewRepository;
 
     private final ReviewService reviewService;
 
@@ -44,7 +43,7 @@ public class MovieServiceImpl implements  MovieService{
     private final String AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMjUxYmI1M2Q5YTNkMTA0NGRiYTcwZDFiMmI2ZGEwNSIsInN1YiI6IjY2MmNmNDRlZjZmZDE4MDEyODIyNGI3MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yGcscHFGjYQq6B7s_OqCif9IH5jw8vlFboOuJZNKnTk";
 
     @Override
-    public List<MovieCardDto> getTopRatedMovies(Long memberId) throws Exception {
+    public List<MovieCardDto> getTopRatedMovies() throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
 

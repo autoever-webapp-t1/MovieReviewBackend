@@ -330,7 +330,7 @@ public class ReviewServiceImpl implements ReviewService{
             double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
 
             // 결과 반환
-            mySkills.put("totalAvgSkill", roundedTotalAvg);
+            mySkills.put("avgSkill", roundedTotalAvg);
 
             MovieCardDto movieCardDto = MovieCardDto.builder()
                     .id(review.getMovie().getId())

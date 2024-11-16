@@ -30,22 +30,24 @@ public class MovieController {
     private final ReviewService reviewService;
 
     @GetMapping("/topRated") //topRated가져오기
-    public List<MovieCardDto> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
+    public ResponseEntity<?> getTopRatedMovies() {
         try {
-            return movieService.getTopRatedMovies(memberId);
+            List<MovieCardDto> result = movieService.getTopRatedMovies();
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
 
     @GetMapping("/nowPlaying") //nowPlaying가져오기
-    public List<MovieCardDto> getNowPlayingMovies(){
+    public ResponseEntity<?> getNowPlayingMovies(){
         try {
-            return movieService.getNowPlayingMovies();
+            List<MovieCardDto> result =movieService.getNowPlayingMovies();
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
 
