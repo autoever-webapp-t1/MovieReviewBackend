@@ -67,9 +67,9 @@ public class CommentServiceImpl implements CommentService {
         post.addComment(comment);
         postRepository.save(post);
         Long postOwnerId = post.getWriter().getMemberId();
-        if (!postOwnerId.equals(member.getMemberId())) {
-            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
-        }
+//        if (!postOwnerId.equals(member.getMemberId())) {
+//            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
+//        }
         return CommentResDto.entityToResDto(comment);
     }
 

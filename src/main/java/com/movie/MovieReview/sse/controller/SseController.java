@@ -18,9 +18,14 @@ public class SseController {
         this.sseService = sseService;
     }
 
+//    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public SseEmitter subscribe(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+//        return sseService.subscribe(userPrincipal.getId());
+//    }
+
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return sseService.subscribe(userPrincipal.getId());
+    public SseEmitter subscribe() {
+        return sseService.subscribe();
     }
 
     @PostMapping("/notify")
