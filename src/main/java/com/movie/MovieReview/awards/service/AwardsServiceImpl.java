@@ -48,7 +48,7 @@ public class AwardsServiceImpl implements AwardsService{
         List<AwardsEntity> currentAwards = awardsRepository.findByStatus(1);
         for (AwardsEntity award : currentAwards) {
             award.setStatus(0);
-            log.info("AwardServiceImpl: status 0 -> 1로 변경완료!!!!!");
+            log.info("AwardServiceImpl: status 1 -> 0로 변경완료!!!!!");
         }
 
         // 상태가 2인 항목 중 하나를 1로 변경
@@ -56,7 +56,7 @@ public class AwardsServiceImpl implements AwardsService{
         if (!futureAwards.isEmpty()) {
             AwardsEntity nextAward = futureAwards.get(0);
             nextAward.setStatus(1);
-            log.info("AwardServiceImpl: status 1 -> 2로 변경완료!!!!!");
+            log.info("AwardServiceImpl: status 2 -> 1로 변경완료!!!!!");
         }
     }
 
