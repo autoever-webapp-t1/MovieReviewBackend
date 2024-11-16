@@ -3,6 +3,7 @@ package com.movie.MovieReview.movie.service;
 import com.google.gson.*;
 import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
+import com.movie.MovieReview.movie.entity.MovieRecommendEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
@@ -31,7 +32,7 @@ public class MovieServiceImpl implements  MovieService{
     private final TopRatedMovieIdRepository topRatedMovieIdRepository;
     private final MovieRecommendService movieRecommendService;
     private final MovieCreditService movieCreditService;
-
+    private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
 
     private final OkHttpClient client = new OkHttpClient();
@@ -311,7 +312,7 @@ public class MovieServiceImpl implements  MovieService{
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 String jsonResponse = response.body().string();
-                
+
                 // 영화 상세정보 뽑아내기
                 JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
                 String title = jsonObject.get("title").getAsString();
@@ -582,4 +583,73 @@ public class MovieServiceImpl implements  MovieService{
                 .total(searchPage.getTotalElements())
                 .build();
     }
+
+    @Override
+    public List<MovieCardDto> getMovieMemberRecommendations(Long memberId) {
+        // 사용자의 리뷰 목록 가져오기
+        List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
+
+        log.info("MovieServiceImpl: 해당 사용자가 본 영화들 리스트 {}", reviews);
+
+        // 랜덤으로 리뷰 하나 선택
+        Random random = new Random();
+        int randomIndex = random.nextInt(reviews.size());
+        ReviewEntity randomReview = reviews.get(randomIndex);
+
+        log.info("MovieServiceImpl: 선택된 리뷰 {}", randomReview);
+
+        Long movieId = randomReview.getMovie().getId();
+        log.info("MovieServiceImpl: 선택된 영화 ID {}", movieId);
+
+        try {
+            // 영화 detail 정보 가져오기
+            MovieDetailsDto movieDetailsDto = getTopRatedMovieDetailsInDB(movieId);
+
+            // 추천 리스트 가져오기
+            List<MovieDetailsDto.Recommends> recommendList = movieDetailsDto.getRecommendations();
+
+            log.info("MovieServiceImpl: 추천 리스트 {}", recommendList);
+
+            if (recommendList == null || recommendList.isEmpty()) {
+                log.warn("MovieServiceImpl: 추천 리스트가 비어 있습니다.");
+                return new ArrayList<>();
+            }
+
+            // 중복 제거를 위해 Set 사용
+            Set<Long> processedIds = new HashSet<>();
+
+            return recommendList.stream()
+                    .map(recommend -> {
+                        Long recommendId = recommend.getId();
+
+                        // 중복된 추천 제거
+                        if (!processedIds.add(recommendId)) {
+                            return null; // 이미 처리된 ID는 제외
+                        }
+
+                        Optional<MovieDetailEntity> movieDetailOptional = movieRepository.findById(recommendId);
+                        if (movieDetailOptional.isEmpty()) {
+                            log.warn("MovieServiceImpl: 추천 영화 ID {}가 DB에 없습니다.", recommendId);
+                            return null;
+                        }
+
+                        MovieDetailEntity movieDetail = movieDetailOptional.get();
+                        return MovieCardDto.builder()
+                                .id(movieDetail.getId())
+                                .title(movieDetail.getTitle())
+                                .overview(movieDetail.getOverview())
+                                .poster_path(movieDetail.getImages())
+                                .release_date(movieDetail.getRelease_date())
+                                .genre_ids(movieDetail.getGenres())
+                                .build();
+                    })
+                    .filter(Objects::nonNull) // Null 값 제거
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("MovieServiceImpl: 추천 리스트를 가져오는 중 오류 발생", e);
+            return new ArrayList<>();
+        }
+    }
+
 }

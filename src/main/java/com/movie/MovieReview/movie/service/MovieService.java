@@ -26,6 +26,7 @@ public interface MovieService {
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
     public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String keyword, PageRequestDto pageRequestDto);
+    public List<MovieCardDto> getMovieMemberRecommendations(Long memberId);
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
         List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
@@ -85,4 +86,5 @@ public interface MovieService {
                 .genre_ids(movieDetailEntity.getGenres())
                 .build();
     }
+
 }
