@@ -30,9 +30,9 @@ public class MovieController {
     private final ReviewService reviewService;
 
     @GetMapping("/topRated") //topRated가져오기
-    public List<MovieCardDto> getTopRatedMovies() {
+    public List<MovieCardDto> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
         try {
-            return movieService.getTopRatedMovies();
+            return movieService.getTopRatedMovies(memberId);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

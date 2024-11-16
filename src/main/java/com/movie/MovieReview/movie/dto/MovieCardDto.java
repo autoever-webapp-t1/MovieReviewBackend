@@ -20,6 +20,7 @@ public class MovieCardDto {
     private String release_date; //movie 개봉 날짜
     private String genre_ids; // movie 장르 ID들
     private Map<String, Object> score; // 평균 스킬 데이터 + totalAvgSkill을 저장할 score 필드
+    private Map<String, Object> myScore; //내가 리뷰한 score
 
     @Data
     public static class Genres {

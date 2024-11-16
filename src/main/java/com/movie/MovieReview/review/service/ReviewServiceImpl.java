@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -289,6 +290,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     @Transactional(readOnly = true)
     public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId) {
+        // 해당 회원이 작성한 모든 리뷰 조회
         List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
 
         List<MovieCardDto> movieCardDtos = new ArrayList<>();
@@ -305,8 +307,30 @@ public class ReviewServiceImpl implements ReviewService{
 
             // score가 비어있으면 기본 값 설정
             if (avgSkills == null || avgSkills.isEmpty()) {
-                avgSkills = Map.of(); // 빈 Map으로 설정
+                avgSkills = new HashMap<>(); // 빈 Map으로 설정
             }
+
+            // 내가 가장 최근에 작성한 리뷰의 점수 가져오기
+            Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
+            List<Map<String, Object>> result = reviewRepository.findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(memberId, movieId, pageable);
+            Map<String, Object> mySkills = result.isEmpty() ? null : result.get(0);
+
+            // 결과가 비어 있는 경우 빈 Map 반환
+            if (mySkills == null || mySkills.isEmpty()) {
+                mySkills  = new HashMap<>();
+            }
+            // 평균값들을 더해 전체 평균 계산
+            double totalAvg = mySkills.values().stream()
+                    .filter(Objects::nonNull) // null 값 제외
+                    .mapToInt(value -> (int) value)
+                    .average()
+                    .orElse(0.0);
+
+            // 소수점 둘째 자리까지 반올림
+            double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+            // 결과 반환
+            mySkills.put("totalAvgSkill", roundedTotalAvg);
 
             MovieCardDto movieCardDto = MovieCardDto.builder()
                     .id(review.getMovie().getId())
@@ -316,6 +340,7 @@ public class ReviewServiceImpl implements ReviewService{
                     .release_date(review.getMovie().getRelease_date())
                     .genre_ids(review.getMovie().getGenres())
                     .score(avgSkills)
+                    .myScore(mySkills)
                     .build();
 
             movieCardDtos.add(movieCardDto);
