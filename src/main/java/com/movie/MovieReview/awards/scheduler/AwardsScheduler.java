@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class AwardsScheduler {
     private final AwardsService awardsService;
 
-    //서버 키자마자 2 -> 1, 1 -> 0
-    @Scheduled(fixedRate = 600000000) // 1분 마다 실행
+    //매주 월요일 자정 12시에 갱신해줌
+    @Scheduled(cron = "0 0 0 * * MON")
     public void updateAwardsStatus() {
         awardsService.changeStatus();
     }
