@@ -9,6 +9,8 @@ import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
+import com.movie.MovieReview.review.entity.ReviewEntity;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -603,7 +605,7 @@ public class MovieServiceImpl implements  MovieService{
 
         try {
             // 영화 detail 정보 가져오기
-            MovieDetailsDto movieDetailsDto = getTopRatedMovieDetailsInDB(movieId);
+            MovieDetailsDto movieDetailsDto = getTopRatedMovieDetailsInDBForAwards(movieId);
 
             // 추천 리스트 가져오기
             List<MovieDetailsDto.Recommends> recommendList = movieDetailsDto.getRecommendations();
