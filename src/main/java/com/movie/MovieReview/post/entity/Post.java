@@ -1,4 +1,4 @@
-package com.movie.MovieReview.post.entitiy;
+package com.movie.MovieReview.post.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.movie.MovieReview.comment.entity.Comment;
@@ -30,8 +30,8 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    @Column(name = "isLiked")
-    private boolean isLiked;
+    @Column(name = "liked")
+    private boolean liked;
 
     @Column(name="likesCount")
     private int likesCount;

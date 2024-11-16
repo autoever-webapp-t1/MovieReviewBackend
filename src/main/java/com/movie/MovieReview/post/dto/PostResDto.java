@@ -1,6 +1,6 @@
 package com.movie.MovieReview.post.dto;
 
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class PostResDto implements PostDtoInterface{
     private String title;
     private String content;
     private Integer commentCnt;
-    private boolean isLiked;
+    private boolean liked;
     private Integer likesCount;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -25,7 +25,7 @@ public class PostResDto implements PostDtoInterface{
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCnt(post.getCommentCnt())
-                .isLiked(post.isLiked())
+                .liked(post.isLiked())
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
@@ -33,7 +33,7 @@ public class PostResDto implements PostDtoInterface{
     }
 
     public String getNickname() {return nickname;}
-    public boolean getIsLiked() {return isLiked;}
+    public boolean getIsLiked() {return liked;}
     @Override
     public Long getPostId() {
         return postId;
@@ -50,8 +50,8 @@ public class PostResDto implements PostDtoInterface{
     }
 
     @Override
-    public boolean isLiked() {
-        return isLiked;
+    public boolean liked() {
+        return liked;
     }
 
     @Override

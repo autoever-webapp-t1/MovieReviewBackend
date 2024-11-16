@@ -1,6 +1,6 @@
 package com.movie.MovieReview.post.dto;
 
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class PostDetailDto implements PostDtoInterface{
     private String content;
     private String nickname;
     private Integer likesCount;
-    private boolean isLiked;
+    private boolean liked;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     @Override
@@ -38,8 +38,8 @@ public class PostDetailDto implements PostDtoInterface{
     }
 
     @Override
-    public boolean isLiked() {
-        return isLiked;
+    public boolean liked() {
+        return liked;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PostDetailDto implements PostDtoInterface{
                 .nickname(post.getWriter().getNickname())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isLiked(post.isLiked())
+                .liked(post.isLiked())
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
