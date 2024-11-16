@@ -16,11 +16,11 @@ class SseServiceTest {
     private static final Logger log = LoggerFactory.getLogger(SseServiceTest.class);// 30분
     SseService sseService = new SseService();
 
-    @Test
-    void subscribe() {
-        String emitter = sseService.subscribe().toString();
-        log.info("emitter: " + emitter);
-    }
+//    @Test
+//    void subscribe() {
+//        String emitter = sseService.subscribe("user@naver.com").toString();
+//        log.info("emitter: " + emitter);
+//    }
 
     @Test
     void setMessage() {

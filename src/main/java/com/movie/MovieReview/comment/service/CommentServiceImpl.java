@@ -10,6 +10,7 @@ import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
+import com.movie.MovieReview.sse.service.SseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -22,6 +23,11 @@ public class CommentServiceImpl implements CommentService {
     private PostRepository postRepository;
     private UserPrincipal userPrincipal;
     private PostServiceImpl postService;
+    private final SseService sseService;
+
+    public CommentServiceImpl(SseService sseService) {
+        this.sseService = sseService;
+    }
 
     private MemberEntity getLoginMember() {
         String loginMemberEmail = userPrincipal.getEmail();
@@ -60,6 +66,10 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.save(comment);
         post.addComment(comment);
         postRepository.save(post);
+        Long postOwnerId = post.getWriter().getMemberId();
+//        if (!postOwnerId.equals(member.getMemberId())) {
+//            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
+//        }
         return CommentResDto.entityToResDto(comment);
     }
 

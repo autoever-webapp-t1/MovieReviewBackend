@@ -1,8 +1,10 @@
 package com.movie.MovieReview.sse.controller;
 
+import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.sse.dto.MessageDto;
 import com.movie.MovieReview.sse.service.SseService;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -16,6 +18,11 @@ public class SseController {
         this.sseService = sseService;
     }
 
+//    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public SseEmitter subscribe(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+//        return sseService.subscribe(userPrincipal.getId());
+//    }
+
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
         return sseService.subscribe();
@@ -25,4 +32,6 @@ public class SseController {
     public void notify(@RequestBody MessageDto messageDto) {
         sseService.setMessage(messageDto);
     }
+
+
 }
