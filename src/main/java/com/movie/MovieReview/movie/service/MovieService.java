@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 public interface MovieService {
-    public List<MovieCardDto> getTopRatedMovies(Long memberId) throws Exception; //TopRated 100개 영화정보 가져오기
+    public List<MovieCardDto> getTopRatedMovies() throws Exception; //TopRated 100개 영화정보 가져오기
     public List<MovieCardDto> getNowPlayingMovies() throws Exception; //NowPlaying 100개 영화정보 가져오기
     public List<MovieCardDto> getUpComingMovies() throws Exception; //UpComing 100개 영화정보 가져오기
     public List<MovieCardDto> getPopularMovies() throws Exception;
