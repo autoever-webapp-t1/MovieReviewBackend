@@ -5,11 +5,15 @@ import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.sse.dto.MessageDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,15 +23,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Log4j2
 public class SseService {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private UserPrincipal userPrincipal;
-    private MemberRepository memberRepository;
-    private String loginMemberName;
     private final LinkedBlockingQueue<MessageDto> messageQueue = new LinkedBlockingQueue<>();
     private SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-    public SseEmitter subscribe(String memberName) {
-        MemberEntity member = memberRepository.findByEmail(memberName).orElseThrow(()->new RuntimeException("no member"));
-        Long memberId = member.getMemberId();
-        loginMemberName = memberName;
+
+
+    public SseEmitter subscribe(Long memberId) {
         emitters.put(memberId, emitter);
         try {
             emitter.send(SseEmitter.event()
@@ -47,24 +47,35 @@ public class SseService {
     public void setMessage(MessageDto messageDto) {
         messageQueue.offer(messageDto);
     }
-//        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
+
+    // 게시글에 댓글 달렸을 때 알람 기능 구현
+    public void sendNotification(Long memberId, String message) {
+        SseEmitter emitter1 = emitters.get(memberId);
+        if (emitter1 != null) {
+            try {
+                emitter.send(SseEmitter.event().name("NEW_COMMENT").data(message));
+            } catch (IOException e) {
+                emitters.remove(memberId);
+            }
+        }
+    }
+
+    //        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
     @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
     public void alarm() {
-        MemberEntity member = memberRepository.findByEmail(loginMemberName).orElseThrow(()->new RuntimeException("no member"));
-        Long memberId = member.getMemberId();
         MessageDto messageDto = messageQueue.poll();
         if (messageDto != null) {
             String message = messageDto.getMessage();
-            log.info("message: " + message);
-            emitter = emitters.get(memberId);
-            if (emitter != null) {
+            log.info("message: "+ message);
+            Iterator<SseEmitter> iterator = emitters.values().iterator();
+            while (iterator.hasNext()) {
+                SseEmitter emitter = iterator.next();
                 try {
                     emitter.send(SseEmitter.event().data(message));
                 } catch (IOException e) {
-                    emitters.remove(memberId);
+                    iterator.remove();
                 }
             }
-
         }
     }
 
