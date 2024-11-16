@@ -10,7 +10,6 @@ import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
-import com.movie.MovieReview.sse.controller.SseController;
 import com.movie.MovieReview.sse.service.SseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

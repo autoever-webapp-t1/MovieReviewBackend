@@ -1,14 +1,8 @@
 package com.movie.MovieReview.sse.service;
 
-import com.movie.MovieReview.member.entity.MemberEntity;
-import com.movie.MovieReview.member.entity.UserPrincipal;
-import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.sse.dto.MessageDto;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
