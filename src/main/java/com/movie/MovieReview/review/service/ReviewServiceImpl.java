@@ -189,7 +189,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         // 각 평균값들을 소수점 둘째 자리까지 반올림
         avgSkills.replaceAll((key, value) ->
-                value != null ? Math.round(((double) value) * 100.0) / 100.0 : null
+                value != null ? Math.round(((double) value) * 100.0) / 100.0 : 0.0
         );
 
         // 평균값들을 더해 전체 평균 계산
@@ -289,6 +289,44 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     @Transactional(readOnly = true)
+    public Map<String, Object> getLatestReviewSkills(Long memberId, Long movieId) {
+        // 최신 리뷰 한 건 조회
+        Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
+        List<Map<String, Object>> result = reviewRepository.findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(memberId, movieId, pageable);
+
+        // 결과가 비어 있는 경우 빈 Map 반환
+        if (result.isEmpty() || result.get(0).isEmpty()) {
+            Map<String, Object> emptySkills = new HashMap<>();
+            emptySkills.put("actorSkill", 0);
+            emptySkills.put("directorSkill", 0);
+            emptySkills.put("lineSkill", 0);
+            emptySkills.put("musicSkill", 0);
+            emptySkills.put("sceneSkill", 0);
+            emptySkills.put("storySkill", 0);
+            emptySkills.put("avgSkill", 0.0); // avgSkill 기본값 설정
+            return emptySkills;
+        }
+
+        Map<String, Object> mySkills = result.get(0);
+
+        // 평균값들을 더해 전체 평균 계산
+        double totalAvg = mySkills.values().stream()
+                .filter(Objects::nonNull) // null 값 제외
+                .mapToInt(value -> (int) value)
+                .average()
+                .orElse(0.0);
+
+        // 소수점 둘째 자리까지 반올림
+        double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+        // avgSkill 값 추가
+        mySkills.put("avgSkill", roundedTotalAvg);
+
+        return mySkills;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId) {
         // 해당 회원이 작성한 모든 리뷰 조회
         List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
@@ -310,27 +348,8 @@ public class ReviewServiceImpl implements ReviewService{
                 avgSkills = new HashMap<>(); // 빈 Map으로 설정
             }
 
-            // 내가 가장 최근에 작성한 리뷰의 점수 가져오기
-            Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
-            List<Map<String, Object>> result = reviewRepository.findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(memberId, movieId, pageable);
-            Map<String, Object> mySkills = result.isEmpty() ? null : result.get(0);
-
-            // 결과가 비어 있는 경우 빈 Map 반환
-            if (mySkills == null || mySkills.isEmpty()) {
-                mySkills  = new HashMap<>();
-            }
-            // 평균값들을 더해 전체 평균 계산
-            double totalAvg = mySkills.values().stream()
-                    .filter(Objects::nonNull) // null 값 제외
-                    .mapToInt(value -> (int) value)
-                    .average()
-                    .orElse(0.0);
-
-            // 소수점 둘째 자리까지 반올림
-            double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
-
-            // 결과 반환
-            mySkills.put("avgSkill", roundedTotalAvg);
+            // 내가 가장 최근에 작성한 리뷰의 점수 가져오기 (평균 포함)
+            Map<String, Object> mySkills = getLatestReviewSkills(memberId, movieId);
 
             MovieCardDto movieCardDto = MovieCardDto.builder()
                     .id(review.getMovie().getId())

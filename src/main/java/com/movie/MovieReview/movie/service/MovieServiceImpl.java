@@ -8,8 +8,6 @@ import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
-import com.movie.MovieReview.review.entity.ReviewEntity;
-import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -43,7 +41,7 @@ public class MovieServiceImpl implements  MovieService{
     private final String AUTH_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMjUxYmI1M2Q5YTNkMTA0NGRiYTcwZDFiMmI2ZGEwNSIsInN1YiI6IjY2MmNmNDRlZjZmZDE4MDEyODIyNGI3MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.yGcscHFGjYQq6B7s_OqCif9IH5jw8vlFboOuJZNKnTk";
 
     @Override
-    public List<MovieCardDto> getTopRatedMovies() throws Exception {
+    public List<MovieCardDto> getTopRatedMovies(Long memberId) throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
 
@@ -83,7 +81,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    Map<String, Object> score = new HashMap<>();
+                    Map<String, Object> myScore = new HashMap<>();
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                    }
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
                     allMovies.add(movieCardDto);
                 }
             }
@@ -92,7 +101,7 @@ public class MovieServiceImpl implements  MovieService{
     }
 
     @Override
-    public List<MovieCardDto> getNowPlayingMovies() throws Exception {
+    public List<MovieCardDto> getNowPlayingMovies(Long memberId) throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
         String NowPlayingUrl = "now_playing?language=ko-KR&page=";
 
@@ -134,7 +143,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    Map<String, Object> score = new HashMap<>();
+                    Map<String, Object> myScore = new HashMap<>();
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                    }
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
                     allMovies.add(movieCardDto);
                 }
             }
@@ -153,7 +173,7 @@ public class MovieServiceImpl implements  MovieService{
 
 
     @Override
-    public List<MovieCardDto> getUpComingMovies() throws Exception {
+    public List<MovieCardDto> getUpComingMovies(Long memberId) throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
         String NowPlayingUrl = "upcoming?language=ko-KR&page=";
 
@@ -193,7 +213,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    Map<String, Object> score = new HashMap<>();
+                    Map<String, Object> myScore = new HashMap<>();
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                    }
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
                     allMovies.add(movieCardDto);
                 }
             }
@@ -202,7 +233,7 @@ public class MovieServiceImpl implements  MovieService{
     }
 
     @Override
-    public List<MovieCardDto> getPopularMovies() throws Exception {
+    public List<MovieCardDto> getPopularMovies(Long memberId) throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
         String PopularUrl = "popular?language=ko-KR&page=";
 
@@ -242,7 +273,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds);
+                    Map<String, Object> score = new HashMap<>();
+                    Map<String, Object> myScore = new HashMap<>();
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0.0);
+                    }
+
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
                     allMovies.add(movieCardDto);
                 }
             }

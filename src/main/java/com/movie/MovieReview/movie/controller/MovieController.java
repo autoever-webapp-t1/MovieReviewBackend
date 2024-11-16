@@ -11,12 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,10 +27,10 @@ public class MovieController {
     private final MovieRecommendService movieRecommendService;
     private final ReviewService reviewService;
 
-    @GetMapping("/topRated/{memberId} ") //topRated가져오기
-    public ResponseEntity<?> getTopRatedMovies() {
+    @GetMapping("/topRated/{memberId}") //topRated가져오기
+    public ResponseEntity<?> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
         try {
-            List<MovieCardDto> result = movieService.getTopRatedMovies();
+            List<MovieCardDto> result = movieService.getTopRatedMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,10 +38,10 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/nowPlaying") //nowPlaying가져오기
-    public ResponseEntity<?> getNowPlayingMovies(){
+    @GetMapping("/nowPlaying/{memberId}") //nowPlaying가져오기
+    public ResponseEntity<?> getNowPlayingMovies(@PathVariable("memberId") Long memberId){
         try {
-            List<MovieCardDto> result =movieService.getNowPlayingMovies();
+            List<MovieCardDto> result =movieService.getNowPlayingMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,10 +49,10 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/upComing") //upComing가져오기
-    public ResponseEntity<?> getUpComingMovies(){
+    @GetMapping("/upComing/{memberId}") //upComing가져오기
+    public ResponseEntity<?> getUpComingMovies(@PathVariable("memberId") Long memberId){
         try {
-            List<MovieCardDto> result = movieService.getUpComingMovies();
+            List<MovieCardDto> result = movieService.getUpComingMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,10 +60,10 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/popular") //popular가져오기
-    public ResponseEntity<?> getPopularMovies(){
+    @GetMapping("/popular/{memberId}") //popular가져오기
+    public ResponseEntity<?> getPopularMovies(@PathVariable("memberId") Long memberId){
         try {
-            List<MovieCardDto> result = movieService.getPopularMovies();
+            List<MovieCardDto> result = movieService.getPopularMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
