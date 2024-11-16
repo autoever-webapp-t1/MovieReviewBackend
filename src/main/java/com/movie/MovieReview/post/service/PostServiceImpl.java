@@ -6,7 +6,7 @@ import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
-import com.movie.MovieReview.post.entitiy.Post;
+import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.exception.PostNotFoundException;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
@@ -119,7 +119,7 @@ public class PostServiceImpl implements PostService{
                 .content(post.getContent())
                 .nickname(post.getWriter().getNickname())
                 .likesCount(post.getLikesCount())
-                .isLiked(post.isLiked())
+                .liked(post.isLiked())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();

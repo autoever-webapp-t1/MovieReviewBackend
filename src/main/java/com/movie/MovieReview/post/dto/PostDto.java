@@ -1,19 +1,16 @@
 package com.movie.MovieReview.post.dto;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.movie.MovieReview.comment.dto.CommentResDto;
-import com.movie.MovieReview.member.dto.MemberDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-import java.util.List;
-    @Getter
+
+@Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public class PostDto implements PostDtoInterface {
         private Long postId;
         private String title;
         private String content;
-        private boolean isLiked;
+        private boolean liked;
         private Integer likesCount;
         public PostDto(Long postId, String title, String content) {
             this.postId = postId;
@@ -33,8 +30,8 @@ import java.util.List;
             return content;
         }
         @Override
-        public boolean isLiked() {
-            return isLiked;
+        public boolean liked() {
+            return liked;
         }
         @Override
         public Integer likesCount() {
