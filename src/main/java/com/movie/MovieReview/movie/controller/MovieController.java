@@ -101,10 +101,10 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/{id}") //우리 DB에서 영화 상세정보 검색
-    public MovieDetailsDto getTopRatedMovieDetailsInDB(@PathVariable ("id") Long id) {
+    @GetMapping("/{id}/{memberId}") //우리 DB에서 영화 상세정보 검색
+    public MovieDetailsDto getTopRatedMovieDetailsInDB(@PathVariable ("id") Long id, @PathVariable ("memberId") Long memberId) {
         try{
-            return movieService.getTopRatedMovieDetailsInDB(id);
+            return movieService.getTopRatedMovieDetailsInDB(id, memberId);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

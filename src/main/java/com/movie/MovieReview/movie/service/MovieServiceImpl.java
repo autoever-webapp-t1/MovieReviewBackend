@@ -89,7 +89,8 @@ public class MovieServiceImpl implements  MovieService{
                     } catch (Exception e) {
                         log.warn("Review data not found for movie ID: {}", id, e);
                         score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                        myScore = null;
+//                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
                     }
 
                     MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
@@ -151,7 +152,8 @@ public class MovieServiceImpl implements  MovieService{
                     } catch (Exception e) {
                         log.warn("Review data not found for movie ID: {}", id, e);
                         score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                        myScore = null;
+//                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
                     }
 
                     MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
@@ -221,7 +223,8 @@ public class MovieServiceImpl implements  MovieService{
                     } catch (Exception e) {
                         log.warn("Review data not found for movie ID: {}", id, e);
                         score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+                       myScore = null;
+//                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
                     }
 
                     MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
@@ -281,7 +284,8 @@ public class MovieServiceImpl implements  MovieService{
                     } catch (Exception e) {
                         log.warn("Review data not found for movie ID: {}", id, e);
                         score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0.0);
+                        myScore = null;
+//                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0.0);
                     }
 
                     MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
@@ -496,7 +500,7 @@ public class MovieServiceImpl implements  MovieService{
 
     @Override
     @Transactional
-    public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId) throws Exception{
+    public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId, Long memberId) throws Exception{
         log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
         Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
         MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
@@ -504,10 +508,44 @@ public class MovieServiceImpl implements  MovieService{
         // 영화 상세 정보를 DTO로 변환
         MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
 
-        // 평균 스킬 데이터 가져오기
-        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieId(movieId);
+        Map<String, Object> score = new HashMap<>();
+        Map<String, Object> myScore = new HashMap<>();
+        try {
+            score = reviewService.getAverageSkillsByMovieId(movieId);
+            myScore = reviewService.getLatestReviewSkills(memberId, movieId);
+        } catch (Exception e) {
+            log.warn("Review data not found for movie ID: {}", movieId, e);
+            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+            myScore = null;
+        }
+        movieDetailsDto.setScore(score);
+        movieDetailsDto.setMyScore(myScore);
 
-        movieDetailsDto.setScore(avgSkills);
+        return movieDetailsDto;
+    }
+
+    @Override
+    @Transactional
+    public MovieDetailsDto getTopRatedMovieDetailsInDBForAwards(Long movieId) throws Exception{
+        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
+        Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
+        MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
+
+        // 영화 상세 정보를 DTO로 변환
+        MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
+
+        Map<String, Object> score = new HashMap<>();
+        Map<String, Object> myScore = new HashMap<>();
+        try {
+            score = reviewService.getAverageSkillsByMovieId(movieId);
+//            myScore = reviewService.getLatestReviewSkills(memberId, movieId);
+        } catch (Exception e) {
+            log.warn("Review data not found for movie ID: {}", movieId, e);
+            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+//            myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
+        }
+        movieDetailsDto.setScore(score);
+//        movieDetailsDto.setMyScore(myScore);
 
         return movieDetailsDto;
     }
