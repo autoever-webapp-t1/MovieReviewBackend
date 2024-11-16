@@ -59,8 +59,8 @@ public class OauthController {
         response.addHeader("Set-Cookie", "accessToken=" + accessToken + "; HttpOnly; Path=/; Domain=localhost; SameSite=None");
         response.addHeader("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/; Domain=localhost SameSite=None;");
 
-        String redirectUrl = "http://localhost:5173";
-        response.sendRedirect(redirectUrl);
+//        String redirectUrl = "http://localhost:5173";
+//        response.sendRedirect(redirectUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(oauthResponseDto);
     }
