@@ -1,6 +1,7 @@
 package com.movie.MovieReview.review.repository;
 
-import com.movie.MovieReview.movie.dto.MovieCardDto;
+import com.movie.MovieReview.member.entity.MemberEntity;
+import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
@@ -47,6 +49,24 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             @Param("id") Long movieId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    //ReviewEntity findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(Long memberId, Long movieId);
+    //Optional<ReviewEntity> findTopByMemberAndMovieOrderByCreatedDateDesc(MemberEntity member, MovieDetailEntity movie);
+
+    @Query("SELECT new map(" +
+            "r.actorSkill as actorSkill, " +
+            "r.directorSkill as directorSkill, " +
+            "r.lineSkill as lineSkill, " +
+            "r.musicSkill as musicSkill, " +
+            "r.sceneSkill as sceneSkill, " +
+            "r.storySkill as storySkill) " +
+            "FROM ReviewEntity r " +
+            "WHERE r.member.id = :memberId AND r.movie.id = :movieId " +
+            "ORDER BY r.createdDate DESC")
+    List<Map<String, Object>> findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(
+            @Param("memberId") Long memberId,
+            @Param("movieId") Long movieId,
+            Pageable pageable);
 
 }
 
