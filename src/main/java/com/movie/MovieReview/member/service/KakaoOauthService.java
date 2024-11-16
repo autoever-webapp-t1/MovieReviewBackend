@@ -43,7 +43,7 @@ public class KakaoOauthService {
         Boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
 
         MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
-                .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).isExisted(isExisted).build();
+                .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
 
         MemberEntity memberEntity = memberService.toEntity(memberDto);
 
