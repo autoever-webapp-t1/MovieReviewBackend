@@ -27,5 +27,4 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
     void decrementLikeCount(@Param("postId") Long postId);
 
-//    Page<Post> findByTitleContaining(String title, Pageable pageable);
 }
