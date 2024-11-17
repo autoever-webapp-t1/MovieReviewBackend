@@ -20,5 +20,4 @@ public interface AwardsService {
     public  List<AwardsPastListDto> getPastAwardsDetails(); //과거 어워즈 모든 기록 제공
     public AwardsDto getCurrentAwards();
 
-    //public AwardsDto getAwardsByTopMovieId(Long movieId); // 일등 영화 찾기
 }
