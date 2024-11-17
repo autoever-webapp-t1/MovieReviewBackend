@@ -12,6 +12,8 @@ import com.movie.MovieReview.post.exception.PostNotFoundException;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
+import com.movie.MovieReview.util.SecurityUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,16 +23,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
     PostRepository postRepository;
 //    UserPrincipal userPrincipal;
     MemberRepository memberRepository;
     KakaoInfoDto kakaoInfoDto;
+    private final SecurityUtils securityUtils;
 
 
     private MemberEntity getLoginMember() {
 //        String loginMemberEmail = userPrincipal.getEmail();
         String loginMemberEmail = kakaoInfoDto.getEmail();
+//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }
