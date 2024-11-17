@@ -3,6 +3,7 @@ import com.movie.MovieReview.Heart.dao.HeartRepository;
 import com.movie.MovieReview.Heart.dto.HeartRequestDto;
 import com.movie.MovieReview.Heart.entity.Heart;
 import com.movie.MovieReview.exception.NotFoundException;
+import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
@@ -17,10 +18,13 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private UserPrincipal userPrincipal;
+//    private UserPrincipal userPrincipal;
+    KakaoInfoDto kakaoInfoDto;
+
 
     private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
+//        String loginMemberEmail = userPrincipal.getEmail();
+        String loginMemberEmail = kakaoInfoDto.getEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }

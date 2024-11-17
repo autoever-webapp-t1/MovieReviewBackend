@@ -23,9 +23,9 @@ public class SseController {
 //        return sseService.subscribe(userPrincipal.getId());
 //    }
 
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe() {
-        return sseService.subscribe();
+    @GetMapping(value = "/events/{memberId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable("memberId") Long memberId) {
+        return sseService.subscribe(memberId);
     }
 
     @PostMapping("/notify")
