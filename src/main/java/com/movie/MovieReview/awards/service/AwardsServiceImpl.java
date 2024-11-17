@@ -73,18 +73,21 @@ public class AwardsServiceImpl implements AwardsService{
         return awardsRepository.findByStatus(0); // 과거 어워즈 가져오기
     }
 
-
-
     @Override
     @Transactional
-    public void updateAwardsStatusAndTopMovie() {
+    public Long updateAwardsStatusAndTopMovie() {
         // 1. status가 1인 AwardsEntity 조회
         List<AwardsEntity> activeAwards = awardsRepository.findByStatus(1);
+        log.info("############################Active awards count: {}", activeAwards.size());
+
+        Long topMovieId = null;
 
         for (AwardsEntity awards : activeAwards) {
             // 2. AwardsEntity에서 기간 가져오기
             LocalDateTime startDate = awards.getStartDateTime();
             LocalDateTime endDate = awards.getEndDateTime();
+            log.info("############################Processing AwardsEntity ID: {}, Start Date: {}, End Date: {}",
+                    awards.getAwardsId(), startDate, endDate);
 
             // 3. nominated 영화들의 `awardsTotalAverageSkill` 계산 및 비교
             List<Long> nominatedMovieIds = Arrays.asList(
@@ -93,6 +96,7 @@ public class AwardsServiceImpl implements AwardsService{
                     awards.getNominated3(),
                     awards.getNominated4()
             );
+            log.info("############################Nominated Movie IDs: {}", nominatedMovieIds);
 
             MovieDetailEntity topMovie = null;
             double highestSkill = -1;
@@ -100,15 +104,18 @@ public class AwardsServiceImpl implements AwardsService{
             for (Long movieId : nominatedMovieIds) {
                 // 4. 영화의 `awardsTotalAverageSkill` 계산
                 Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, startDate, endDate);
+                log.info("############################Movie ID: {}, Average Skills: {}", movieId, avgSkills);
 
                 if (!avgSkills.isEmpty()) {
                     double totalAverageSkill = (double) avgSkills.getOrDefault("totalAverageSkill", 0.0);
+                    log.info("############################Movie ID: {}, Total Average Skill: {}", movieId, totalAverageSkill);
 
                     // 가장 높은 평균값의 영화 찾기
                     if (totalAverageSkill > highestSkill) {
                         highestSkill = totalAverageSkill;
                         topMovie = movieRepository.findById(movieId)
-                                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+                                .orElseThrow(() -> new EntityNotFoundException("############################Movie not found with id: " + movieId));
+                        log.info("############################New Top Movie Found: ID: {}, Skill: {}", topMovie.getId(), highestSkill);
                     }
                 }
             }
@@ -116,11 +123,20 @@ public class AwardsServiceImpl implements AwardsService{
             // 5. AwardsEntity에 topMovieId 설정 및 상태 업데이트
             if (topMovie != null) {
                 awards.setTopMovieId(topMovie.getId());
+                topMovieId = awards.getTopMovieId();
+                log.info("############################Top Movie for Awards ID: {} is Movie ID: {}", awards.getAwardsId(), topMovie.getId());
+            } else {
+                log.info("############################No Top Movie Found for Awards ID: {}", awards.getAwardsId());
             }
+
             awards.setStatus(0); // 상태를 0으로 변경
             awardsRepository.save(awards); // 변경 사항 저장
+            log.info("############################AwardsEntity ID: {} status updated to 0", awards.getAwardsId());
         }
+        return topMovieId;
     }
+
+
 }
 
 

@@ -3,11 +3,13 @@ import com.movie.MovieReview.Heart.dao.HeartRepository;
 import com.movie.MovieReview.Heart.dto.HeartRequestDto;
 import com.movie.MovieReview.Heart.entity.Heart;
 import com.movie.MovieReview.exception.NotFoundException;
+import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
+import com.movie.MovieReview.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +19,15 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private UserPrincipal userPrincipal;
+//    private UserPrincipal userPrincipal;
+    private SecurityUtils securityUtils;
+    private KakaoInfoDto kakaoInfoDto;
+
 
     private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
+//        String loginMemberEmail = userPrincipal.getEmail();
+        String loginMemberEmail = kakaoInfoDto.getEmail();
+//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }

@@ -4,6 +4,7 @@ import com.movie.MovieReview.comment.dao.CommentRepository;
 import com.movie.MovieReview.comment.dto.CommentReqDto;
 import com.movie.MovieReview.comment.dto.CommentResDto;
 import com.movie.MovieReview.comment.entity.Comment;
+import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
@@ -37,7 +38,8 @@ public class CommentServiceImplTest {
 
     @Mock
     private UserPrincipal userPrincipal;
-
+    @Mock
+    private KakaoInfoDto kakaoInfoDto;
     @InjectMocks
     private CommentServiceImpl commentService;
     @Mock
@@ -61,7 +63,8 @@ public class CommentServiceImplTest {
         Long postId = 1L;
         CommentReqDto commentReqDto = new CommentReqDto("테스트 댓글입니다.");
 
-        when(userPrincipal.getEmail()).thenReturn("user@example.com");
+//        when(userPrincipal.getEmail()).thenReturn("user@example.com"); // userPrincipal 이용시 테스트
+        when(kakaoInfoDto.getEmail()).thenReturn("user@example.com");
         when(memberRepository.findByEmail("user@example.com")).thenReturn(Optional.of(mockMember));
         when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
 
