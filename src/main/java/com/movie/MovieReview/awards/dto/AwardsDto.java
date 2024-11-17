@@ -1,20 +1,25 @@
 package com.movie.MovieReview.awards.dto;
 
-import java.util.Date;
+import lombok.Builder;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
+
+@Getter
+@Builder
 public class AwardsDto {
     private String awardName;
 
-    private int nominated1;
+    private Long nominated1;
 
-    private int nominated2;
+    private Long nominated2;
 
-    private int nominated3;
+    private Long nominated3;
 
-    private int nominated4;
+    private Long nominated4;
 
-    private Date startDateTime;
+    private LocalDateTime startDateTime;
 
-    private Date endDateTime;
+    private LocalDateTime endDateTime;
 
 }
