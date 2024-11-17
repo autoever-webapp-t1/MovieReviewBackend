@@ -1,5 +1,6 @@
 package com.movie.MovieReview.awards.service;
 
+import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
@@ -8,6 +9,7 @@ import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.service.MovieService;
 import com.movie.MovieReview.review.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OrderBy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -136,7 +138,36 @@ public class AwardsServiceImpl implements AwardsService{
         return topMovieId;
     }
 
+    @Override
+    @Transactional
+    public List<AwardsMovieCardDto> getNominatedMovies() {
+        // Awards 테이블에서 모든 status=0 데이터를 가져옴
+        List<AwardsEntity> nominatedAwards = awardsRepository.findAllByStatus(0);
 
-}
+        // 결과 DTO 리스트
+        List<AwardsMovieCardDto> result = new ArrayList<>();
+
+        for (AwardsEntity award : nominatedAwards) {
+            Long movieId = award.get
+            String movieTitle = award.getMovieTitle();
+            LocalDateTime startDate = award.getStartDate();
+            LocalDateTime endDate = award.getEndDate();
+
+            // 평균 계산
+            Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, startDate, endDate);
+
+            // DTO 생성 및 필드 설정
+            AwardsMovieCardDto dto = new AwardsMovieCardDto();
+            dto.setMovieId(movieId);
+            dto.setMovieTitle(movieTitle);
+            dto.setScore(avgSkills); // 반환된 평균 데이터를 score에 저장
+
+            result.add(dto);
+        }
+
+        return result;
+
+
+    }
 
 

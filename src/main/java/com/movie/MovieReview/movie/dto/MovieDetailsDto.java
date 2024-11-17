@@ -29,6 +29,8 @@ public class MovieDetailsDto {
     private Map<String, Object> score; // 평균 스킬 데이터 + totalAvgSkill을 저장할 score 필드
     private Map<String, Object> myScore; //내가 리뷰한 score
 
+    private String awardsName; // 수상 경력 있으면 awardsName 보여주기
+
 
     public MovieDetailsDto(Long id, String title, String overview, String release_date, int runtime, String images,
                            String videos, String genres, List<Credits> credits, List<Recommends> recommendations) {
