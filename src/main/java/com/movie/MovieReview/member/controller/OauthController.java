@@ -2,6 +2,7 @@ package com.movie.MovieReview.member.controller;
 
 import com.movie.MovieReview.awards.dto.AwardsDto;
 import com.movie.MovieReview.awards.service.AwardsService;
+import com.movie.MovieReview.member.dto.MemberAwardsResponseDto;
 import com.movie.MovieReview.member.dto.MemberDto;
 import com.movie.MovieReview.member.dto.OauthRequestDto;
 import com.movie.MovieReview.member.dto.OauthResponseDto;
@@ -93,10 +94,15 @@ public class OauthController {
 //        Map<String, MemberDto> responseMap = new HashMap<>();
 //        responseMap.put(jwtToken, memberDto); // jwtToken을 키로 사용
 
-        Map<MemberDto, AwardsDto> responseMap = new HashMap<>();
-        responseMap.put(memberDto,awardsService.getCurrentAwards());
+        AwardsDto awardsDto = awardsService.getCurrentAwards(); //현재 시상식 정보
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseMap);
+        MemberAwardsResponseDto responseDto = MemberAwardsResponseDto.builder()
+                .member(memberDto)
+                .award(awardsDto)
+                .build();
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
 }
