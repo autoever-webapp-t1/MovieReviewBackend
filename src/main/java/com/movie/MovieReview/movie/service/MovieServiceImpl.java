@@ -89,8 +89,19 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    Map<String, Object> score = new HashMap<>();
-                    Map<String, Object> myScore = new HashMap<>();
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
+
                     try {
                         score = reviewService.getAverageSkillsByMovieId(id);
                         myScore = reviewService.getLatestReviewSkills(memberId, id);
@@ -152,8 +163,19 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    Map<String, Object> score = new HashMap<>();
-                    Map<String, Object> myScore = new HashMap<>();
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
+
                     try {
                         score = reviewService.getAverageSkillsByMovieId(id);
                         myScore = reviewService.getLatestReviewSkills(memberId, id);
@@ -223,8 +245,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    Map<String, Object> score = new HashMap<>();
-                    Map<String, Object> myScore = new HashMap<>();
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
                     try {
                         score = reviewService.getAverageSkillsByMovieId(id);
                         myScore = reviewService.getLatestReviewSkills(memberId, id);
@@ -284,8 +316,18 @@ public class MovieServiceImpl implements  MovieService{
                     }
                     String genreIds = genreIdsList.toString();
 
-                    Map<String, Object> score = new HashMap<>();
-                    Map<String, Object> myScore = new HashMap<>();
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
                     try {
                         score = reviewService.getAverageSkillsByMovieId(id);
                         myScore = reviewService.getLatestReviewSkills(memberId, id);
@@ -344,8 +386,18 @@ public class MovieServiceImpl implements  MovieService{
                 }
                 String genreIds = genreIdsList.toString();
 
-                Map<String, Object> score = new HashMap<>();
-                Map<String, Object> myScore = new HashMap<>();
+                // score 초기화
+                Map<String, Object> score = Map.of(
+                        "avgActorSkill", 0.0,
+                        "avgDirectorSkill", 0.0,
+                        "avgLineSkill", 0.0,
+                        "avgMusicSkill", 0.0,
+                        "avgSceneSkill", 0.0,
+                        "avgStorySkill", 0.0,
+                        "totalAverageSkill", 0.0
+                );
+                // myScore 초기화
+                Map<String, Object> myScore = null;
                 try {
                     score = reviewService.getAverageSkillsByMovieId(id);
                     myScore = reviewService.getLatestReviewSkills(memberId, id);
@@ -685,18 +737,20 @@ public class MovieServiceImpl implements  MovieService{
         // 영화 상세 정보를 DTO로 변환
         MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
 
-        Map<String, Object> score = new HashMap<>();
-        Map<String, Object> myScore = new HashMap<>();
+        // 기본 점수 값 설정
+        Map<String, Object> score = Map.of(
+                "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
+                "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
+                "totalAverageSkill", 0.0
+        );
+
         try {
             score = reviewService.getAverageSkillsByMovieId(movieId);
-//            myScore = reviewService.getLatestReviewSkills(memberId, movieId);
         } catch (Exception e) {
             log.warn("Review data not found for movie ID: {}", movieId, e);
-            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-//            myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
         }
+
         movieDetailsDto.setScore(score);
-//        movieDetailsDto.setMyScore(myScore);
 
         return movieDetailsDto;
     }
@@ -739,7 +793,10 @@ public class MovieServiceImpl implements  MovieService{
         // 사용자의 리뷰 목록 가져오기
         List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
 
-        log.info("MovieServiceImpl: 해당 사용자가 본 영화들 리스트 {}", reviews);
+        if (reviews == null || reviews.isEmpty()) {
+            log.warn("사용자 ID {}에 대한 리뷰가 없습니다.", memberId);
+            return new ArrayList<>();
+        }
 
         // 랜덤으로 리뷰 하나 선택
         Random random = new Random();
@@ -785,8 +842,14 @@ public class MovieServiceImpl implements  MovieService{
 
                         MovieDetailEntity movieDetail = movieDetailOptional.get();
 
-                        Map<String, Object> score = new HashMap<>();
-                        Map<String, Object> myScore = new HashMap<>();
+                        Map<String, Object> score = Map.of(
+                                "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
+                                "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
+                                "totalAverageSkill", 0.0
+                        );
+
+                        Map<String, Object> myScore = null;
+
                         try {
                             score = reviewService.getAverageSkillsByMovieId(movieId);
                             myScore = reviewService.getLatestReviewSkills(memberId, movieId);
