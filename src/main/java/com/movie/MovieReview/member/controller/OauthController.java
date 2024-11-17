@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,9 +80,8 @@ public class OauthController {
 
         switch (provider) {
             case "kakao":
-                // loginWithKakao 메서드가 TokenResponseDto 객체를 반환
-//                jwtToken = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken(),
-//                        response);
+                 //loginWithKakao 메서드가 TokenResponseDto 객체를 반환
+                jwtToken = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken());
                 memberDto = oauthService.UserInfo(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken(),
                         response);
                 break;
@@ -99,6 +99,7 @@ public class OauthController {
         MemberAwardsResponseDto responseDto = MemberAwardsResponseDto.builder()
                 .member(memberDto)
                 .award(awardsDto)
+                .jwtToken(jwtToken)
                 .build();
 
 

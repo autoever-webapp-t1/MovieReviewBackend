@@ -40,6 +40,7 @@ public class PostServiceImpl implements PostService{
     private MemberEntity getLoginMember() {
 //        String loginMemberEmail = userPrincipal.getEmail();
         String loginMemberEmail = kakaoInfoDto.getEmail();
+        System.out.println("PostServiceImpl: ?????????????이메일" + loginMemberEmail);
 //        String loginMemberEmail = securityUtils.getLoginMemberEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
