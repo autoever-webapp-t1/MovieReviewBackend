@@ -4,6 +4,7 @@ import com.movie.MovieReview.comment.dto.CommentReqDto;
 import com.movie.MovieReview.comment.dto.CommentResDto;
 import com.movie.MovieReview.comment.entity.Comment;
 import com.movie.MovieReview.comment.exception.CommentNotFoundException;
+import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
@@ -11,26 +12,33 @@ import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.sse.service.SseService;
+import com.movie.MovieReview.util.SecurityUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private MemberRepository memberRepository;
+    private final SecurityUtils securityUtils;
     private PostRepository postRepository;
     private UserPrincipal userPrincipal;
     private PostServiceImpl postService;
     private final SseService sseService;
+    private KakaoInfoDto kakaoInfoDto;
 
-    public CommentServiceImpl(SseService sseService) {
-        this.sseService = sseService;
-    }
+
+
 
     private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
+//        String loginMemberEmail = userPrincipal.getEmail();
+        String loginMemberEmail = kakaoInfoDto.getEmail();
+//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
+
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(() -> new RuntimeException("member not found"));
     }
@@ -59,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
         MemberEntity member = getLoginMember();
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("post not found"));
         Comment comment = Comment.builder()
-                .writer(getLoginMember())
+                .writer(member)
                 .content(commentReqDto.getContent())
                 .post(post)
                 .build();
@@ -67,9 +75,9 @@ public class CommentServiceImpl implements CommentService {
         post.addComment(comment);
         postRepository.save(post);
         Long postOwnerId = post.getWriter().getMemberId();
-//        if (!postOwnerId.equals(member.getMemberId())) {
-//            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
-//        }
+        if (!postOwnerId.equals(member.getMemberId())) {
+            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
+        }
         return CommentResDto.entityToResDto(comment);
     }
 

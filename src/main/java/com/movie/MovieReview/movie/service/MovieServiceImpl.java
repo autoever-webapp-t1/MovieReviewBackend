@@ -1,6 +1,7 @@
 package com.movie.MovieReview.movie.service;
 
 import com.google.gson.*;
+import com.movie.MovieReview.awards.dto.AwardsDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.awards.service.AwardsService;
@@ -39,8 +40,8 @@ public class MovieServiceImpl implements  MovieService{
     private final MovieCreditService movieCreditService;
     private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
+    private final AwardsRepository awardsRepository;
 //    private final AwardsService awardsService;
-    //private final AwardsRepository awardsRepository;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -465,8 +466,6 @@ public class MovieServiceImpl implements  MovieService{
         }
         return TopRatedMoviesId;
     }
-
-    @Override
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception {
         List<MovieDetailsDto> movieDetailsList = new ArrayList<>();
 
@@ -476,35 +475,95 @@ public class MovieServiceImpl implements  MovieService{
                 .map(TopRatedMovieIdEntity::getId)
                 .collect(Collectors.toList());
 
+        // 이미 저장된 영화 ID 가져오기
+        Set<Long> existingMovieIds = movieRepository.findAll()
+                .stream()
+                .map(MovieDetailEntity::getId) // MovieEntity의 ID 필드 기준
+                .collect(Collectors.toSet());
+
         // 각 ID에 대해 영화 상세 정보 요청
         for (Long id : movieIds) {
-            MovieDetailsDto movieDetails = getMovieDetails(id);
-            movieRepository.save(toEntity(movieDetails)); //db에 저장
-
-            // recommendations 저장
-            for (MovieDetailsDto.Recommends recommId : movieDetails.getRecommendations()) {
-                MovieRecommendDto recommendDto = MovieRecommendDto.builder()
-                        .movieId(id)
-                        .recommendationMovieId(recommId.getId())
-                        .build();
-                movieRecommendService.saveRecommendations(recommendDto);
+            // 이미 저장된 ID는 건너뛰기
+            if (existingMovieIds.contains(id)) {
+                continue;
             }
 
-            // credits 저장
-            for (MovieDetailsDto.Credits creditId : movieDetails.getCredits()) {
-                MovieCreditsDto movieCreditsDto = MovieCreditsDto.builder()
-                        .movieId(id)
-                        .name(creditId.getName())
-                        .type(creditId.getType())
-                        .profile(creditId.getProfile())
-                        .build();
-                movieCreditService.saveMovieCredit(movieCreditsDto);
-            }
+            try {
+                MovieDetailsDto movieDetails = getMovieDetails(id);
+                movieRepository.save(toEntity(movieDetails)); // DB에 저장
 
-            movieDetailsList.add(movieDetails);
+                // recommendations 저장
+                for (MovieDetailsDto.Recommends recommId : movieDetails.getRecommendations()) {
+                    movieRecommendService.saveRecommendations(
+                            MovieRecommendDto.builder()
+                                    .movieId(id)
+                                    .recommendationMovieId(recommId.getId())
+                                    .build()
+                    );
+                }
+
+                // credits 저장
+                for (MovieDetailsDto.Credits creditId : movieDetails.getCredits()) {
+                    movieCreditService.saveMovieCredit(
+                            MovieCreditsDto.builder()
+                                    .movieId(id)
+                                    .name(creditId.getName())
+                                    .type(creditId.getType())
+                                    .profile(creditId.getProfile())
+                                    .build()
+                    );
+                }
+
+                movieDetailsList.add(movieDetails);
+            } catch (Exception e) {
+                // 예외 발생 시 로그 출력 및 작업 중단 방지
+                log.error("Error processing movie ID " + id, e);
+            }
         }
+
         return movieDetailsList;
     }
+
+
+//    @Override
+//    public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception {
+//        List<MovieDetailsDto> movieDetailsList = new ArrayList<>();
+//
+//        // DB에서 저장된 모든 영화 ID 가져오기
+//        List<Long> movieIds = topRatedMovieIdRepository.findAll()
+//                .stream()
+//                .map(TopRatedMovieIdEntity::getId)
+//                .collect(Collectors.toList());
+//
+//        // 각 ID에 대해 영화 상세 정보 요청
+//        for (Long id : movieIds) {
+//            MovieDetailsDto movieDetails = getMovieDetails(id);
+//            movieRepository.save(toEntity(movieDetails)); //db에 저장
+//
+//            // recommendations 저장
+//            for (MovieDetailsDto.Recommends recommId : movieDetails.getRecommendations()) {
+//                MovieRecommendDto recommendDto = MovieRecommendDto.builder()
+//                        .movieId(id)
+//                        .recommendationMovieId(recommId.getId())
+//                        .build();
+//                movieRecommendService.saveRecommendations(recommendDto);
+//            }
+//
+//            // credits 저장
+//            for (MovieDetailsDto.Credits creditId : movieDetails.getCredits()) {
+//                MovieCreditsDto movieCreditsDto = MovieCreditsDto.builder()
+//                        .movieId(id)
+//                        .name(creditId.getName())
+//                        .type(creditId.getType())
+//                        .profile(creditId.getProfile())
+//                        .build();
+//                movieCreditService.saveMovieCredit(movieCreditsDto);
+//            }
+//
+//            movieDetailsList.add(movieDetails);
+//        }
+//        return movieDetailsList;
+//    }
 
     @Override
     @Transactional
@@ -529,11 +588,10 @@ public class MovieServiceImpl implements  MovieService{
         movieDetailsDto.setScore(score);
         movieDetailsDto.setMyScore(myScore);
 
-        /*AwardsEntity awardsEntity = awardsRepository.findByTopMovieId(movieId);
+        Optional<AwardsEntity> awardsEntity = awardsRepository.findByTopMovieId(movieId);
         if (awardsEntity != null) {
-            movieDetailsDto.setAwardsName(awardsEntity.getAwardName());
+            movieDetailsDto.setAwardsName(awardsEntity.get().getAwardName());
         }
-*/
         return movieDetailsDto;
     }
 

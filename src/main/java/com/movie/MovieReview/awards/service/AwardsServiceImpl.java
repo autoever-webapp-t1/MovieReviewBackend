@@ -1,25 +1,24 @@
 package com.movie.MovieReview.awards.service;
 
+import com.movie.MovieReview.awards.dto.AwardsDto;
 import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
+import com.movie.MovieReview.awards.dto.AwardsPastListDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.OrderBy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -138,36 +137,88 @@ public class AwardsServiceImpl implements AwardsService{
         return topMovieId;
     }
 
+    // 과거 어워즈 기록 조회
     @Override
     @Transactional
-    public List<AwardsMovieCardDto> getNominatedMovies() {
-        // Awards 테이블에서 모든 status=0 데이터를 가져옴
-        List<AwardsEntity> nominatedAwards = awardsRepository.findAllByStatus(0);
+    public List<AwardsPastListDto> getPastAwardsDetails() {
+        List<AwardsEntity> pastAwards = awardsRepository.findByStatus(0);
 
-        // 결과 DTO 리스트
-        List<AwardsMovieCardDto> result = new ArrayList<>();
+        return pastAwards.stream().map(award -> {
+            List<Long> nominatedMovies = List.of(
+                    award.getNominated1(),
+                    award.getNominated2(),
+                    award.getNominated3(),
+                    award.getNominated4()
+            );
 
-        for (AwardsEntity award : nominatedAwards) {
-            Long movieId = award.get
-            String movieTitle = award.getMovieTitle();
-            LocalDateTime startDate = award.getStartDate();
-            LocalDateTime endDate = award.getEndDate();
+            List<AwardsMovieCardDto> movieCardDtos = nominatedMovies.stream()
+                    .map(movieId -> {
+                        MovieDetailEntity movie = movieRepository.findById(movieId)
+                                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
 
-            // 평균 계산
-            Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, startDate, endDate);
+                        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(
+                                movieId, award.getStartDateTime(), award.getEndDateTime()
+                        );
 
-            // DTO 생성 및 필드 설정
-            AwardsMovieCardDto dto = new AwardsMovieCardDto();
-            dto.setMovieId(movieId);
-            dto.setMovieTitle(movieTitle);
-            dto.setScore(avgSkills); // 반환된 평균 데이터를 score에 저장
+                        return AwardsMovieCardDto.builder()
+                                .movieId(movieId)
+                                .movieTitle(movie.getTitle())
+                                .score(avgSkills)
+                                .build();
+                    })
+                    .toList();
 
-            result.add(dto);
+            return AwardsPastListDto.builder()
+                    .awardsId(award.getAwardsId())
+                    .awardsName(award.getAwardName())
+                    .nominatedMovies(movieCardDtos)
+                    .build();
+        }).toList();
+    }
+
+    @Override
+    public AwardsDto getCurrentAwards(){
+        List<AwardsEntity> awards = awardsRepository.findByStatus(1);
+
+        if (awards.isEmpty()) {
+            throw new RuntimeException("No awards found with status 1");
         }
 
-        return result;
+        //현재 진행중인 어워즈 가져오기
+        AwardsEntity awardEntity = awards.get(0);
 
+        AwardsDto awardsDto = AwardsDto.builder()
+                .awardName(awardEntity.getAwardName())
+                .nominated1(awardEntity.getNominated1())
+                .nominated2(awardEntity.getNominated2())
+                .nominated3(awardEntity.getNominated3())
+                .nominated4(awardEntity.getNominated4())
+                .startDateTime(awardEntity.getStartDateTime())
+                .endDateTime(awardEntity.getEndDateTime())
+                .build();
 
+        return awardsDto;
     }
+
+//    @Override
+//    public AwardsDto getAwardsByTopMovieId(Long topMovieId) {
+//        // topMovieId로 AwardsEntity 찾기
+//        Optional<AwardsEntity> awardsEntity = awardsRepository.findByTopMovieId(topMovieId);
+//
+//        // 찾은 AwardsEntity를 AwardsDto로 변환하여 반환
+//        return awardsEntity.map(entity -> AwardsDto.builder()
+//                        .awardName(entity.getAwardName())
+//                        .nominated1(entity.getNominated1())
+//                        .nominated2(entity.getNominated2())
+//                        .nominated3(entity.getNominated3())
+//                        .nominated4(entity.getNominated4())
+//                        .startDateTime(entity.getStartDateTime())
+//                        .endDateTime(entity.getEndDateTime())
+//                        .topMovieId(entity.getTopMovieId())
+//                        .build())
+//                .orElse(null); // 없으면 null 반환
+//    }
+
+}
 
 

@@ -25,7 +25,6 @@ public class MovieDetailsDto {
     private List<Credits> credits;
     private List<Recommends> recommendations;
 
-    //private Double totalAverageSkill; // 영화 육각형 통계의 평균
     private Map<String, Object> score; // 평균 스킬 데이터 + totalAvgSkill을 저장할 score 필드
     private Map<String, Object> myScore; //내가 리뷰한 score
 

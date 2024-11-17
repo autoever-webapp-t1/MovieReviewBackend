@@ -1,5 +1,8 @@
 package com.movie.MovieReview.member.controller;
 
+import com.movie.MovieReview.awards.dto.AwardsDto;
+import com.movie.MovieReview.awards.service.AwardsService;
+import com.movie.MovieReview.member.dto.MemberAwardsResponseDto;
 import com.movie.MovieReview.member.dto.MemberDto;
 import com.movie.MovieReview.member.dto.OauthRequestDto;
 import com.movie.MovieReview.member.dto.OauthResponseDto;
@@ -28,6 +31,7 @@ public class OauthController {
     private final OauthService oauthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
+    private final AwardsService awardsService;
 
     @GetMapping("/login/oauth/kakao")
     public ResponseEntity<OauthResponseDto> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws IOException{
@@ -66,7 +70,7 @@ public class OauthController {
     }
 
     @PostMapping("/login/oauth/{provider}")
-    public ResponseEntity<MemberDto> login(@PathVariable("provider") String provider,
+    public ResponseEntity<?> login(@PathVariable("provider") String provider,
                                            @RequestBody OauthRequestDto oauthRequestDto, HttpServletResponse response) {
 
         OauthResponseDto oauthResponseDto = new OauthResponseDto();
@@ -90,7 +94,15 @@ public class OauthController {
 //        Map<String, MemberDto> responseMap = new HashMap<>();
 //        responseMap.put(jwtToken, memberDto); // jwtToken을 키로 사용
 
-        return ResponseEntity.status(HttpStatus.OK).body(memberDto);
+        AwardsDto awardsDto = awardsService.getCurrentAwards(); //현재 시상식 정보
+
+        MemberAwardsResponseDto responseDto = MemberAwardsResponseDto.builder()
+                .member(memberDto)
+                .award(awardsDto)
+                .build();
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
 }
