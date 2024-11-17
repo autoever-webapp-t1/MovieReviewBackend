@@ -1,5 +1,6 @@
 package com.movie.MovieReview.post.service;
 
+import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
@@ -22,12 +23,14 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService{
     PostRepository postRepository;
-    UserPrincipal userPrincipal;
+//    UserPrincipal userPrincipal;
     MemberRepository memberRepository;
+    KakaoInfoDto kakaoInfoDto;
 
 
     private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
+//        String loginMemberEmail = userPrincipal.getEmail();
+        String loginMemberEmail = kakaoInfoDto.getEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }
