@@ -1,14 +1,19 @@
 package com.movie.MovieReview.member.service;
 
+import java.lang.reflect.Member;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.movie.MovieReview.exception.CustomException;
 import com.movie.MovieReview.exception.ErrorCode;
 import com.movie.MovieReview.member.dto.MemberDto;
+import com.movie.MovieReview.member.repository.MemberRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +28,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+
 
 @Service
 public class JwtTokenService implements InitializingBean {
@@ -48,15 +54,15 @@ public class JwtTokenService implements InitializingBean {
         this.key = getKeyFromBase64EncodedKey(encodeBase64SecretKey(secretKey));
     }
 
-    public String createJWTToken(String accessToken, String refreshToken, String payload) {
-        return createToken(accessToken, refreshToken, payload, accessTokenExpirationInSeconds);
+    public String createJWTToken(String accessToken, String refreshToken, Long memberId) {
+        return createToken(accessToken, refreshToken, memberId, accessTokenExpirationInSeconds);
     }
 
-    public String createToken(String accessToken, String refreshToken, String payload, long expireLength) {
+    public String createToken(String accessToken, String refreshToken, Long memberId, long expireLength) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expireLength);
 
-        MemberDto memberDto = memberService.getMemberDtoFromRefreshToken(refreshToken);
+        MemberDto memberDto =  memberService.findById(memberId);
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("memberId", memberDto.getMemberId());
@@ -67,6 +73,7 @@ public class JwtTokenService implements InitializingBean {
         claims.put("refreshToken", refreshToken); // 필요한 경우 카카오 토큰도 포함
 
         return Jwts.builder().setClaims(claims) // 사용자 정보 포함
+                .setSubject(String.valueOf(memberId))
                 .setIssuedAt(now) // 발행 시간
                 .setExpiration(validity) // 만료 시간
                 .signWith(key, SignatureAlgorithm.HS256) // 서명 알고리즘 및 비밀키 설정

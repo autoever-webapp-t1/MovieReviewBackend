@@ -1,5 +1,6 @@
 package com.movie.MovieReview.movie.controller;
 
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.service.MovieRecommendService;
@@ -26,10 +27,37 @@ public class MovieController {
     private final MovieService movieService;
     private final MovieRecommendService movieRecommendService;
     private final ReviewService reviewService;
+    private final JwtTokenService jwtTokenService;
 
-    @GetMapping("/topRated/{memberId}") //topRated가져오기
-    public ResponseEntity<?> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
+//    @GetMapping("/topRated/{memberId}") //topRated가져오기
+//    public ResponseEntity<?> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
+//        try {
+//            List<MovieCardDto> result = movieService.getTopRatedMovies(memberId);
+//            return ResponseEntity.ok(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+//        }
+//    }
+
+    @GetMapping("/topRated") // memberId를 PathVariable로 받지 않음
+    public ResponseEntity<?> getTopRatedMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // 헤더에서 JWT 토큰 추출
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header.");
+            }
+            String token = authorizationHeader.substring(7); // "Bearer " 이후의 토큰만 가져옴
+
+            // 토큰 유효성 검사
+            if (!jwtTokenService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token.");
+            }
+
+            // 토큰에서 memberId 추출
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            System.out.println("Extracted memberId: " + memberId);
+
             List<MovieCardDto> result = movieService.getTopRatedMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -37,6 +65,7 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
+
 
     @GetMapping("/nowPlaying/{memberId}") //nowPlaying가져오기
     public ResponseEntity<?> getNowPlayingMovies(@PathVariable("memberId") Long memberId){

@@ -42,21 +42,24 @@ public class OauthService {
                 }).block();
     }
 
-    public String loginWithKakao(String accessToken, String refreshToken, HttpServletResponse response) {
-        MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
+    public String loginWithKakao(String accessToken, String refreshToken) {
+        MemberDto memberDto = kakaoOauthService.getUserProfileByTokenNoSave(accessToken, refreshToken);
 
         if (memberDto == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
         // 자체적인 JWT 토큰 생성
         String JWTToken = jwtTokenService.createJWTToken(accessToken, refreshToken,
-                String.valueOf(memberDto.getMemberId()));
+                memberDto.getMemberId());
+
+        String PAYLOAD = jwtTokenService.getPayload(JWTToken);
+        System.out.println("OauthService: PAYLOAD??????????????????"+PAYLOAD);
 
         // TokenResponseDto 생성
-        TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        tokenResponseDto.setAccessToken(accessToken);
-        tokenResponseDto.setRefreshToken(refreshToken);
-        return JWTToken; // TokenResponseDto 객체 반환
+//        TokenResponseDto tokenResponseDto = new TokenResponseDto();
+//        tokenResponseDto.setAccessToken(accessToken);
+//        tokenResponseDto.setRefreshToken(refreshToken);
+        return JWTToken;
     }
 
     //카카오 사용자 로그아웃

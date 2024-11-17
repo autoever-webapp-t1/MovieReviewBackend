@@ -51,4 +51,16 @@ public class KakaoOauthService {
 
         return memberDto;
     }
+
+    public MemberDto getUserProfileByTokenNoSave(String accessToken, String refreshToken) {
+        Map<String, Object> userAttributesByToken = getUserAttributesByToken(accessToken);
+
+        KakaoInfoDto kakaoInfoDto = new KakaoInfoDto(userAttributesByToken);
+
+        Boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
+
+        MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
+                .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
+        return memberDto;
+    }
 }

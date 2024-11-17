@@ -9,4 +9,5 @@ import lombok.Getter;
 public class MemberAwardsResponseDto {
     private MemberDto member;
     private AwardsDto award;
+    private String jwtToken;
 }
