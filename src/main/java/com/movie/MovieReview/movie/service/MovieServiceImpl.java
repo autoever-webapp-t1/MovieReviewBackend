@@ -634,8 +634,20 @@ public class MovieServiceImpl implements  MovieService{
         // 영화 상세 정보를 DTO로 변환
         MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
 
-        Map<String, Object> score = new HashMap<>();
-        Map<String, Object> myScore = new HashMap<>();
+        // score 초기화
+        Map<String, Object> score = Map.of(
+                "avgActorSkill", 0.0,
+                "avgDirectorSkill", 0.0,
+                "avgLineSkill", 0.0,
+                "avgMusicSkill", 0.0,
+                "avgSceneSkill", 0.0,
+                "avgStorySkill", 0.0,
+                "totalAverageSkill", 0.0
+        );
+
+        // myScore 초기화
+        Map<String, Object> myScore = null;
+
         try {
             score = reviewService.getAverageSkillsByMovieId(movieId);
             myScore = reviewService.getLatestReviewSkills(memberId, movieId);
@@ -647,9 +659,18 @@ public class MovieServiceImpl implements  MovieService{
         movieDetailsDto.setScore(score);
         movieDetailsDto.setMyScore(myScore);
 
-        Optional<AwardsEntity> awardsEntity = awardsRepository.findByTopMovieId(movieId);
-        if (awardsEntity != null) {
-            movieDetailsDto.setAwardsName(awardsEntity.get().getAwardName());
+        // awardsNames 초기화
+        List<String> awardsNames = List.of();
+        List<AwardsEntity> awardsEntityList = awardsRepository.findByTopMovieId(movieId);
+
+        if (awardsEntityList != null && !awardsEntityList.isEmpty()) {
+            // AwardsEntity에서 awardsName만 추출
+            awardsNames = awardsEntityList.stream()
+                    .map(AwardsEntity::getAwardName)
+                    .toList();
+            movieDetailsDto.setAwardsNames(awardsNames);
+        } else {
+            movieDetailsDto.setAwardsNames(List.of()); // 빈 리스트로 초기화
         }
         return movieDetailsDto;
     }
