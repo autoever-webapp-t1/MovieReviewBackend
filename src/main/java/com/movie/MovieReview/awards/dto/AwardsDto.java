@@ -16,4 +16,5 @@ public class AwardsDto {
     private Date startDateTime;
 
     private Date endDateTime;
+
 }
