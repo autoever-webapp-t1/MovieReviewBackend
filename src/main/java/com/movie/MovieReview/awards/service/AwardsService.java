@@ -15,5 +15,5 @@ public interface AwardsService {
 
     public List<AwardsEntity> getPastAwards();
 
-    public void updateAwardsStatusAndTopMovie();
+    public Long updateAwardsStatusAndTopMovie(); //일등 영화 movieId
 }
