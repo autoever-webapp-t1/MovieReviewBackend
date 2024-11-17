@@ -7,7 +7,6 @@ import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.awards.service.AwardsService;
 import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
-import com.movie.MovieReview.movie.entity.MovieRecommendEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.repository.TopRatedMovieIdRepository;
@@ -306,6 +305,66 @@ public class MovieServiceImpl implements  MovieService{
     }
 
     @Override
+    public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception {
+        List<MovieCardDto> allMovies = new ArrayList<>();
+        String RecommendUrl = movieId + "/recommendations?language=ko-KR&page=1";
+
+        Request request = new Request.Builder()
+                .url(TMDB_API_URL + RecommendUrl + "&region=KR")
+                .get()
+                .addHeader("accept", "application/json")
+                .addHeader("Authorization", AUTH_TOKEN)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new Exception("Unexpected code " + response);
+            }
+
+            String jsonResponse = response.body().string();
+            log.info("MovieServiceImpl: " + jsonResponse);
+
+            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+            for (JsonElement resultElement : resultsArray) {
+                JsonObject movieObject = resultElement.getAsJsonObject();
+
+                Long id = movieObject.get("id").getAsLong();
+                String title = movieObject.get("title").getAsString();
+                String overview = movieObject.get("overview").getAsString();
+                String posterPath = movieObject.get("poster_path").getAsString();
+                String releaseDate = movieObject.get("release_date").getAsString();
+
+                // 장르 ID list -> String
+                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                List<Integer> genreIdsList = new ArrayList<>();
+                for (JsonElement genreElement : genreIdsArray) {
+                    genreIdsList.add(genreElement.getAsInt());
+                }
+                String genreIds = genreIdsList.toString();
+
+                Map<String, Object> score = new HashMap<>();
+                Map<String, Object> myScore = new HashMap<>();
+                try {
+                    score = reviewService.getAverageSkillsByMovieId(id);
+                    myScore = reviewService.getLatestReviewSkills(memberId, id);
+                } catch (Exception e) {
+                    log.warn("Review data not found for movie ID: {}", id, e);
+                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                    myScore = null;
+                }
+
+                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+                allMovies.add(movieCardDto);
+            }
+        }
+
+        return allMovies;
+    }
+
+
+    @Override
     public MovieDetailsDto getMovieDetails(Long id) throws Exception {
         log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
         String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=credits%2Cvideos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
@@ -363,7 +422,7 @@ public class MovieServiceImpl implements  MovieService{
                 JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
                 JsonArray crewArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("crew");
 
-                // 배우 정보: 기본적으로 최대 10명, 10명 미만일 경우 전체 배우 추가
+                // 배우 기본 10명(10명 안되면 전체 배우 가져옴)
                 int castCount = Math.min(10, castArray.size());
                 for (int i = 0; i < castArray.size(); i++) {
                     if (i >= castCount) break;
@@ -386,7 +445,7 @@ public class MovieServiceImpl implements  MovieService{
                     credits.add(credit);
                 }
 
-                // 감독 정보: crewArray에서 job 필드가 "Director"인 인물 1명을 찾아서 리스트에 추가
+                // 감독 1명 배우 10명
                 for (int i = 0; i < crewArray.size(); i++) {
                     JsonObject crewObject = crewArray.get(i).getAsJsonObject();
 
@@ -403,7 +462,7 @@ public class MovieServiceImpl implements  MovieService{
                                 : null);
 
                         credits.add(director); // 감독 정보를 배우 리스트에 추가
-                        break; // 감독을 찾았으므로 루프 종료
+                        break;
                     }
                 }
 

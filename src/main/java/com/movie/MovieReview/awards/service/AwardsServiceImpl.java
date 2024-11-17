@@ -188,6 +188,7 @@ public class AwardsServiceImpl implements AwardsService{
         AwardsEntity awardEntity = awards.get(0);
 
         AwardsDto awardsDto = AwardsDto.builder()
+                .awardsId(awardEntity.getAwardsId())
                 .awardName(awardEntity.getAwardName())
                 .nominated1(awardEntity.getNominated1())
                 .nominated2(awardEntity.getNominated2())

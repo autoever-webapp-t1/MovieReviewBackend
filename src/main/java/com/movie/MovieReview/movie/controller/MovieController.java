@@ -71,6 +71,17 @@ public class MovieController {
         }
     }
 
+    @GetMapping("/recommendations/{id}/{memberId}") //recommendations가져오기
+    public ResponseEntity<?> getRecommendMovies(@PathVariable("id") Long id, @PathVariable("memberId") Long memberId){
+        try {
+            List<MovieCardDto> result = movieService.getRecommendMovies(id, memberId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
     public List<Long> SaveTopRatedId(){
         try{

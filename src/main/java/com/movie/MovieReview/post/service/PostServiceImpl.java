@@ -9,13 +9,16 @@ import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.exception.PostNotFoundException;
+import com.movie.MovieReview.post.repository.PagingAndSortingRepository;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.util.SecurityUtils;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
     PostRepository postRepository;
+    PagingAndSortingRepository pagingAndSortingRepository;
 //    UserPrincipal userPrincipal;
     MemberRepository memberRepository;
     KakaoInfoDto kakaoInfoDto;
@@ -118,6 +122,11 @@ public class PostServiceImpl implements PostService{
                 .build();
     }
 
+    @Override
+    public Page<Post> findAll(Predicate predicate, Pageable pageable) {
+        return pagingAndSortingRepository.findAll(predicate, pageable);
+    }
+
 
     public PostDetailDto postDetailDto(Post post) {
         return PostDetailDto.builder()
@@ -133,12 +142,4 @@ public class PostServiceImpl implements PostService{
                 .build();
     }
 
-//    @Override
-//    public Page<Post> searchByTitle(String title, int page, int size) {
-//        if (title == null)
-//            title = "";
-//        PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by("postId").descending());
-//        Page<Post> byTitleContaining = postRepository.findByTitleContaining(title,pageRequest);
-//        return byTitleContaining;
-//    }
 }
