@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class AwardsDto {
+    private Long awardsId;
+
     private String awardName;
 
     private Long nominated1;
