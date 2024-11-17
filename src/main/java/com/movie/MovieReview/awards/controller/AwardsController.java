@@ -1,5 +1,7 @@
 package com.movie.MovieReview.awards.controller;
 
+import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
+import com.movie.MovieReview.awards.dto.AwardsPastListDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.service.AwardsService;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
@@ -32,6 +34,9 @@ public class AwardsController {
         List<AwardsEntity> pastAwards = awardsService.getPastAwards();
         return pastAwards;
     }
-
-
+    @GetMapping("/past")
+    public ResponseEntity<List<AwardsPastListDto>> getPastAwardsDetails() {
+        List<AwardsPastListDto> pastAwardsDetails = awardsService.getPastAwardsDetails();
+        return ResponseEntity.ok(pastAwardsDetails);
+    }
 }

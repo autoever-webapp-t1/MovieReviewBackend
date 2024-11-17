@@ -212,7 +212,7 @@ public class ReviewServiceImpl implements ReviewService{
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
     }
-
+////어워즈 이거 쓰면 돼!!!!!!!
     @Override
     @Transactional
     public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate) {

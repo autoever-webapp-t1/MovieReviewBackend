@@ -24,4 +24,5 @@ public class AwardsDto {
 
     private LocalDateTime endDateTime;
 
+    private Long topMovieId;
 }

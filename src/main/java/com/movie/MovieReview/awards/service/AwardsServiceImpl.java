@@ -1,12 +1,15 @@
 package com.movie.MovieReview.awards.service;
 
 import com.movie.MovieReview.awards.dto.AwardsDto;
+import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
+import com.movie.MovieReview.awards.dto.AwardsPastListDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.service.MovieService;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -137,6 +137,45 @@ public class AwardsServiceImpl implements AwardsService{
         return topMovieId;
     }
 
+    // 과거 어워즈 기록 조회
+    @Override
+    @Transactional
+    public List<AwardsPastListDto> getPastAwardsDetails() {
+        List<AwardsEntity> pastAwards = awardsRepository.findByStatus(0);
+
+        return pastAwards.stream().map(award -> {
+            List<Long> nominatedMovies = List.of(
+                    award.getNominated1(),
+                    award.getNominated2(),
+                    award.getNominated3(),
+                    award.getNominated4()
+            );
+
+            List<AwardsMovieCardDto> movieCardDtos = nominatedMovies.stream()
+                    .map(movieId -> {
+                        MovieDetailEntity movie = movieRepository.findById(movieId)
+                                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+
+                        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(
+                                movieId, award.getStartDateTime(), award.getEndDateTime()
+                        );
+
+                        return AwardsMovieCardDto.builder()
+                                .movieId(movieId)
+                                .movieTitle(movie.getTitle())
+                                .score(avgSkills)
+                                .build();
+                    })
+                    .toList();
+
+            return AwardsPastListDto.builder()
+                    .awardsId(award.getAwardsId())
+                    .awardsName(award.getAwardName())
+                    .nominatedMovies(movieCardDtos)
+                    .build();
+        }).toList();
+    }
+
     @Override
     public AwardsDto getCurrentAwards(){
         List<AwardsEntity> awards = awardsRepository.findByStatus(1);
@@ -161,6 +200,25 @@ public class AwardsServiceImpl implements AwardsService{
 
         return awardsDto;
     }
+
+//    @Override
+//    public AwardsDto getAwardsByTopMovieId(Long topMovieId) {
+//        // topMovieId로 AwardsEntity 찾기
+//        Optional<AwardsEntity> awardsEntity = awardsRepository.findByTopMovieId(topMovieId);
+//
+//        // 찾은 AwardsEntity를 AwardsDto로 변환하여 반환
+//        return awardsEntity.map(entity -> AwardsDto.builder()
+//                        .awardName(entity.getAwardName())
+//                        .nominated1(entity.getNominated1())
+//                        .nominated2(entity.getNominated2())
+//                        .nominated3(entity.getNominated3())
+//                        .nominated4(entity.getNominated4())
+//                        .startDateTime(entity.getStartDateTime())
+//                        .endDateTime(entity.getEndDateTime())
+//                        .topMovieId(entity.getTopMovieId())
+//                        .build())
+//                .orElse(null); // 없으면 null 반환
+//    }
 
 }
 

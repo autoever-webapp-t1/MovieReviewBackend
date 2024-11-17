@@ -1,6 +1,10 @@
 package com.movie.MovieReview.movie.service;
 
 import com.google.gson.*;
+import com.movie.MovieReview.awards.dto.AwardsDto;
+import com.movie.MovieReview.awards.entity.AwardsEntity;
+import com.movie.MovieReview.awards.repository.AwardsRepository;
+import com.movie.MovieReview.awards.service.AwardsService;
 import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
@@ -35,6 +39,8 @@ public class MovieServiceImpl implements  MovieService{
     private final MovieCreditService movieCreditService;
     private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
+    private final AwardsRepository awardsRepository;
+//    private final AwardsService awardsService;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -641,6 +647,10 @@ public class MovieServiceImpl implements  MovieService{
         movieDetailsDto.setScore(score);
         movieDetailsDto.setMyScore(myScore);
 
+        Optional<AwardsEntity> awardsEntity = awardsRepository.findByTopMovieId(movieId);
+        if (awardsEntity != null) {
+            movieDetailsDto.setAwardsName(awardsEntity.get().getAwardName());
+        }
         return movieDetailsDto;
     }
 
