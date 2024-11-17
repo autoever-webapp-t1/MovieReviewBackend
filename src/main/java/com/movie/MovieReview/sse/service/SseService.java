@@ -73,6 +73,18 @@ public class SseService {
             }
         }
     }
+    //어워즈 기간 종료 시 결과 알림
+    public void broadcast(String message) {
+        Iterator<SseEmitter> iterator = emitters.values().iterator();
+        while (iterator.hasNext()) {
+            SseEmitter emitter = iterator.next();
+            try {
+                emitter.send(SseEmitter.event().name("AWARDS_NOTIFICATION").data(message));
+            } catch (IOException e) {
+                iterator.remove();
+            }
+        }
+    }
 
     //        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
     @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
@@ -92,6 +104,9 @@ public class SseService {
             }
         }
     }
+
+
+
     //        @Scheduled(cron = "0 0 21 ? * MON") // At 09:00 PM, 매주 목요일 실행
 //    @Scheduled(cron = "0 * * * * *") // 매분 0초에 실행(테스트용)
 //    public void alarm() {

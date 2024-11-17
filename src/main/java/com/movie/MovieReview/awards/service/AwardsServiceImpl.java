@@ -134,6 +134,14 @@ public class AwardsServiceImpl implements AwardsService{
             awardsRepository.save(awards); // 변경 사항 저장
             log.info("############################AwardsEntity ID: {} status updated to 0", awards.getAwardsId());
         }
+        // 상태가 2인 항목 중 하나를 1로 변경
+        List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
+        if (!futureAwards.isEmpty()) {
+            AwardsEntity nextAward = futureAwards.get(0);
+            nextAward.setStatus(1);
+            awardsRepository.save(nextAward);
+            log.info("############################Award ID: {} status updated from 2 to 1", nextAward.getAwardsId());
+        }
         return topMovieId;
     }
 

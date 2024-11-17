@@ -17,12 +17,7 @@ public class WishController {
     @Autowired
     private WishService wishService;
 
-    /**
-     * 위시리스트에 영화를 추가하거나 삭제하는 API
-     * @param memberId 회원 ID
-     * @param movieId 영화 ID
-     * @return ResponseEntity
-     */
+//  위시리스트에 영화를 추가하거나 삭제하는 API (toggle형태)
     @PostMapping("/toggle")
     public ResponseEntity<String> toggleWishlist(@RequestParam Long memberId, @RequestParam Long movieId) {
         try {
@@ -33,11 +28,7 @@ public class WishController {
             return ResponseEntity.status(500).body("오류가 발생했습니다: " + e.getMessage());
         }
     }
-    /**
-     * 특정 회원의 위시리스트 조회
-     * @param memberId 회원 ID
-     * @return 회원의 위시리스트 항목 리스트
-     */
+//    회원의 wishlist 조회
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<MovieCardDto>> getWishlistByMemberId(@PathVariable("memberId") Long memberId) {
         List<MovieCardDto> wishlist = wishService.getWishlistByMemberId(memberId);

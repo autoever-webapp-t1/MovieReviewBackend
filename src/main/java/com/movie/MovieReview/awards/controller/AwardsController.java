@@ -28,12 +28,12 @@ public class AwardsController {
             return new ArrayList<>();
         }
     }
-
-    @GetMapping("")
-    public List<AwardsEntity> getPastAwards() {
-        List<AwardsEntity> pastAwards = awardsService.getPastAwards();
-        return pastAwards;
-    }
+//
+//    @GetMapping("")
+//    public List<AwardsEntity> getPastAwards() {
+//        List<AwardsEntity> pastAwards = awardsService.getPastAwards();
+//        return pastAwards;
+//    }
     @GetMapping("/past")
     public ResponseEntity<List<AwardsPastListDto>> getPastAwardsDetails() {
         List<AwardsPastListDto> pastAwardsDetails = awardsService.getPastAwardsDetails();

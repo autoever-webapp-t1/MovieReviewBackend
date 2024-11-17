@@ -212,7 +212,7 @@ public class ReviewServiceImpl implements ReviewService{
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
     }
-////어워즈 이거 쓰면 돼!!!!!!!
+//    어워즈에서 이용함.
     @Override
     @Transactional
     public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -294,9 +294,10 @@ public class ReviewServiceImpl implements ReviewService{
         Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
         List<Map<String, Object>> result = reviewRepository.findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(memberId, movieId, pageable);
 
-        // 결과가 비어 있는 경우 빈 Map 반환
-        if (result.isEmpty() || result.get(0).isEmpty()) {
-            new HashMap<>();
+        // 결과가 비어 있는 경우 null 반환
+        if (result == null || result.isEmpty()) {
+            log.warn("No review found for member ID: {} and movie ID: {}", memberId, movieId);
+            return null;
         }
 
         Map<String, Object> mySkills = result.get(0);
