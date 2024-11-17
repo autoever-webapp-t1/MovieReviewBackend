@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
-    PostRepository postRepository;
+    private final PostRepository postRepository;
     PagingAndSortingRepository pagingAndSortingRepository;
 //    UserPrincipal userPrincipal;
     MemberRepository memberRepository;
@@ -40,7 +40,6 @@ public class PostServiceImpl implements PostService{
     private MemberEntity getLoginMember() {
 //        String loginMemberEmail = userPrincipal.getEmail();
         String loginMemberEmail = kakaoInfoDto.getEmail();
-        System.out.println("PostServiceImpl: ?????????????이메일" + loginMemberEmail);
 //        String loginMemberEmail = securityUtils.getLoginMemberEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
@@ -112,7 +111,7 @@ public class PostServiceImpl implements PostService{
     @Transactional(readOnly = true)
     public PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto) {
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1,pageRequestDto.getSize());
-        Page<Post> postPage = (Page<Post>) postRepository.findAll();
+        Page<Post> postPage =  postRepository.findAll(pageable);
         List<PostDetailDto> posts = postPage.getContent().stream()
                 .map(this::postDetailDto)
                 .collect(Collectors.toList());
