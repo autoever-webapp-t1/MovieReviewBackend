@@ -52,15 +52,24 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<PageResponseDto<PostDetailDto>> getAllPosts(
+    public ResponseEntity<?> getAllPosts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        PageRequestDto pageRequestDto = PageRequestDto.builder()
-                .page(page)
-                .size(size)
-                .build();
-        PageResponseDto<PostDetailDto> response = postService.getAllPosts(pageRequestDto);
-        return ResponseEntity.ok(response);
+        try {
+            PageRequestDto pageRequestDto = PageRequestDto.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
+            PageResponseDto<PostDetailDto> response = postService.getAllPosts(pageRequestDto);
+            if (response==null) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body("게시글이 없습니다.");
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("서버 에러가 발생했습니다 : " +e.getMessage());
+        }
     }
 
     @GetMapping("/search")
