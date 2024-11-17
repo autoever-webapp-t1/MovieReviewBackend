@@ -149,7 +149,7 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/recommendations/{id}") //recommendations영화 가져오기
+    @GetMapping("/relatedContents/{id}") //상세페이지 관련 콘텐츠 가져오기
     public ResponseEntity<?> getRecommendMovies(@PathVariable("id") Long id ,@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // 헤더에서 JWT 토큰 추출
