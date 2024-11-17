@@ -16,6 +16,7 @@ public class SseController {
         this.sseService = sseService;
     }
 
+    //클라이언트와 서버 연결
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
         return sseService.subscribe();
