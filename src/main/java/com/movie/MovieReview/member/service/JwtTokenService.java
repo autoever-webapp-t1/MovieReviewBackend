@@ -80,6 +80,7 @@ public class JwtTokenService implements InitializingBean {
                 .compact();
     }
 
+    //현재 payload에 담겨 있는 값은 memberId JWTToken에서 memberId추출
     public String getPayload(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
@@ -96,13 +97,13 @@ public class JwtTokenService implements InitializingBean {
 
             // 토큰의 만료 여부 확인
             boolean isValid = !claimsJws.getBody().getExpiration().before(new Date());
-            System.out.println("JwtTokenService Token is valid: " + isValid); // 토큰 유효성 출력
+            System.out.println("JwtTokenService 토큰 유효!!!!!: " + isValid); // 토큰 유효성 출력
             return isValid;
         } catch (ExpiredJwtException e) {
-            System.out.println("JwtTokenService Token has expired: " + e.getMessage()); // 만료된 토큰 예외 출력
+            System.out.println("JwtTokenService 토큰 만료ㅜㅜㅜㅜㅜ: " + e.getMessage()); // 만료된 토큰 예외 출력
             return false;
         } catch (JwtException | IllegalArgumentException exception) {
-            System.out.println("JwtTokenService Invalid token: " + exception.getMessage()); // 유효하지 않은 토큰 예외 출력
+            System.out.println("JwtTokenService 토큰 오류????: " + exception.getMessage()); // 유효하지 않은 토큰 예외 출력
             return false;
         }
     }

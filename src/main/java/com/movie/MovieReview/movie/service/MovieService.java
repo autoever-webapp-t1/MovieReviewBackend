@@ -16,7 +16,7 @@ public interface MovieService {
     public List<MovieCardDto> getNowPlayingMovies(Long memberId) throws Exception; //NowPlaying 100개 영화정보 가져오기
     public List<MovieCardDto> getUpComingMovies(Long memberId) throws Exception; //UpComing 100개 영화정보 가져오기
     public List<MovieCardDto> getPopularMovies(Long memberId) throws Exception;
-    public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception;
+    public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception; //무비 아이디 가지고 recommendations api호출하기
 
     public MovieDetailsDto getMovieDetails(Long id) throws Exception; //영화상세정보 가져오기
     public List<Long> SaveTopRatedId() throws Exception; //TopRated ID들 저장
@@ -27,7 +27,7 @@ public interface MovieService {
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
     public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String keyword, PageRequestDto pageRequestDto);
-    public List<MovieCardDto> getMovieMemberRecommendations(Long memberId);
+    public List<MovieCardDto> getMovieMemberRecommendations(Long memberId); //~~를 보셨다면? -> 랜덤으로 추천해주기
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
         List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
