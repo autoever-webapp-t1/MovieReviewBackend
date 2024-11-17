@@ -39,7 +39,7 @@ public class MovieController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
 //        }
 //    }
-
+    //MainPage
     @GetMapping("/topRated") //topRated영화 가져오기
     public ResponseEntity<?> getTopRatedMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
@@ -66,7 +66,6 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
         }
     }
-
 
     @GetMapping("/nowPlaying") //nowPlaying영화 가져오기
     public ResponseEntity<?> getNowPlayingMovies(@RequestHeader("Authorization") String authorizationHeader) {
@@ -144,6 +143,34 @@ public class MovieController {
             List<MovieCardDto> result = movieService.getPopularMovies(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
+        }
+    }
+
+    @GetMapping("/recommendations") //~~를 보셨다면?? -> 랜덤으로 하나 골라서 추천해주는 거
+    public ResponseEntity<?> getMemberRecommendByMemberId(@RequestHeader("Authorization") String authorizationHeader) {
+        try{
+            // 헤더에서 JWT 토큰 추출
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
+            }
+
+            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+
+            // 토큰 유효성 검사
+            if (!jwtTokenService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
+            }
+
+            // 토큰에서 memberId 추출
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+
+            log.info("Request received for memberId: {}", memberId);  // memberId 확인 로그
+            List<MovieCardDto> movieCards = movieService.getMovieMemberRecommendations(memberId);
+            return ResponseEntity.ok(movieCards);
+
+        }catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
         }
@@ -259,13 +286,6 @@ public class MovieController {
         PageResponseDto<MovieCardDto> response = movieService.getAllMovieByKeyword(keyword, pageRequestDto);
 
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/recommendations/{memberId}") //~~를 보셨다면?? -> 랜덤으로 하나 골라서 추천해주는 거
-    public ResponseEntity<List<MovieCardDto>> getMemberRecommendByMemberId(@PathVariable("memberId") Long memberId) {
-        log.info("Request received for memberId: {}", memberId);  // memberId 확인 로그
-        List<MovieCardDto> movieCards = movieService.getMovieMemberRecommendations(memberId);
-        return ResponseEntity.ok(movieCards);
     }
 }
 
