@@ -25,7 +25,7 @@ public class AwardsScheduler {
             System.out.println("Awards 결과(topMovieId) : " + topMovieId);
 
             // SSE 알림 전송
-            String notificationMessage = "어워즈 종료! Top MovieI는: " + topMovieId;
+            String notificationMessage = "어워즈 종료! Top MovieID는: " + topMovieId;
             sseService.broadcast(notificationMessage);
             System.out.println(notificationMessage);
             System.out.println("Awards 상태 및 TopMovie 업데이트 완료");

@@ -14,6 +14,5 @@ import java.util.Optional;
 public interface AwardsRepository extends JpaRepository<AwardsEntity,Long> {
     List<AwardsEntity> findByStatus(int status);
 
-//    @Query("SELECT a FROM AwardsEntity a WHERE a.topMovieId = :topMovieId")
     List<AwardsEntity> findByTopMovieId(@Param("topMovieId") Long topMovieId);
 }

@@ -9,6 +9,9 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class AwardsMovieCardDto {
+
+    //nominate 된 영화 하나에 대한 DTO
+    
     private Long movieId; //nominatedId (=movieId)
 
     private String movieTitle; //nominated Movie title

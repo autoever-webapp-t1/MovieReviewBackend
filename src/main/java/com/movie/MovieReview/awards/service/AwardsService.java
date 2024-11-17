@@ -12,7 +12,7 @@ import java.util.List;
 public interface AwardsService {
     public List<MovieDetailsDto> getNominatedMoviesDetails(Long awardId) throws Exception;
 
-    public void changeStatus();
+//    public void changeStatus();
 
     public List<AwardsEntity> getPastAwards();
 

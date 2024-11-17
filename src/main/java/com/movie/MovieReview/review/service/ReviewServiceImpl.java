@@ -5,8 +5,6 @@ import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.repository.MovieRepository;
-import com.movie.MovieReview.movie.service.MovieService;
-import com.movie.MovieReview.movie.service.MovieServiceImpl;
 import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
@@ -14,8 +12,8 @@ import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.MovieReview.review.entity.ReviewEntity;
 import com.movie.MovieReview.review.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,147 +26,146 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
+@RequiredArgsConstructor
 @Service
-public class ReviewServiceImpl implements ReviewService{
+public class ReviewServiceImpl implements ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-    @Autowired
-    private MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
+
+    private MemberEntity validateMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found for ID: " + memberId));
+    }
+
+    private MovieDetailEntity validateMovie(Long movieId) {
+        return movieRepository.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Movie not found for ID: " + movieId));
+    }
+
+    private ReviewEntity validateReview(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found for ID: " + reviewId));
+    }
+
+    //review의 member, movie가 null 일 때 exception 발생
+    private void validateInput(ReviewDetailDto dto) {
+        if (dto.getMemberId() == null) {
+            throw new IllegalArgumentException("Member ID must not be null");
+        }
+        if (dto.getMovieId() == null) {
+            throw new IllegalArgumentException("Movie ID must not be null");
+        }
+    }
+
+    //영화 엔티티 업데이트
+    private void updateMovieTotalAverageSkill(Long movieId, double roundedTotalAvg) {
+        MovieDetailEntity movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+        movie.setTotalAverageSkill(roundedTotalAvg);
+        movieRepository.save(movie); // 변경 사항 저장
+    }
+
+    //영화 엔티티 업데이트 for 어워즈
+    private void updateMovieAwardsTotalAverageSkill(Long movieId, double roundedTotalAvg) {
+        MovieDetailEntity movie = movieRepository.findById(movieId)
+                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
+        movie.setAwardsTotalAverageSkill(roundedTotalAvg);
+        movieRepository.save(movie); // 변경 사항 저장
+    }
+
 
     @Override
     @Transactional
     public Long createReview(ReviewDetailDto dto) {
-        Long memberId = dto.getMemberId();
-        Long movieId = dto.getMovieId();
+        validateInput(dto);
 
-        if (memberId == null) {
-            throw new IllegalArgumentException("Member ID must not be null");
-        }
+        MemberEntity foundMember = validateMember(dto.getMemberId());
+        MovieDetailEntity foundMovie = validateMovie(dto.getMovieId());
 
-        if (movieId == null) {
-            throw new IllegalArgumentException("Movie ID must not be null");
-        }
-
-        Optional<MemberEntity> member = memberRepository.findById(memberId);
-        MemberEntity foundMember = member.orElseThrow(() -> new IllegalArgumentException("Member not found"));
-
-        Optional<MovieDetailEntity> movie = movieRepository.findById(movieId);
-        MovieDetailEntity foundMovie = movie.orElseThrow(() -> new IllegalArgumentException("Movie not found"));
-
-        ReviewEntity reviewEntity = toEntity(dto, foundMember,foundMovie);
-
+        ReviewEntity reviewEntity = toEntity(dto, foundMember, foundMovie);
         ReviewEntity result = reviewRepository.save(reviewEntity);
-        log.info("result: " + result.getMember().getMemberId() );
+
+        log.info("Review created for Member ID: " + result.getMember().getMemberId());
         return result.getReviewId();
     }
 
     @Override
     @Transactional
     public void modifyReview(ReviewDetailDto dto) {
-        Long memberId = dto.getMemberId();
-        Long movieId = dto.getMovieId();
+        validateInput(dto);
         Long reviewId = dto.getReviewId();
-
-        if (memberId == null) {
-            throw new IllegalArgumentException("Member ID must not be null");
-        }
-
-        if (movieId == null) {
-            throw new IllegalArgumentException("Movie ID must not be null");
-        }
 
         if (reviewId == null) {
             throw new IllegalArgumentException("Review ID must not be null");
         }
-
-        // 멤버와 영화가 존재하는지 확인
-        MemberEntity foundMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    // 멤버가 존재하지 않으면 오류를 발생시킴
-                    System.out.println("Member not found for ID: " + memberId);  // 로그 추가
-                    return new IllegalArgumentException("Member not found");
-                });
-        MovieDetailEntity foundMovie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
-
-        // 수정할 리뷰가 존재하는지 확인
-        ReviewEntity existingReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        validateMember(dto.getMemberId());
+        validateMovie(dto.getMovieId());
+        ReviewEntity existingReview = validateReview(reviewId);
 
         // 기존 리뷰 내용 수정
-        existingReview.setContent(dto.getContent());
-        existingReview.setTotalHeart(dto.getTotalHeart());
-        existingReview.setMyHeart(dto.isMyHeart());
-        existingReview.setActorSkill(dto.getActorSkill());
-        existingReview.setDirectorSkill(dto.getDirectorSkill());
-        existingReview.setSceneSkill(dto.getSceneSkill());
-        existingReview.setMusicSkill(dto.getMusicSkill());
-        existingReview.setStorySkill(dto.getStorySkill());
-        existingReview.setLineSkill(dto.getLineSkill());
-
-        // 변경 사항 저장
+        existingReview.updateReview(dto);
+        log.info("Review updated: ID=" + reviewId);
         reviewRepository.save(existingReview);
+        log.info("Review updated DONE ID= " + existingReview.getReviewId());
     }
 
     @Override
     public void removeReview(Long movieId, Long reviewId) {
-        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        ReviewEntity reviewEntity = validateReview(reviewId);
 
         if (!reviewEntity.getMovie().getId().equals(movieId)) {
             throw new IllegalArgumentException("Review does not belong to the specified movie");
         }
 
         reviewRepository.delete(reviewEntity);
+        log.info("Review deleted: ID=" + reviewId);
     }
 
     @Override
     public ReviewDetailDto getReview(Long reviewId) {
-        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
-
+        ReviewEntity reviewEntity = validateReview(reviewId);
         return toDto(reviewEntity);
     }
+
     @Override
     @Transactional
     public PageResponseDto<ReviewDetailDto> getAllReviewsByMovieId(Long movieId, PageRequestDto pageRequestDto) {
-        // Convert PageRequestDto to Pageable
+
+        // 페이지 요청
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
 
-        // Fetch paginated reviews for the movie
+        // 영화 ID로 리뷰 목록 페이징 조회
         Page<ReviewEntity> reviewPage = reviewRepository.findByMovieId(movieId, pageable);
 
-        // Convert the Page of ReviewEntity to ReviewDetailDto
         List<ReviewDetailDto> reviewList = reviewPage.getContent().stream()
-                .map(this::toDto)  // Assuming ReviewDetailDto constructor that maps ReviewEntity to DTO
+                .map(this::toDto)
                 .collect(Collectors.toList());
 
-        // Create and return a PageResponseDto
         return PageResponseDto.<ReviewDetailDto>withAll()
                 .dtoList(reviewList)
                 .pageRequestDto(pageRequestDto)
                 .total(reviewPage.getTotalElements())
                 .build();
     }
+
     @Override
     public List<ReviewDetailDto> getAllReviews() {
         List<ReviewEntity> reviews = reviewRepository.findAll();
         return reviews.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    @Override
-    public void toggleLike(Long reviewId) {
-        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
-
-        reviewEntity.setMyHeart(!reviewEntity.isMyHeart());  // Toggle the like status
-        reviewRepository.save(reviewEntity);
-    }
+//    @Override
+//    public void toggleLike(Long reviewId) {
+//        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
+//                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+//
+//        reviewEntity.setMyHeart(!reviewEntity.isMyHeart());  // Toggle the like status
+//        reviewRepository.save(reviewEntity);
+//    }
 
     @Override
     public Map<String, Object> getAverageSkillsByMemberId(Long memberId) {
@@ -203,16 +200,14 @@ public class ReviewServiceImpl implements ReviewService{
         double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
 
         // Movie 엔티티에 totalAverageSkill 업데이트
-        MovieDetailEntity movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
-        movie.setTotalAverageSkill(roundedTotalAvg);
-        movieRepository.save(movie); // 변경 사항 저장
+        updateMovieTotalAverageSkill(movieId, roundedTotalAvg);
 
         // 결과 반환
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
     }
-//    어워즈에서 이용함.
+
+    // 어워즈에서 이용함.
     @Override
     @Transactional
     public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate) {
@@ -234,11 +229,8 @@ public class ReviewServiceImpl implements ReviewService{
         // 소수점 둘째 자리까지 반올림
         double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
 
-        // Movie 엔티티의 totalAverageSkill 업데이트
-        MovieDetailEntity movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
-        movie.setAwardsTotalAverageSkill(roundedTotalAvg);
-        movieRepository.save(movie); // 변경 사항 저장
+        // Movie 엔티티의 awardsTotalAverageSkill 업데이트
+        updateMovieAwardsTotalAverageSkill(movieId, roundedTotalAvg);
 
         avgSkills.put("totalAverageSkill", roundedTotalAvg);
         return avgSkills;
@@ -324,8 +316,8 @@ public class ReviewServiceImpl implements ReviewService{
         // 해당 회원이 작성한 모든 리뷰 조회
         List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberId(memberId);
 
-        List<MovieCardDto> movieCardDtos = new ArrayList<>();
         Set<Long> addedMovieIds = new HashSet<>();
+        List<MovieCardDto> movieCardDtos = new ArrayList<>();
 
         for (ReviewEntity review : reviews) {
             Long movieId = review.getMovie().getId();
@@ -334,15 +326,13 @@ public class ReviewServiceImpl implements ReviewService{
             if (addedMovieIds.contains(movieId)) {
                 continue;
             }
+            //영화의 통계값
             Map<String, Object> avgSkills = getAverageSkillsByMovieId(review.getMovie().getId());
-
-            // score가 비어있으면 기본 값 설정
-            if (avgSkills == null || avgSkills.isEmpty()) {
-                avgSkills = new HashMap<>(); // 빈 Map으로 설정
-            }
 
             // 내가 가장 최근에 작성한 리뷰의 점수 가져오기 (평균 포함)
             Map<String, Object> mySkills = getLatestReviewSkills(memberId, movieId);
+            // score가 비어있으면 기본 값 설정
+            avgSkills = (avgSkills == null || avgSkills.isEmpty()) ? new HashMap<>() : avgSkills;
 
             MovieCardDto movieCardDto = MovieCardDto.builder()
                     .id(review.getMovie().getId())
@@ -385,11 +375,11 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
 
-    public ReviewDetailDto toDto(ReviewEntity reviewEntity){
+    public ReviewDetailDto toDto(ReviewEntity reviewEntity) {
         double avgSkill = Math.round(
-                ((double)(reviewEntity.getActorSkill() + reviewEntity.getDirectorSkill() +
+                ((double) (reviewEntity.getActorSkill() + reviewEntity.getDirectorSkill() +
                         reviewEntity.getSceneSkill() + reviewEntity.getMusicSkill() +
-                        reviewEntity.getStorySkill() + reviewEntity.getLineSkill()) / 12) * 100
+                        reviewEntity.getStorySkill() + reviewEntity.getLineSkill()) / 6) * 100
         ) / 100.0;
 
         return ReviewDetailDto.builder()
@@ -414,12 +404,12 @@ public class ReviewServiceImpl implements ReviewService{
                 .build();
     }
 
-    public MyReviewsDto toMyPageDto(ReviewEntity reviewEntity){
+    public MyReviewsDto toMyPageDto(ReviewEntity reviewEntity) {
 
         double avgSkill = Math.round(
-                ((double)(reviewEntity.getActorSkill() + reviewEntity.getDirectorSkill() +
+                ((double) (reviewEntity.getActorSkill() + reviewEntity.getDirectorSkill() +
                         reviewEntity.getSceneSkill() + reviewEntity.getMusicSkill() +
-                        reviewEntity.getStorySkill() + reviewEntity.getLineSkill()) / 12) * 100
+                        reviewEntity.getStorySkill() + reviewEntity.getLineSkill()) / 6) * 100
         ) / 100.0;
         return MyReviewsDto.builder()
                 .reviewId(reviewEntity.getReviewId())
@@ -441,7 +431,7 @@ public class ReviewServiceImpl implements ReviewService{
                 .build();
     }
 
-    public ReviewEntity toEntity(ReviewDetailDto reviewDetailDto, MemberEntity member, MovieDetailEntity movie){
+    public ReviewEntity toEntity(ReviewDetailDto reviewDetailDto, MemberEntity member, MovieDetailEntity movie) {
 
         return ReviewEntity.builder()
                 .reviewId(reviewDetailDto.getReviewId())

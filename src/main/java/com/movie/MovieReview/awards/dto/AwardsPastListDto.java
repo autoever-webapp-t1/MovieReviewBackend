@@ -10,6 +10,8 @@ import java.util.List;
 @Builder
 public class AwardsPastListDto {
     private Long awardsId; // 어워즈 ID
-    private String awardsName; //어워즈 이fma
+    
+    private String awardsName; // 어워즈명
+    
     private List<AwardsMovieCardDto> nominatedMovies; // 후보 영화 리스트
 }
