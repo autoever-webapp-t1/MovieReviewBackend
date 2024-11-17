@@ -8,6 +8,7 @@ import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
+import com.movie.MovieReview.post.exception.NoPostsFoundException;
 import com.movie.MovieReview.post.exception.PostNotFoundException;
 import com.movie.MovieReview.post.repository.PagingAndSortingRepository;
 import com.movie.MovieReview.post.repository.PostRepository;
@@ -114,7 +115,9 @@ public class PostServiceImpl implements PostService{
         List<PostDetailDto> posts = postPage.getContent().stream()
                 .map(this::postDetailDto)
                 .collect(Collectors.toList());
-
+        if (posts.isEmpty()) {
+            throw new NoPostsFoundException("게시글이 없습니다.");
+        }
         return PageResponseDto.<PostDetailDto>withAll()
                 .dtoList(posts)
                 .pageRequestDto(pageRequestDto)
