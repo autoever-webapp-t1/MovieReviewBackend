@@ -1,5 +1,6 @@
 package com.movie.MovieReview.awards.service;
 
+import com.movie.MovieReview.awards.dto.AwardsDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
@@ -136,6 +137,29 @@ public class AwardsServiceImpl implements AwardsService{
         return topMovieId;
     }
 
+    @Override
+    public AwardsDto getCurrentAwards(){
+        List<AwardsEntity> awards = awardsRepository.findByStatus(1);
+
+        if (awards.isEmpty()) {
+            throw new RuntimeException("No awards found with status 1");
+        }
+
+        //현재 진행중인 어워즈 가져오기
+        AwardsEntity awardEntity = awards.get(0);
+
+        AwardsDto awardsDto = AwardsDto.builder()
+                .awardName(awardEntity.getAwardName())
+                .nominated1(awardEntity.getNominated1())
+                .nominated2(awardEntity.getNominated2())
+                .nominated3(awardEntity.getNominated3())
+                .nominated4(awardEntity.getNominated4())
+                .startDateTime(awardEntity.getStartDateTime())
+                .endDateTime(awardEntity.getEndDateTime())
+                .build();
+
+        return awardsDto;
+    }
 
 }
 
