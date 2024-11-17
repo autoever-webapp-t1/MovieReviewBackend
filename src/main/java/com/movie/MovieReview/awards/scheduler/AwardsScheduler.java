@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class AwardsScheduler {
     private final AwardsService awardsService;
     private final SseService sseService;
+
     //매주 월요일 자정 12시에 갱신해줌
 //    @Scheduled(cron = "0 0 0 * * MON")
     //서버 키자마자 2 -> 1, 1 -> 0
@@ -24,8 +25,9 @@ public class AwardsScheduler {
             System.out.println("Awards 결과(topMovieId) : " + topMovieId);
 
             // SSE 알림 전송
-            String notificationMessage = "어워즈 종료! Top 영화는: " + topMovieId;
-            sseService.broadcast(notificationMessage); // 추가된 메소드 호출
+            String notificationMessage = "어워즈 종료! Top MovieID는: " + topMovieId;
+            sseService.broadcast(notificationMessage);
+            System.out.println(notificationMessage);
             System.out.println("Awards 상태 및 TopMovie 업데이트 완료");
 
         } catch (Exception e) {

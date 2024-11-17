@@ -2,6 +2,7 @@ package com.movie.MovieReview.review.entity;
 
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
+import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -65,5 +66,18 @@ public class ReviewEntity extends BaseTimeEntity {
             this.myHeart = true;
             this.totalHeart += 1;
         }
+    }
+
+    //review update
+    public void updateReview(ReviewDetailDto dto) {
+        this.content = dto.getContent();
+        this.totalHeart = dto.getTotalHeart();
+        this.myHeart = dto.isMyHeart();
+        this.actorSkill = dto.getActorSkill();
+        this.directorSkill = dto.getDirectorSkill();
+        this.sceneSkill = dto.getSceneSkill();
+        this.musicSkill = dto.getMusicSkill();
+        this.storySkill = dto.getStorySkill();
+        this.lineSkill = dto.getLineSkill();
     }
 }

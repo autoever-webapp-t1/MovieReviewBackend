@@ -13,25 +13,23 @@ import java.util.Map;
 
 @Service
 public interface ReviewService {
-    public Long createReview(ReviewDetailDto dto);
-    public void modifyReview(ReviewDetailDto dto);
-    public void removeReview(Long movieId, Long reviewId);
-    public ReviewDetailDto getReview(Long reviewId);
-    public List<ReviewDetailDto> getAllReviews();
-    public PageResponseDto<ReviewDetailDto> getAllReviewsByMovieId(Long movieId, PageRequestDto pageRequestDto);
+    public Long createReview(ReviewDetailDto dto); //리뷰 작성
+    public void modifyReview(ReviewDetailDto dto); //리뷰 수정
+    public void removeReview(Long movieId, Long reviewId); //리뷰 삭제
+    public ReviewDetailDto getReview(Long reviewId); //리뷰 하나 detail
+    public List<ReviewDetailDto> getAllReviews(); //모든 리뷰
 
-    public PageResponseDto<ReviewDetailDto> getAllReviewsByMemberId(Long memberId, PageRequestDto pageRequestDto);
+    public PageResponseDto<ReviewDetailDto> getAllReviewsByMovieId(Long movieId, PageRequestDto pageRequestDto); //movie ID로 리뷰 목록 페이징 조회
+    public PageResponseDto<ReviewDetailDto> getAllReviewsByMemberId(Long memberId, PageRequestDto pageRequestDto); //member ID로 리뷰 목록 페이징 조회
 
-    void toggleLike(Long reviewId); // 좋아요 토글
-
-    public Map<String, Object> getAverageSkillsByMemberId(Long memberId); //회원의 통계 평균
-    public Map<String, Object> getAverageSkillsByMovieId(Long movieId);
+    public Map<String, Object> getAverageSkillsByMemberId(Long memberId); //회원 리뷰의 평균 통계
+    public Map<String, Object> getAverageSkillsByMovieId(Long movieId); //영화 리뷰의 평균 통계
     public List<MyReviewsDto> getMemberReviews(Long memberId);
-    public Map<String, Object> getLatestReviewSkills(Long memberId, Long movieId);
-    public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId);
+    public Map<String, Object> getLatestReviewSkills(Long memberId, Long movieId); //가장 최근에 작성한 리뷰의 6개 skill + avgSkill
+    public List<MovieCardDto> getMovieCardDtosByMemberId(Long memberId); //회원이 본 영화를 CardDto로 제공
 
     //for awards
-    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate);
+    public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate); //어워즈 기간동안 영화 하나의 모든 리뷰의 skill 값 통계 + totalAvgSkill
 }
 
 

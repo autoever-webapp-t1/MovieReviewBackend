@@ -51,23 +51,23 @@ public class AwardsServiceImpl implements AwardsService{
         return movieDetailsList;
     }
 
-    @Transactional
-    @Override
-    public void changeStatus(){
-        List<AwardsEntity> currentAwards = awardsRepository.findByStatus(1);
-        for (AwardsEntity award : currentAwards) {
-            award.setStatus(0);
-            log.info("AwardServiceImpl: status 1 -> 0로 변경완료!!!!!");
-        }
-
-        // 상태가 2인 항목 중 하나를 1로 변경
-        List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
-        if (!futureAwards.isEmpty()) {
-            AwardsEntity nextAward = futureAwards.get(0);
-            nextAward.setStatus(1);
-            log.info("AwardServiceImpl: status 2 -> 1로 변경완료!!!!!");
-        }
-    }
+//    @Transactional
+//    @Override
+//    public void changeStatus(){
+//        List<AwardsEntity> currentAwards = awardsRepository.findByStatus(1);
+//        for (AwardsEntity award : currentAwards) {
+//            award.setStatus(0);
+//            log.info("AwardServiceImpl: status 1 -> 0로 변경완료!!!!!");
+//        }
+//
+//        // 상태가 2인 항목 중 하나를 1로 변경
+//        List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
+//        if (!futureAwards.isEmpty()) {
+//            AwardsEntity nextAward = futureAwards.get(0);
+//            nextAward.setStatus(1);
+//            log.info("AwardServiceImpl: status 2 -> 1로 변경완료!!!!!");
+//        }
+//    }
 
     @Override
     public List<AwardsEntity> getPastAwards() {

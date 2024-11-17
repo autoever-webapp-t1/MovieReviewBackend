@@ -40,7 +40,6 @@ public class MovieServiceImpl implements  MovieService{
     private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
     private final AwardsRepository awardsRepository;
-//    private final AwardsService awardsService;
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
