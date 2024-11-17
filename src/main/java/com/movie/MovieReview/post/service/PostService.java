@@ -6,7 +6,9 @@ import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
+import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,5 +22,5 @@ public interface PostService {
     List<PostResDto> findPostByMemberId(Long memberId);
     PostDetailDto getPost(Long postId);
     PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto);
-//    Page<Post> searchByTitle(String title, int page, int size);
+    Page<Post> findAll(Predicate predicate, Pageable pageable);
 }

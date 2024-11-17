@@ -8,7 +8,10 @@ import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
+import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,13 +63,9 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity searchTitle(@RequestParam(value = "title", required = false) String title,
-//                                      @RequestParam int page,
-//                                      @RequestParam int size) {
-//        Page<Post> pagePosts = postService.searchByTitle(title, page, size);
-//        List<Post> posts = pagePosts.getContent();
-//        return new ResponseEntity<>(new MultiResponseDto<>(mapper.postToPostResDtos(posts),pagePosts),HttpStatus.OK);
-//    }
+    @GetMapping("/search")
+    public ResponseEntity getFiltered(@QuerydslPredicate(root = Post.class) Predicate predicate, Pageable pageable) {
+        return ResponseEntity.ok(postService.findAll(predicate, pageable));
+    }
 
 }
