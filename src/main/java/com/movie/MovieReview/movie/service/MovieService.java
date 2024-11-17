@@ -16,6 +16,7 @@ public interface MovieService {
     public List<MovieCardDto> getNowPlayingMovies(Long memberId) throws Exception; //NowPlaying 100개 영화정보 가져오기
     public List<MovieCardDto> getUpComingMovies(Long memberId) throws Exception; //UpComing 100개 영화정보 가져오기
     public List<MovieCardDto> getPopularMovies(Long memberId) throws Exception;
+    public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception;
 
     public MovieDetailsDto getMovieDetails(Long id) throws Exception; //영화상세정보 가져오기
     public List<Long> SaveTopRatedId() throws Exception; //TopRated ID들 저장
