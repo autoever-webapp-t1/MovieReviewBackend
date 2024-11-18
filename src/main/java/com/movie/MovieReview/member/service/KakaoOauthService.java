@@ -61,6 +61,8 @@ public class KakaoOauthService {
 
         MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
                 .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
+
+
         return memberDto;
     }
 }
