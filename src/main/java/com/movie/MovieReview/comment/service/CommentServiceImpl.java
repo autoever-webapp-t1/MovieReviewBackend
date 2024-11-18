@@ -11,7 +11,6 @@ import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.sse.service.SseService;
-import com.movie.MovieReview.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private MemberRepository memberRepository;
-    private final SecurityUtils securityUtils;
     private PostRepository postRepository;
     private PostServiceImpl postService;
     private final SseService sseService;
