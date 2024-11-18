@@ -2,6 +2,7 @@ package com.movie.MovieReview.member.service;
 
 import com.movie.MovieReview.exception.CustomException;
 import com.movie.MovieReview.exception.ErrorCode;
+import com.movie.MovieReview.member.dto.JwtWithMemberDto;
 import com.movie.MovieReview.member.dto.MemberDto;
 import com.movie.MovieReview.member.dto.TokenResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +43,7 @@ public class OauthService {
                 }).block();
     }
 
-    public String loginWithKakao(String accessToken, String refreshToken) {
+    public JwtWithMemberDto loginWithKakao(String accessToken, String refreshToken) {
         MemberDto memberDto = kakaoOauthService.getUserProfileByTokenNoSave(accessToken, refreshToken);
 
         if (memberDto == null) {
@@ -52,14 +53,12 @@ public class OauthService {
         String JWTToken = jwtTokenService.createJWTToken(accessToken, refreshToken,
                 memberDto.getMemberId());
 
+        JwtWithMemberDto jwtWithMemberDto = new JwtWithMemberDto(JWTToken,memberDto);
+
         String PAYLOAD = jwtTokenService.getPayload(JWTToken);
         System.out.println("OauthService: PAYLOAD??????????????????"+PAYLOAD);
 
-        // TokenResponseDto 생성
-//        TokenResponseDto tokenResponseDto = new TokenResponseDto();
-//        tokenResponseDto.setAccessToken(accessToken);
-//        tokenResponseDto.setRefreshToken(refreshToken);
-        return JWTToken;
+        return jwtWithMemberDto;
     }
 
     //카카오 사용자 로그아웃
@@ -77,7 +76,7 @@ public class OauthService {
     }
 
     //사용자 정보 가져와서 db에 저장
-    public MemberDto UserInfo(String accessToken, String refreshToken, HttpServletResponse response) {
+    public MemberDto UserInfo(String accessToken, String refreshToken) {
         MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
         return memberDto;
     }

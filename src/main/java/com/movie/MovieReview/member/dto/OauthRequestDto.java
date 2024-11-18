@@ -8,6 +8,4 @@ import lombok.Setter;
 public class OauthRequestDto {
     private String accessToken;
     private String refreshToken;
-
-    private String code;
 }
