@@ -5,6 +5,7 @@ import com.movie.MovieReview.review.dto.MyReviewsDto;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
+import com.movie.MovieReview.review.entity.ReviewEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ public interface ReviewService {
 
     //for awards
     public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate); //어워즈 기간동안 영화 하나의 모든 리뷰의 skill 값 통계 + totalAvgSkill
+
+    ReviewDetailDto toDto(ReviewEntity reviewEntity);
 }
 
 

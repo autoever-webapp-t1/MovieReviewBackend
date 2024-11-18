@@ -374,7 +374,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
     }
 
-
+    @Override
     public ReviewDetailDto toDto(ReviewEntity reviewEntity) {
         double avgSkill = Math.round(
                 ((double) (reviewEntity.getActorSkill() + reviewEntity.getDirectorSkill() +

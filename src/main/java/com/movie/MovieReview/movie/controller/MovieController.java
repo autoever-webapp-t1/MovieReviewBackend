@@ -3,10 +3,14 @@ package com.movie.MovieReview.movie.controller;
 import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
+import com.movie.MovieReview.movie.dto.MovieWithReviewsDto;
 import com.movie.MovieReview.movie.service.MovieRecommendService;
 import com.movie.MovieReview.movie.service.MovieService;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
+import com.movie.MovieReview.review.dto.ReviewDetailDto;
+import com.movie.MovieReview.review.entity.ReviewEntity;
+import com.movie.MovieReview.review.repository.ReviewRepository;
 import com.movie.MovieReview.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +32,7 @@ public class MovieController {
     private final MovieRecommendService movieRecommendService;
     private final ReviewService reviewService;
     private final JwtTokenService jwtTokenService;
+    private final ReviewRepository reviewRepository;
 
     //JWTToken에서 memberId추출
     private Long extractMemberId(String authorizationHeader) throws Exception {
@@ -173,11 +178,26 @@ public class MovieController {
             // 토큰에서 memberId 추출
             Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
-            MovieDetailsDto result = movieService.getTopRatedMovieDetailsInDB(id, memberId);
-            return ResponseEntity.ok(result);
+
+            System.out.println("**********************MovieController 리뷰 리스트?????????");
+            //영화 상세정보
+            MovieDetailsDto movieDetails = movieService.getTopRatedMovieDetailsInDB(id, memberId);
+            System.out.println("**********************MovieController 리뷰 리스트?????????");
+            //사용자가 해당 영화에 쓴 리뷰
+            List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberIdAndMovieId(memberId,id);
+
+            System.out.println("#####################MovieController 리뷰 리스트?????????"+reviews);
+            // ReviewEntity -> ReviewDetailDto 변환
+            List<ReviewDetailDto> reviewDtos = reviews.stream()
+                    .map(reviewService::toDto) // ReviewEntity를 ReviewDetailDto로 변환
+                    .toList();
+
+            MovieWithReviewsDto response = new MovieWithReviewsDto(movieDetails, reviewDtos);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while fetching movie details.");
         }
     }
 
