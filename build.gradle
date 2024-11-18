@@ -49,10 +49,15 @@ dependencies {
 
 //	implementation 'software.amazon.awssdk:s3:2.20.0'  // V2 SDK
 //	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.345'
-	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.573'
+//	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.573'
 
 //	Spring Cloud AWS Starter
-	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter:3.1.1'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.767'
+
+
 	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
 	// QueryDSL Implementation
