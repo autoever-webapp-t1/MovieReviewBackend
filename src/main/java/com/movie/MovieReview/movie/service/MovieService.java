@@ -26,7 +26,7 @@ public interface MovieService {
     public MovieDetailsDto searchMovie(String name) throws Exception; //DB에서 영화 제목으로 DB에서 검색
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
-    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String keyword, PageRequestDto pageRequestDto);
+    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(Long memberId, String keyword, PageRequestDto pageRequestDto);
     public List<MovieCardDto> getMovieMemberRecommendations(Long memberId); //~~를 보셨다면? -> 랜덤으로 추천해주기
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
