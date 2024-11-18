@@ -8,6 +8,7 @@ import com.movie.MovieReview.review.dto.PageResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,7 @@ public interface MovieService {
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
     public PageResponseDto<MovieCardDto> getAllMovieByKeyword(Long memberId, String keyword, PageRequestDto pageRequestDto);
-    public List<MovieCardDto> getMovieMemberRecommendations(Long memberId); //~~를 보셨다면? -> 랜덤으로 추천해주기
+    public Map<String, Object> getMovieMemberRecommendations(Long memberId); //~~를 보셨다면? -> 랜덤으로 추천해주기
 
     default MovieDetailsDto toDto(MovieDetailEntity movieDetailEntity) {
         List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
