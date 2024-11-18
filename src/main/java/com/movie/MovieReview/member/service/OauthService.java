@@ -30,37 +30,7 @@ public class OauthService {
     private String kakaoRedirectUri;
 
     //카카오 사용자 토큰 받아오기
-    public Map<String, Object>  getKakaoToken(String code) {
-        WebClient webClient = WebClient.builder().baseUrl("https://kauth.kakao.com")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
-
-        return webClient.post().uri("/oauth/token")
-                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", kakaoClientId)
-                        .with("redirect_uri", kakaoRedirectUri).with("code", code))
-                .retrieve().bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                }).block();
-    }
-
-    public String loginWithKakao(String accessToken, String refreshToken) {
-        MemberDto memberDto = kakaoOauthService.getUserProfileByTokenNoSave(accessToken, refreshToken);
-
-        if (memberDto == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
-        }
-        // 자체적인 JWT 토큰 생성
-        String JWTToken = jwtTokenService.createJWTToken(accessToken, refreshToken,
-                memberDto.getMemberId());
-
-        String PAYLOAD = jwtTokenService.getPayload(JWTToken);
-        System.out.println("OauthService: PAYLOAD??????????????????"+PAYLOAD);
-
-        // TokenResponseDto 생성
-//        TokenResponseDto tokenResponseDto = new TokenResponseDto();
-//        tokenResponseDto.setAccessToken(accessToken);
-//        tokenResponseDto.setRefreshToken(refreshToken);
-        return JWTToken;
-    }
+    :
 
     //카카오 사용자 로그아웃
     public Map<String, Object> logout(String accessToken) {
