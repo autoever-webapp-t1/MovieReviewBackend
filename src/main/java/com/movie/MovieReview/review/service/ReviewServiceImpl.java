@@ -216,7 +216,13 @@ public class ReviewServiceImpl implements ReviewService {
 
         // 결과가 비어 있는 경우 빈 Map 반환
         if (avgSkills == null || avgSkills.isEmpty()) {
-            return Collections.emptyMap();
+            avgSkills = new HashMap<>();
+            avgSkills.put("avgActorSkill", 0.0);
+            avgSkills.put("avgDirectorSkill", 0.0);
+            avgSkills.put("avgLineSkill", 0.0);
+            avgSkills.put("avgMusicSkill", 0.0);
+            avgSkills.put("avgSceneSkill", 0.0);
+            avgSkills.put("avgStorySkill", 0.0);
         }
 
         // 평균값들을 더해 전체 평균 계산
