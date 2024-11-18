@@ -14,7 +14,6 @@ import com.movie.MovieReview.post.repository.PagingAndSortingRepository;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
-import com.movie.MovieReview.util.SecurityUtils;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     PagingAndSortingRepository pagingAndSortingRepository;
-    private final UserPrincipal userPrincipal;
+    UserPrincipal userPrincipal;
     MemberRepository memberRepository;
 
     private MemberEntity getLoginMember() {

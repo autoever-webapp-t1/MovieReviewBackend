@@ -26,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
     private MemberRepository memberRepository;
     private final SecurityUtils securityUtils;
     private PostRepository postRepository;
-    private UserPrincipal userPrincipal;
+    UserPrincipal userPrincipal;
     private PostServiceImpl postService;
     private final SseService sseService;
 
