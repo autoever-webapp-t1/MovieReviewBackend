@@ -860,6 +860,7 @@ public class MovieServiceImpl implements  MovieService{
 
                         MovieDetailEntity movieDetail = movieDetailOptional.get();
 
+                        // 추천 영화의 score와 myScore 계산
                         Map<String, Object> score = Map.of(
                                 "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
                                 "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
@@ -869,11 +870,14 @@ public class MovieServiceImpl implements  MovieService{
                         Map<String, Object> myScore = null;
 
                         try {
-                            score = reviewService.getAverageSkillsByMovieId(movieId);
-                            myScore = reviewService.getLatestReviewSkills(memberId, movieId);
+                            // 추천된 영화의 score 가져오기
+                            score = reviewService.getAverageSkillsByMovieId(recommendId);
+
+                            // 사용자의 최근 리뷰에서 해당 영화의 myScore 가져오기
+                            myScore = reviewService.getLatestReviewSkills(memberId, recommendId);
                         } catch (Exception e) {
-                            log.warn("Review data not found for movie ID: {}", movieId, e);
-                            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                            log.warn("Review data not found for movie ID: {}", recommendId, e);
+                            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
                             myScore = null;
                         }
 
@@ -896,5 +900,6 @@ public class MovieServiceImpl implements  MovieService{
             return new ArrayList<>();
         }
     }
+
 
 }
