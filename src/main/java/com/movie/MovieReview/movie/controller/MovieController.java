@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -109,20 +110,23 @@ public class MovieController {
         }
     }
 
-    @GetMapping("/recommendations") //~~를 보셨다면?? -> 랜덤으로 하나 골라서 추천해주는 거
+    @GetMapping("/recommendations")
     public ResponseEntity<?> getMemberRecommendByMemberId(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // 토큰에서 memberId 추출
             Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
-            List<MovieCardDto> result = movieService.getMovieMemberRecommendations(memberId);
+            // 추천 결과 가져오기
+            Map<String, Object> result = movieService.getMovieMemberRecommendations(memberId);
+
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error fetching recommendations: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
         }
     }
+
 
     //MovieDetailPage
     @GetMapping("/relatedContents/{id}") //상세페이지 관련 콘텐츠 가져오기

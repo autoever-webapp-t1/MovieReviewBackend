@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin("*")
 @RequiredArgsConstructor
 public class AwardPageController {
     private final AdminServiceImpl adminService;
