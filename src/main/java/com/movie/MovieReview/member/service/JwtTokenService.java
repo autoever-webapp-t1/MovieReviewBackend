@@ -68,9 +68,9 @@ public class JwtTokenService implements InitializingBean {
         claims.put("memberId", memberDto.getMemberId());
         claims.put("email", memberDto.getEmail());
         claims.put("nickname", memberDto.getNickname());
-        claims.put("profile", memberDto.getProfile()); // 필요한 경우 카카오 토큰도 포함
-        claims.put("accessToken", accessToken); // 필요한 경우 카카오 토큰도 포함
-        claims.put("refreshToken", refreshToken); // 필요한 경우 카카오 토큰도 포함
+        claims.put("profile", memberDto.getProfile());
+        claims.put("accessToken", accessToken);
+        claims.put("refreshToken", refreshToken);
 
         return Jwts.builder().setClaims(claims) // 사용자 정보 포함
                 .setSubject(String.valueOf(memberId))

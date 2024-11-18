@@ -45,6 +45,7 @@ public class MovieDetailsDto {
         this.recommendations = recommendations;
     }
 
+    @NoArgsConstructor
     @Data
     public static class Images{
         private String poster_path;

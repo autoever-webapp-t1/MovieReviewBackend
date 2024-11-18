@@ -1,10 +1,8 @@
 package com.movie.MovieReview.movie.service;
 
 import com.google.gson.*;
-import com.movie.MovieReview.awards.dto.AwardsDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
-import com.movie.MovieReview.awards.service.AwardsService;
 import com.movie.MovieReview.movie.dto.*;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.movie.entity.TopRatedMovieIdEntity;
@@ -27,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -746,6 +746,57 @@ public class MovieServiceImpl implements  MovieService{
         return movieDetailsDto;
     }
 
+    @Transactional
+    @Override
+    public MovieDetailsDto getPosterGenre(Long movieId) throws Exception{
+        log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 id로 검색");
+        Optional<MovieDetailEntity> movieDetail = movieRepository.findById(movieId);
+        MovieDetailEntity movieDetailEntity = movieDetail.orElseThrow();
+
+        // 영화 상세 정보를 DTO로 변환
+        MovieDetailsDto movieDetailsDto = toDto(movieDetailEntity);
+
+        List<MovieDetailsDto.Credits> creditDtos = movieDetailEntity.getCredits().stream()
+                .map(credit -> new MovieDetailsDto.Credits(credit.getType(), credit.getName(), credit.getProfile()))
+                .collect(Collectors.toList());
+
+        List<MovieDetailsDto.Recommends> recommendDtos = movieDetailEntity.getRecommendations().stream()
+                .map(recommend -> new MovieDetailsDto.Recommends(recommend.getRecommendationId()))
+                .collect(Collectors.toList());
+
+
+
+        MovieDetailsDto.builder()
+                .id(movieDetailEntity.getId())
+                .title(movieDetailEntity.getTitle())
+                .overview(movieDetailEntity.getOverview())
+                .release_date(movieDetailEntity.getRelease_date())
+                .runtime(movieDetailEntity.getRuntime())
+                .images(movieDetailEntity.getImages())
+                .videos(movieDetailEntity.getVideos())
+                .genres(movieDetailEntity.getGenres())
+                .credits(creditDtos)
+                .recommendations(recommendDtos)
+                .build();
+
+        // 기본 점수 값 설정
+        Map<String, Object> score = Map.of(
+                "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
+                "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
+                "totalAverageSkill", 0.0
+        );
+
+        try {
+            score = reviewService.getAverageSkillsByMovieId(movieId);
+        } catch (Exception e) {
+            log.warn("Review data not found for movie ID: {}", movieId, e);
+        }
+
+        movieDetailsDto.setScore(score);
+
+        return movieDetailsDto;
+    }
+
     @Override
     public MovieDetailsDto searchMovie(String title) throws Exception{
         log.info("MovieServiceImpl: 지금 영화 데이터 DB에서 이름으로 검색");
@@ -928,7 +979,7 @@ public class MovieServiceImpl implements  MovieService{
 
         try {
             // 영화 detail 정보 가져오기
-            MovieDetailsDto movieDetailsDto = getTopRatedMovieDetailsInDBForAwards(movieId);
+            MovieDetailsDto movieDetailsDto = getPosterGenre(movieId);
 
             // 추천 리스트 가져오기
             List<MovieDetailsDto.Recommends> recommendList = movieDetailsDto.getRecommendations();
@@ -961,6 +1012,20 @@ public class MovieServiceImpl implements  MovieService{
 
                         MovieDetailEntity movieDetail = movieDetailOptional.get();
 
+                        int endIndex = movieDetail.getImages().indexOf(",", 17);
+                        String profile_path = movieDetail.getImages().substring(17,endIndex-1);
+
+                        List<Integer> ids = new ArrayList<>();
+
+                        Pattern pattern = Pattern.compile("\"id\":(\\d+)");
+                        Matcher matcher = pattern.matcher(movieDetail.getGenres());
+
+                        while (matcher.find()) {
+                            ids.add(Integer.parseInt(matcher.group(1)));
+                        }
+
+                        String genres = ids.toString();
+
                         // 추천 영화의 score와 myScore 계산
                         Map<String, Object> score = Map.of(
                                 "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
@@ -986,9 +1051,9 @@ public class MovieServiceImpl implements  MovieService{
                                 .id(movieDetail.getId())
                                 .title(movieDetail.getTitle())
                                 .overview(movieDetail.getOverview())
-                                .poster_path(movieDetail.getImages())
+                                .poster_path(profile_path)
                                 .release_date(movieDetail.getRelease_date())
-                                .genre_ids(movieDetail.getGenres())
+                                .genre_ids(genres)
                                 .score(score)
                                 .myScore(myScore)
                                 .build();
