@@ -22,27 +22,31 @@ public class PageResponseDto<E> {
         this.pageRequestDto = pageRequestDto;
         this.totalCount = (int) total;
 
-        int end = (int) (Math.ceil(pageRequestDto.getPage() / 10.0)) * 10;
-        int start = end - 9;
+        // 페이지네이션 계산
+        int size = pageRequestDto.getSize(); // 페이지 크기
+        int page = pageRequestDto.getPage(); // 현재 페이지
+        this.totalPage = (int) Math.ceil((double) total / size); // 전체 페이지 수
 
-        int last = (int) (Math.ceil(totalCount / (double) (pageRequestDto.getSize())));
-
-        end = end > last ? last : end;
+        int start = ((page - 1) / 10) * 10 + 1; // 시작 페이지 번호
+        int end = Math.min(start + 9, totalPage); // 끝 페이지 번호
 
         this.pageNumList = IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
 
-        this.prev = start > 1;
-        this.next = totalCount > end * pageRequestDto.getSize();
+        // 이전, 다음 페이지 버튼 활성화 여부
+        this.prev = start >= 1;
+        this.next = end <= totalPage;
 
-        if (prev) {
-            this.prevPage = start - 1;
-        }
-        if (next) {
-            this.nextPage = end + 1;
-        }
+        // 이전, 다음 페이지 번호 설정
+        this.prevPage = this.prev ? start - 1 : 0;
+        this.nextPage = this.next ? end + 1 : 0;
 
-        this.totalPage = this.pageNumList.size();
-        this.current = pageRequestDto.getPage();
+        // 현재 페이지
+        this.current = page;
+
+        // 디버깅 로그
+        System.out.println("Start: " + start + ", End: " + end);
+        System.out.println("Prev: " + this.prev + ", Next: " + this.next);
+        System.out.println("PrevPage: " + this.prevPage + ", NextPage: " + this.nextPage);
     }
 
     // MovieCardDto 전용 빌더 메서드
