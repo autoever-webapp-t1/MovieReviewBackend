@@ -6,6 +6,7 @@ import com.movie.MovieReview.member.filter.JwtFilter;
 import com.movie.MovieReview.exception.ExceptionHandlerFilter;
 import com.movie.MovieReview.member.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
+    @Value("${spring.cloud.aws.region.static}")
+    private String region;
 
     @Bean
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration)
@@ -37,6 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        System.out.println("region:"+region);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("*");  // Allow all origins, but you can restrict it to specific domains
