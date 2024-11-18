@@ -22,6 +22,6 @@ public class PostDetailDto{
     private boolean liked;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private String profile;
+    private String profile_image;
     private int commentCnt;
 }
