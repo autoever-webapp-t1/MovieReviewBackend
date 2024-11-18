@@ -30,7 +30,7 @@ public class OauthService {
     private String kakaoRedirectUri;
 
     //카카오 사용자 토큰 받아오기
-    :
+
 
     //카카오 사용자 로그아웃
     public Map<String, Object> logout(String accessToken) {
