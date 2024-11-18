@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 public interface PostService {
     Post findByPostId(Long postId);
-    PostResDto createPost(PostDto postDto);
-    void deletePost(Long postId);
-    PostResDto updatePost(Long postId, PostResDto postResDto);
+    PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception;
+    void deletePost(String authorizationHeader,Long postId) throws Exception;
+    PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postResDto) throws Exception;
     List<PostResDto> findPostByMemberId(Long memberId);
     PostDetailDto getPost(Long postId);
     PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto);
