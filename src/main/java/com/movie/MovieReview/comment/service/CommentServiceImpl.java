@@ -29,16 +29,9 @@ public class CommentServiceImpl implements CommentService {
     private UserPrincipal userPrincipal;
     private PostServiceImpl postService;
     private final SseService sseService;
-    private KakaoInfoDto kakaoInfoDto;
-
-
-
 
     private MemberEntity getLoginMember() {
-//        String loginMemberEmail = userPrincipal.getEmail();
-        String loginMemberEmail = kakaoInfoDto.getEmail();
-//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
-
+        String loginMemberEmail = userPrincipal.getEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(() -> new RuntimeException("member not found"));
     }
