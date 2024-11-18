@@ -1,5 +1,6 @@
 package com.movie.MovieReview.review.controller;
 
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.service.MovieService;
 import com.movie.MovieReview.review.dto.PageRequestDto;
@@ -29,13 +30,30 @@ public class ReviewController {
 
     private final MovieService movieService;
 
+    private final JwtTokenService jwtTokenService;
+
+    //JWTToken에서 memberId추출
+    private Long extractMemberId(String authorizationHeader) throws Exception {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
+        }
+
+        String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+        if (!jwtTokenService.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰!!!!");
+        }
+
+        return Long.valueOf(jwtTokenService.getPayload(token));
+    }
+
     //리뷰 생성
     @PostMapping("/movie/{movieId}/review")
     public ResponseEntity<?> createReview(
             @PathVariable("movieId") Long movieId,
-            @RequestParam Long memberId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @Validated @RequestBody ReviewDetailDto dto) {
         try {
+            Long memberId = extractMemberId(authorizationHeader);
             if (movieId == null || memberId == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Movie ID and Member ID must not be null.");
             }
@@ -48,7 +66,7 @@ public class ReviewController {
             Long reviewId = reviewService.createReview(dto);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("Review created with ID: " + reviewId);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data: " + e.getMessage());
         }
     }
@@ -58,12 +76,15 @@ public class ReviewController {
     public ResponseEntity<?> modifyReview(
             @PathVariable("id") Long id,
             @PathVariable("reviewId") Long reviewId,
-            @RequestParam Long memberId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @Validated @RequestBody ReviewDetailDto dto) {
         try {
+            Long memberId = extractMemberId(authorizationHeader);
+
             dto.setMovieId(id);
             dto.setReviewId(reviewId);
             dto.setMemberId(memberId);
+
             reviewService.modifyReview(dto);
             return ResponseEntity.ok("Review updated successfully.");
         } catch (IllegalArgumentException e) {
@@ -130,10 +151,16 @@ public class ReviewController {
     }
 
     //member 당 평균값 내기
-    @GetMapping("/user/{memberId}/rate")
-    public ResponseEntity<Map<String, Object>> getAverageSkillsByMemberId(@PathVariable Long memberId){
-        Map<String, Object> averageSkills = reviewService.getAverageSkillsByMemberId(memberId);
-        return ResponseEntity.ok(averageSkills);
+    @GetMapping("/user/rate")
+    public ResponseEntity<?> getAverageSkillsByMemberId(@RequestHeader("Authorization") String authorizationHeader){
+        try{
+            Long memberId = extractMemberId(authorizationHeader);
+            Map<String, Object> averageSkills = reviewService.getAverageSkillsByMemberId(memberId);
+            return ResponseEntity.ok(averageSkills);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
+        }
     }
 
     //movie 당 평균값 내기 (여섯개 skill의 avg + totalAvg)
@@ -172,17 +199,18 @@ public class ReviewController {
     }*/
 
     //mypage에서 리뷰 리스트 보여주는거
-    @GetMapping("/user/{memberId}/reviews")
+    @GetMapping("/user/reviews")
     public ResponseEntity<PageResponseDto<ReviewDetailDto>> getAllReviewsByMemberId(
-            @PathVariable("memberId") Long memberId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size) throws Exception {
 
         PageRequestDto pageRequestDto = PageRequestDto.builder()
                 .page(page)
                 .size(size)
                 .build();
 
+        Long memberId = extractMemberId(authorizationHeader);
         PageResponseDto<ReviewDetailDto> response = reviewService.getAllReviewsByMemberId(memberId, pageRequestDto);
 
         return ResponseEntity.ok(response);
@@ -190,8 +218,9 @@ public class ReviewController {
 
     //main용
     //memberId로 movieId를 찾아서 List<MovieCardsDto>로 반환
-    @GetMapping("/member/{memberId}/movie-cards")
-    public ResponseEntity<List<MovieCardDto>> getMovieCardDtosByMemberId(@PathVariable("memberId") Long memberId) {
+    @GetMapping("/member/movie-cards")
+    public ResponseEntity<List<MovieCardDto>> getMovieCardDtosByMemberId(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
+        Long memberId = extractMemberId(authorizationHeader);
         List<MovieCardDto> movieCards = reviewService.getMovieCardDtosByMemberId(memberId);
         return ResponseEntity.ok(movieCards);
     }
