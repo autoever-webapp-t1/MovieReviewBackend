@@ -68,5 +68,11 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             @Param("movieId") Long movieId,
             Pageable pageable);
 
+    @Query("SELECT r FROM ReviewEntity r WHERE r.member.id = :memberId AND r.movie.id = :movieId")
+    List<ReviewEntity> findAllReviewsByMemberIdAndMovieId(
+            @Param("memberId") Long memberId,
+            @Param("movieId") Long movieId);
+
+
 }
 

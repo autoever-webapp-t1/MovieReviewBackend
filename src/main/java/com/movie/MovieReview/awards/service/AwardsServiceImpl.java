@@ -171,6 +171,7 @@ public class AwardsServiceImpl implements AwardsService{
                         return AwardsMovieCardDto.builder()
                                 .movieId(movieId)
                                 .movieTitle(movie.getTitle())
+                                .moviePoster(movie.getImages())
                                 .score(avgSkills)
                                 .build();
                     })
