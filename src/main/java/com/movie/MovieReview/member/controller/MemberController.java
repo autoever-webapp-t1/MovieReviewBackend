@@ -3,6 +3,7 @@ package com.movie.MovieReview.member.controller;
 import com.movie.MovieReview.exception.CustomException;
 import com.movie.MovieReview.exception.ErrorCode;
 import com.movie.MovieReview.member.dto.MemberDto;
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.member.service.MemberService;
 import com.movie.MovieReview.member.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class MemberController {
     private final MemberService memberService;
+    private final JwtTokenService jwtTokenService;
+
+    private Long extractMemberId(String authorizationHeader) throws Exception {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
+        }
+
+        String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+        if (!jwtTokenService.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰!!!!");
+        }
+
+        return Long.valueOf(jwtTokenService.getPayload(token));
+    }
 
     @GetMapping("/info")
     public MemberDto info(){
@@ -28,9 +43,10 @@ public class MemberController {
 
     @PutMapping("/{memberId}/nickname")
     public ResponseEntity<?> updateNickname(
-            @PathVariable("memberId") Long memberId,
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam String newname) {
         try {
+            Long memberId = extractMemberId(authorizationHeader);
             memberService.updateNickname(memberId, newname);
             return ResponseEntity.ok(newname);
         } catch (IllegalArgumentException e) {

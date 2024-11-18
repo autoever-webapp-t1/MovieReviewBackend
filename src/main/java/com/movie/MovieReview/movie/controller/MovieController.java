@@ -205,21 +205,6 @@ public class MovieController {
         }
     }
 
-//    @GetMapping("/search/{name}") //영화 제목으로 검색
-//    public MovieDetailsDto searchMovie(@PathVariable ("name") String name){
-//        try{
-//            return movieService.searchMovie(name);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-//
-//    @GetMapping("/search")
-//    public List<MovieCardDto> search(@RequestParam String query) {
-//        return movieService.searchByQuery(query); // 이름에 query가 포함된 제품을 검색
-//    }
-
     //검색 기능
     @GetMapping("/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션
     public ResponseEntity<?> getKeywordResult(

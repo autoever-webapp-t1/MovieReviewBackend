@@ -6,6 +6,7 @@ import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ public interface MovieService {
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception; //TopRated 상세정보들 TMDB에서 가지고 와서 DB에 저장
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId, Long memberId) throws Exception; //DB에서 영화 상세정보 ID로 검색
     public MovieDetailsDto getTopRatedMovieDetailsInDBForAwards(Long movieId) throws Exception; //위와 동일. 어워즈를 위해 memberId없는 버전 제공
+    public MovieDetailsDto getPosterGenre(Long movieId) throws Exception;
+
     public MovieDetailsDto searchMovie(String name) throws Exception; //DB에서 영화 제목으로 DB에서 검색
     public List<MovieCardDto> searchByQuery(String query);
     //public List<MovieCardDto> getMoviesByMemberId(Long memberId);
