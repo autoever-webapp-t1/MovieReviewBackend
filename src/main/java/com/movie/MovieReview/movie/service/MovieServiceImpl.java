@@ -768,8 +768,20 @@ public class MovieServiceImpl implements  MovieService{
 
         Page<MovieDetailEntity> searchPage = movieRepository.findByTitleContaining(title, pageable);
 
+        // score 초기값
+        Map<String, Object> score = Map.of(
+                "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
+                "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
+                "totalAverageSkill", 0.0
+        );
+
+        // MovieCardDto 생성 시 score와 myScore 값을 설정
         List<MovieCardDto> movieList = searchPage.getContent().stream()
-                .map(this::toCardDto)
+                .map(entity -> {
+                    MovieCardDto dto = toCardDto(entity); // 기존 변환 메서드 호출
+                    dto.setScore(score); // score 기본값 설정
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         return  PageResponseDto.<MovieCardDto>withAll()
