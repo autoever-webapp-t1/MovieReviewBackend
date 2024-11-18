@@ -29,34 +29,26 @@ public class MovieController {
     private final ReviewService reviewService;
     private final JwtTokenService jwtTokenService;
 
-//    @GetMapping("/topRated/{memberId}") //topRated가져오기
-//    public ResponseEntity<?> getTopRatedMovies(@PathVariable("memberId") Long memberId) {
-//        try {
-//            List<MovieCardDto> result = movieService.getTopRatedMovies(memberId);
-//            return ResponseEntity.ok(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-//        }
-//    }
+    //JWTToken에서 memberId추출
+    private Long extractMemberId(String authorizationHeader) throws Exception {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
+        }
+
+        String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+        if (!jwtTokenService.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰!!!!");
+        }
+
+        return Long.valueOf(jwtTokenService.getPayload(token));
+    }
+
     //MainPage
     @GetMapping("/topRated") //topRated영화 가져오기
     public ResponseEntity<?> getTopRatedMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!.");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
             List<MovieCardDto> result = movieService.getTopRatedMovies(memberId);
@@ -70,20 +62,8 @@ public class MovieController {
     @GetMapping("/nowPlaying") //nowPlaying영화 가져오기
     public ResponseEntity<?> getNowPlayingMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
             List<MovieCardDto> result = movieService.getNowPlayingMovies(memberId);
@@ -97,20 +77,8 @@ public class MovieController {
     @GetMapping("/upComing") //upComing영화 가져오기
     public ResponseEntity<?> getUpComingMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
             List<MovieCardDto> result = movieService.getUpComingMovies(memberId);
@@ -124,20 +92,8 @@ public class MovieController {
     @GetMapping("/popular") //popular영화 가져오기
     public ResponseEntity<?> getPopularMovies(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
             List<MovieCardDto> result = movieService.getPopularMovies(memberId);
@@ -150,52 +106,12 @@ public class MovieController {
 
     @GetMapping("/recommendations") //~~를 보셨다면?? -> 랜덤으로 하나 골라서 추천해주는 거
     public ResponseEntity<?> getMemberRecommendByMemberId(@RequestHeader("Authorization") String authorizationHeader) {
-        try{
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
-            // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
-
-            log.info("Request received for memberId: {}", memberId);  // memberId 확인 로그
-            List<MovieCardDto> movieCards = movieService.getMovieMemberRecommendations(memberId);
-            return ResponseEntity.ok(movieCards);
-
-        }catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
-        }
-    }
-
-    @GetMapping("/relatedContents/{id}") //상세페이지 관련 콘텐츠 가져오기
-    public ResponseEntity<?> getRecommendMovies(@PathVariable("id") Long id ,@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
 
-            List<MovieCardDto> result = movieService.getRecommendMovies(id,memberId);
+            List<MovieCardDto> result = movieService.getMovieMemberRecommendations(memberId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -203,6 +119,23 @@ public class MovieController {
         }
     }
 
+    //MovieDetailPage
+    @GetMapping("/relatedContents/{id}") //상세페이지 관련 콘텐츠 가져오기
+    public ResponseEntity<?> getRecommendMovies(@PathVariable("id") Long id ,@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // 토큰에서 memberId 추출
+            Long memberId = extractMemberId(authorizationHeader);
+            log.info("MovieController 멤버 아이디 출력: " + memberId);
+
+            List<MovieCardDto> result = movieService.getRecommendMovies(id, memberId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
+        }
+    }
+
+    //DB에 저장하는 용도
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
     public List<Long> SaveTopRatedId(){
         try{
@@ -233,25 +166,15 @@ public class MovieController {
         }
     }
 
+    //누르면 상세페이지로 감
     @GetMapping("/{id}") //우리 DB에서 영화 상세정보 검색
     public ResponseEntity<?> getTopRatedMovieDetailsInDB(@PathVariable ("id") Long id, @RequestHeader("Authorization") String authorizationHeader) {
         try{
-            // 헤더에서 JWT 토큰 추출
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
-            }
-
-            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
-
-            // 토큰 유효성 검사
-            if (!jwtTokenService.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
-            }
-
             // 토큰에서 memberId 추출
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            Long memberId = extractMemberId(authorizationHeader);
             log.info("MovieController 멤버 아이디 출력: " + memberId);
-            return ResponseEntity.ok(movieService.getTopRatedMovieDetailsInDB(id, memberId));
+            MovieDetailsDto result = movieService.getTopRatedMovieDetailsInDB(id, memberId);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -273,6 +196,7 @@ public class MovieController {
 //        return movieService.searchByQuery(query); // 이름에 query가 포함된 제품을 검색
 //    }
 
+    //검색 기능
     @GetMapping("/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션
     public ResponseEntity<PageResponseDto<MovieCardDto>> getKeywordResult(
             @PathVariable("keyword") String keyword,
