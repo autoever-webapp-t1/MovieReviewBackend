@@ -30,6 +30,17 @@ public class OauthService {
     private String kakaoRedirectUri;
 
     //카카오 사용자 토큰 받아오기
+    public Map<String, Object>  getKakaoToken(String code) {
+        WebClient webClient = WebClient.builder().baseUrl("https://kauth.kakao.com")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
+
+        return webClient.post().uri("/oauth/token")
+                .body(BodyInserters.fromFormData("grant_type", "authorization_code")
+                        .with("client_id", kakaoClientId)
+                        .with("redirect_uri", kakaoRedirectUri).with("code", code))
+                .retrieve().bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                }).block();
+    }
 
 
     //카카오 사용자 로그아웃
