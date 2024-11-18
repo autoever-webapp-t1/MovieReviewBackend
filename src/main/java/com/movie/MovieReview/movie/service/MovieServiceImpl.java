@@ -739,6 +739,11 @@ public class MovieServiceImpl implements  MovieService{
             score = reviewService.getAverageSkillsByMovieId(movieId);
         } catch (Exception e) {
             log.warn("Review data not found for movie ID: {}", movieId, e);
+            score = Map.of(
+                    "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
+                    "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
+                    "totalAverageSkill", 0.0
+            );
         }
 
         movieDetailsDto.setScore(score);

@@ -164,15 +164,48 @@ public class AwardsServiceImpl implements AwardsService{
                         MovieDetailEntity movie = movieRepository.findById(movieId)
                                 .orElseThrow(() -> new EntityNotFoundException("Movie not found with id: " + movieId));
 
-                        Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(
-                                movieId, award.getStartDateTime(), award.getEndDateTime()
-                        );
+                        // 기본 score 값을 HashMap으로 초기화
+                        Map<String, Object> score = new HashMap<>();
+                        score.put("avgActorSkill", 0.0);
+                        score.put("avgDirectorSkill", 0.0);
+                        score.put("avgLineSkill", 0.0);
+                        score.put("avgMusicSkill", 0.0);
+                        score.put("avgSceneSkill", 0.0);
+                        score.put("avgStorySkill", 0.0);
+                        score.put("totalAverageSkill", 0.0);
+
+                        try {
+                            Map<String, Object> reviewScore = reviewService.getAverageSkillsByMovieIdAndDateRange(
+                                    movieId, award.getStartDateTime(), award.getEndDateTime()
+                            );
+                            if (reviewScore != null) {
+                                score.putAll(reviewScore); // 기존 score에 reviewScore 갱신
+                            } else {
+                                log.warn("Score returned by reviewService is null for movieId: {}", movieId);
+                                score.put("avgActorSkill", 0.0);
+                                score.put("avgDirectorSkill", 0.0);
+                                score.put("avgLineSkill", 0.0);
+                                score.put("avgMusicSkill", 0.0);
+                                score.put("avgSceneSkill", 0.0);
+                                score.put("avgStorySkill", 0.0);
+                            }
+                        } catch (Exception e) {
+                            log.warn("Review data not found for movie ID: {}", movie.getId(), e);
+//                            score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                            score.put("avgActorSkill", 0.0);
+                            score.put("avgDirectorSkill", 0.0);
+                            score.put("avgLineSkill", 0.0);
+                            score.put("avgMusicSkill", 0.0);
+                            score.put("avgSceneSkill", 0.0);
+                            score.put("avgStorySkill", 0.0);
+                        }
+
 
                         return AwardsMovieCardDto.builder()
                                 .movieId(movieId)
                                 .movieTitle(movie.getTitle())
                                 .moviePoster(movie.getImages())
-                                .score(avgSkills)
+                                .score(score)
                                 .build();
                     })
                     .toList();
