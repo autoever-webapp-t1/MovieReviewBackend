@@ -29,8 +29,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
-    @Value("${spring.cloud.aws.region.static}")
-    private String region;
+//    @Value("${spring.cloud.aws.region.static}")
+//    private String region;
 
     @Bean
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration)
@@ -40,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        System.out.println("region:"+region);
+//        System.out.println("region:"+region);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("*");  // Allow all origins, but you can restrict it to specific domains
