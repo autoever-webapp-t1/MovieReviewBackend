@@ -198,18 +198,38 @@ public class MovieController {
 
     //검색 기능
     @GetMapping("/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션
-    public ResponseEntity<PageResponseDto<MovieCardDto>> getKeywordResult(
+    public ResponseEntity<?> getKeywordResult(
             @PathVariable("keyword") String keyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size){
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authorizationHeader){
 
-        PageRequestDto pageRequestDto = PageRequestDto.builder()
-                .page(page)
-                .size(size)
-                .build();
-        PageResponseDto<MovieCardDto> response = movieService.getAllMovieByKeyword(keyword, pageRequestDto);
+        try{
+            // 헤더에서 JWT 토큰 추출
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
+            }
 
-        return ResponseEntity.ok(response);
+            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+
+            // 토큰 유효성 검사
+            if (!jwtTokenService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
+            }
+
+            // 토큰에서 memberId 추출
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+            log.info("MovieController 멤버 아이디 출력: " + memberId);
+
+            PageRequestDto pageRequestDto = PageRequestDto.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
+            PageResponseDto<MovieCardDto> response = movieService.getAllMovieByKeyword(memberId, keyword, pageRequestDto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
-

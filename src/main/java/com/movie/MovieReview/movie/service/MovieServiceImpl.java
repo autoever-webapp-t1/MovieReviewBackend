@@ -763,33 +763,48 @@ public class MovieServiceImpl implements  MovieService{
     }
 
     @Override
-    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(String title, PageRequestDto pageRequestDto) {
+    public PageResponseDto<MovieCardDto> getAllMovieByKeyword(Long memberId, String title, PageRequestDto pageRequestDto) {
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
 
+        // 제목으로 검색해서 page로 list return
         Page<MovieDetailEntity> searchPage = movieRepository.findByTitleContaining(title, pageable);
-
-        // score 초기값
-        Map<String, Object> score = Map.of(
-                "avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0,
-                "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0,
-                "totalAverageSkill", 0.0
-        );
 
         // MovieCardDto 생성 시 score와 myScore 값을 설정
         List<MovieCardDto> movieList = searchPage.getContent().stream()
                 .map(entity -> {
-                    MovieCardDto dto = toCardDto(entity); // 기존 변환 메서드 호출
-                    dto.setScore(score); // score 기본값 설정
+                    Map<String, Object> score;
+                    Map<String, Object> myScore = null;
+
+                    try {
+                        // 각 MovieDetailEntity의 id로 score와 myScore 계산
+                        score = reviewService.getAverageSkillsByMovieId(entity.getId());
+                        myScore = reviewService.getLatestReviewSkills(memberId, entity.getId());
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", entity.getId(), e);
+                        score = Map.of(
+                                "avgActorSkill", 0.0,
+                                "avgDirectorSkill", 0.0,
+                                "avgLineSkill", 0.0,
+                                "avgMusicSkill", 0.0,
+                                "avgSceneSkill", 0.0,
+                                "avgStorySkill", 0.0,
+                                "totalAverageSkill", 0.0
+                        );
+                        myScore = null; // myScore 기본값 처리
+                    }
+
+                    // DTO 변환 및 score, myScore 설정
+                    MovieCardDto dto = toCardDto(entity);
+                    dto.setScore(score);
+                    dto.setMyScore(myScore);
                     return dto;
                 })
                 .collect(Collectors.toList());
 
-        return  PageResponseDto.<MovieCardDto>withAll()
-                .dtoList(movieList)
-                .pageRequestDto(pageRequestDto)
-                .total(searchPage.getTotalElements())
-                .build();
+        // PageResponseDto에 withSearch() 메서드를 사용하여 반환
+        return PageResponseDto.<MovieCardDto>withSearch(movieList, pageRequestDto, searchPage.getTotalElements());
     }
+
 
     @Override
     public List<MovieCardDto> getMovieMemberRecommendations(Long memberId) {
