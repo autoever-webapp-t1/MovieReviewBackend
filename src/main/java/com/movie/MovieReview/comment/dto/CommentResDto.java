@@ -15,6 +15,7 @@ public class CommentResDto {
     private Long memberId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String profile;
     public static CommentResDto entityToResDto(Comment comment) {
         return CommentResDto.builder()
                 .commentId(comment.getCommentId())
