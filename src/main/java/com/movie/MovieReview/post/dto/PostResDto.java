@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 @Builder
 public class PostResDto implements PostDtoInterface{
     private Long postId;
+    private Long memberId;
     private String nickname;
     private String title;
     private String content;
     private Integer commentCnt;
     private boolean liked;
     private Integer likesCount;
+    private String profile_image;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -29,6 +31,7 @@ public class PostResDto implements PostDtoInterface{
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
+                .profile_image(post.getWriter().getProfile())
                 .build();
     }
 
