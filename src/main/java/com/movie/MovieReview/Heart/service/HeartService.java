@@ -19,15 +19,10 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-//    private UserPrincipal userPrincipal;
-    private SecurityUtils securityUtils;
-    private KakaoInfoDto kakaoInfoDto;
-
+    private UserPrincipal userPrincipal;
 
     private MemberEntity getLoginMember() {
-//        String loginMemberEmail = userPrincipal.getEmail();
-        String loginMemberEmail = kakaoInfoDto.getEmail();
-//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
+        String loginMemberEmail = userPrincipal.getEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }

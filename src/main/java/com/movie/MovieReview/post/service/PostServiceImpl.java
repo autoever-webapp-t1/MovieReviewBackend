@@ -31,16 +31,11 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     PagingAndSortingRepository pagingAndSortingRepository;
-//    UserPrincipal userPrincipal;
+    private final UserPrincipal userPrincipal;
     MemberRepository memberRepository;
-    KakaoInfoDto kakaoInfoDto;
-    private final SecurityUtils securityUtils;
-
 
     private MemberEntity getLoginMember() {
-//        String loginMemberEmail = userPrincipal.getEmail();
-        String loginMemberEmail = kakaoInfoDto.getEmail();
-//        String loginMemberEmail = securityUtils.getLoginMemberEmail();
+        String loginMemberEmail = userPrincipal.getEmail();
         return memberRepository.findByEmail(loginMemberEmail)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }
