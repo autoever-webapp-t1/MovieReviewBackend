@@ -25,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin( origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin( origins = "http://localhost:5173/", allowCredentials = "true")
 @Log4j2
 public class OauthController {
     private final OauthService oauthService;
@@ -71,13 +71,20 @@ public class OauthController {
     }
 
     @PostMapping("/login/oauth/kakao")
-    public ResponseEntity<?> login(@RequestBody OauthRequestDto oauthRequestDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody OauthRequestDto oauthRequestDto) {
+        System.out.println("살려줘 ㅅㅂ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         JwtWithMemberDto jwtWithMemberDto = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken());
 
         String jwtToken = jwtWithMemberDto.getJwtToken();
         MemberDto memberDto = jwtWithMemberDto.getMemberDto();
 
-        Boolean isExisted = memberRepository.findById(memberDto.getMemberId()).isPresent();
+        System.out.println("OauthController jwtToken??????? : "+ jwtToken);
+
+        System.out.println("OauthController memberDto??????? : "+ memberDto);
+
+        //boolean isExisted = memberRepository.findById(memberDto.getMemberId()).isPresent();
+
+        //System.out.println("OauthController isExisted??????? : "+ isExisted);
 
         MemberDto dto = MemberDto.builder()
                 .memberId(memberDto.getMemberId())
@@ -85,13 +92,17 @@ public class OauthController {
                 .email(memberDto.getEmail())
                 .profile(memberDto.getProfile())
                 .refreshToken(oauthRequestDto.getRefreshToken())
-                .existed(isExisted).build();
+                .existed(memberDto.isExisted()).build();
+
+        System.out.println("OauthController dto??????? : "+ dto);
 
         MemberEntity memberEntity = memberService.toEntity(dto);
 
         memberService.save(memberEntity);
 
         AwardsDto awardsDto = awardsService.getCurrentAwards(); //현재 시상식 정보
+
+        System.out.println("OauthController awardsDto??????? : "+ awardsDto);
 
         MemberAwardsResponseDto responseDto = MemberAwardsResponseDto.builder()
                 .member(memberDto)

@@ -46,17 +46,23 @@ public class OauthService {
     public JwtWithMemberDto loginWithKakao(String accessToken, String refreshToken) {
         MemberDto memberDto = kakaoOauthService.getUserProfileByTokenNoSave(accessToken, refreshToken);
 
+        System.out.println("OauthService : loginWithKakao " + memberDto);
+
         if (memberDto == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
         // 자체적인 JWT 토큰 생성
         String JWTToken = jwtTokenService.createJWTToken(accessToken, refreshToken,
-                memberDto.getMemberId());
+                memberDto);
+
+        System.out.println("OauthService JWTToken???????? : "+JWTToken);
 
         JwtWithMemberDto jwtWithMemberDto = new JwtWithMemberDto(JWTToken,memberDto);
 
+        System.out.println("OauthService JWTToken???????? : "+jwtWithMemberDto);
+
         String PAYLOAD = jwtTokenService.getPayload(JWTToken);
-        System.out.println("OauthService: PAYLOAD??????????????????"+PAYLOAD);
+        System.out.println("OauthService: PAYLOAD?????????????????? : "+PAYLOAD);
 
         return jwtWithMemberDto;
     }
@@ -76,10 +82,10 @@ public class OauthService {
     }
 
     //사용자 정보 가져와서 db에 저장
-    public MemberDto UserInfo(String accessToken, String refreshToken) {
-        MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
-        return memberDto;
-    }
+//    public MemberDto UserInfo(String accessToken, String refreshToken) {
+//        MemberDto memberDto = kakaoOauthService.getUserProfileByToken(accessToken, refreshToken);
+//        return memberDto;
+//    }
 //    // 리프레시 토큰으로 액세스토큰 새로 갱신
 //    public String refreshAccessToken(String refreshToken) {
 //        MemberDto memberDto = memberService.findByRefreshToken(refreshToken);

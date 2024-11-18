@@ -34,34 +34,37 @@ public class KakaoOauthService {
     }
 
     // 카카오 API에서 가져온 유저정보를 DB에 저장
-    public MemberDto getUserProfileByToken(String accessToken, String refreshToken) {
-        //entityManager.clear();
-        Map<String, Object> userAttributesByToken = getUserAttributesByToken(accessToken);
-
-        KakaoInfoDto kakaoInfoDto = new KakaoInfoDto(userAttributesByToken);
-
-        Boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
-
-        MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
-                .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
-
-        MemberEntity memberEntity = memberService.toEntity(memberDto);
-
-        memberService.save(memberEntity);
-
-        return memberDto;
-    }
+//    public MemberDto getUserProfileByToken(String accessToken, String refreshToken) {
+//        //entityManager.clear();
+//        Map<String, Object> userAttributesByToken = getUserAttributesByToken(accessToken);
+//
+//        KakaoInfoDto kakaoInfoDto = new KakaoInfoDto(userAttributesByToken);
+//
+//        Boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
+//
+//        MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
+//                .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
+//
+//        MemberEntity memberEntity = memberService.toEntity(memberDto);
+//
+//        memberService.save(memberEntity);
+//
+//        return memberDto;
+//    }
 
     public MemberDto getUserProfileByTokenNoSave(String accessToken, String refreshToken) {
         Map<String, Object> userAttributesByToken = getUserAttributesByToken(accessToken);
 
         KakaoInfoDto kakaoInfoDto = new KakaoInfoDto(userAttributesByToken);
 
-        Boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
+        boolean isExisted = memberRepository.findById(kakaoInfoDto.getId()).isPresent();
+
+        System.out.println("kakaoOauthService boolean값 ?????? : "+isExisted);
 
         MemberDto memberDto = MemberDto.builder().memberId(kakaoInfoDto.getId()).email(kakaoInfoDto.getEmail())
                 .nickname(kakaoInfoDto.getNickname()).profile(kakaoInfoDto.getProfileImage()).refreshToken(refreshToken).existed(isExisted).build();
 
+        System.out.println("kakaoOauthService memberDto값 ?????? : "+memberDto);
 
         return memberDto;
     }

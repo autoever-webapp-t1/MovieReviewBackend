@@ -11,6 +11,7 @@ import java.util.Optional;
 import com.movie.MovieReview.exception.CustomException;
 import com.movie.MovieReview.exception.ErrorCode;
 import com.movie.MovieReview.member.dto.MemberDto;
+import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,9 @@ public class JwtTokenService implements InitializingBean {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     public JwtTokenService(@Value("${jwt.access.token.expiration.seconds}") long accessTokenExpirationInSeconds,
                            @Value("${jwt.refresh.token.expiration.seconds}") long refreshTokenExpirationInSeconds,
                            @Value("${jwt.token.secret-key}") String secretKey) {
@@ -54,15 +58,15 @@ public class JwtTokenService implements InitializingBean {
         this.key = getKeyFromBase64EncodedKey(encodeBase64SecretKey(secretKey));
     }
 
-    public String createJWTToken(String accessToken, String refreshToken, Long memberId) {
-        return createToken(accessToken, refreshToken, memberId, accessTokenExpirationInSeconds);
+    public String createJWTToken(String accessToken, String refreshToken, MemberDto memberDto) {
+        return createToken(accessToken, refreshToken, memberDto, accessTokenExpirationInSeconds);
     }
 
-    public String createToken(String accessToken, String refreshToken, Long memberId, long expireLength) {
+    public String createToken(String accessToken, String refreshToken, MemberDto memberDto, long expireLength) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expireLength);
 
-        MemberDto memberDto =  memberService.findById(memberId);
+        System.out.println("JWTTokenService??????????????? : " + memberDto);
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("memberId", memberDto.getMemberId());
@@ -73,7 +77,7 @@ public class JwtTokenService implements InitializingBean {
         claims.put("refreshToken", refreshToken);
 
         return Jwts.builder().setClaims(claims) // 사용자 정보 포함
-                .setSubject(String.valueOf(memberId))
+                .setSubject(String.valueOf(memberDto.getMemberId()))
                 .setIssuedAt(now) // 발행 시간
                 .setExpiration(validity) // 만료 시간
                 .signWith(key, SignatureAlgorithm.HS256) // 서명 알고리즘 및 비밀키 설정
