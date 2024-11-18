@@ -1,9 +1,9 @@
 package com.movie.MovieReview.post.service;
 
-import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
@@ -30,12 +30,25 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     PagingAndSortingRepository pagingAndSortingRepository;
-    UserPrincipal userPrincipal;
-    MemberRepository memberRepository;
+    private final JwtTokenService jwtTokenService;
+    private final MemberRepository memberRepository;
 
-    private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
-        return memberRepository.findByEmail(loginMemberEmail)
+    private Long extractMemberId(String authorizationHeader) throws Exception {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
+        }
+
+        String token = authorizationHeader.substring(7);
+        if (!jwtTokenService.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰!!!!");
+        }
+
+        return Long.valueOf(jwtTokenService.getPayload(token));
+    }
+
+    private MemberEntity getLoginMember(String authorizationHeader) throws Exception {
+        Long memberId = extractMemberId(authorizationHeader);
+        return memberRepository.findById(memberId)
                 .orElseThrow(()->new RuntimeException("member not found"));
     }
 
@@ -51,8 +64,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostResDto createPost(PostDto postDto) {
-        MemberEntity member = getLoginMember();
+    public PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception {
+        MemberEntity member = getLoginMember(authorizationHeader);
         String title = postDto.getTitle();
         String content = postDto.content();
         Post post = Post.builder()
@@ -67,8 +80,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public void deletePost(Long postId) {
-        MemberEntity member = getLoginMember();
+    public void deletePost(String authorizationHeader, Long postId) throws Exception {
+        MemberEntity member = getLoginMember(authorizationHeader);
         Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
         if (!post.getWriter().equals(member)) {
             throw new RuntimeException("접근 권한이 없습니다");
@@ -78,8 +91,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public PostResDto updatePost(Long postId, PostResDto postDto) {
-        MemberEntity member = getLoginMember();
+    public PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postDto) throws Exception {
+        MemberEntity member = getLoginMember(authorizationHeader);
         Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
         if (!targetPost.getWriter().equals(member)) {
             throw new RuntimeException("접근 권한이 없습니다");

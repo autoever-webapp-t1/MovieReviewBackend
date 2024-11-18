@@ -19,18 +19,18 @@ public class CommentController {
         this.commentService = commentService;
     }
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResDto> create(@PathVariable Long postId, @RequestBody CommentReqDto commentReqDto) {
-        CommentResDto createDto = commentService.addComment(postId, commentReqDto);
+    public ResponseEntity<CommentResDto> create(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody CommentReqDto commentReqDto) throws Exception {
+        CommentResDto createDto = commentService.addComment(authorizationHeader, postId, commentReqDto);
         return ResponseEntity.status(HttpStatus.OK).body(createDto);
     }
     @PatchMapping("/comments/{commentId}")
-    public ResponseEntity<CommentResDto> update(@PathVariable Long commentId, @RequestBody CommentResDto commentResDto) {
+    public ResponseEntity<CommentResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long commentId, @RequestBody CommentResDto commentResDto) {
         CommentResDto updatedDto = commentService.updateComment(commentId,commentResDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<MessageDto> delete(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public ResponseEntity<MessageDto> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long commentId) throws Exception {
+        commentService.deleteComment(authorizationHeader, commentId);
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("comment delete success"));
     }
     @GetMapping("/post/{postId}/comments")

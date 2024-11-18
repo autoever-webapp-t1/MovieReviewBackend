@@ -4,15 +4,13 @@ import com.movie.MovieReview.comment.dto.CommentReqDto;
 import com.movie.MovieReview.comment.dto.CommentResDto;
 import com.movie.MovieReview.comment.entity.Comment;
 import com.movie.MovieReview.comment.exception.CommentNotFoundException;
-import com.movie.MovieReview.member.dto.KakaoInfoDto;
 import com.movie.MovieReview.member.entity.MemberEntity;
-import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.sse.service.SseService;
-import com.movie.MovieReview.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,26 +22,37 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private MemberRepository memberRepository;
-    private final SecurityUtils securityUtils;
     private PostRepository postRepository;
-    UserPrincipal userPrincipal;
     private PostServiceImpl postService;
     private final SseService sseService;
+    private final JwtTokenService jwtTokenService;
+    private Long extractMemberId(String authorizationHeader) throws Exception {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
+        }
 
-    private MemberEntity getLoginMember() {
-        String loginMemberEmail = userPrincipal.getEmail();
-        return memberRepository.findByEmail(loginMemberEmail)
-                .orElseThrow(() -> new RuntimeException("member not found"));
+        String token = authorizationHeader.substring(7);
+        if (!jwtTokenService.validateToken(token)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰!!!!");
+        }
+
+        return Long.valueOf(jwtTokenService.getPayload(token));
+    }
+
+    private MemberEntity getLoginMember(String authorizationHeader) throws Exception {
+        Long memberId = extractMemberId(authorizationHeader);
+        return memberRepository.findById(memberId)
+                .orElseThrow(()->new RuntimeException("member not found"));
     }
 
     @Override
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(String authorizationHeader, Long commentId) throws Exception {
         if (commentRepository.findById(commentId) != null) {
             commentRepository.delete(commentRepository.getReferenceById(commentId));
             Comment comment = commentRepository.findById(commentId)
                     .orElseThrow(() -> new CommentNotFoundException("comment not found"));
-            MemberEntity member = getLoginMember();
+            MemberEntity member = getLoginMember(authorizationHeader);
             if (!comment.getWriter().equals(member)) {
                 throw new RuntimeException("no permisson");
             }
@@ -56,8 +65,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentResDto addComment(Long postId, CommentReqDto commentReqDto) {
-        MemberEntity member = getLoginMember();
+    public CommentResDto addComment(String authorizationHeader, Long postId, CommentReqDto commentReqDto) throws Exception {
+        MemberEntity member = getLoginMember(authorizationHeader);
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("post not found"));
         Comment comment = Comment.builder()
                 .writer(member)

@@ -22,6 +22,7 @@ public class PostDetailDto implements PostDtoInterface{
     private boolean liked;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private int commentCnt;
     @Override
     public Long getPostId() {
         return postId;
@@ -67,6 +68,7 @@ public class PostDetailDto implements PostDtoInterface{
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
+                .commentCnt(post.getCommentCnt())
                 .build();
     }
 }

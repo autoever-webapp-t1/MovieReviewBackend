@@ -9,7 +9,6 @@ import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
 import com.querydsl.core.types.Predicate;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
@@ -27,21 +26,22 @@ public class PostController {
         this.postService = postService;
     }
 
+
     @PostMapping("/post")
-    public ResponseEntity<PostResDto> create(@RequestBody PostDto postDto) {
-        PostResDto createDto = postService.createPost(postDto);
+    public ResponseEntity<PostResDto> create(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PostDto postDto) throws Exception {
+        PostResDto createDto = postService.createPost(authorizationHeader, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(createDto);
     }
 
     @PatchMapping("/post/{postId}")
-    public ResponseEntity<PostResDto> update(@PathVariable Long postId, @RequestBody PostResDto postResDto) {
-        PostResDto updatedDto = postService.updatePost(postId, postResDto);
+    public ResponseEntity<PostResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody PostResDto postResDto) throws Exception {
+        PostResDto updatedDto = postService.updatePost(authorizationHeader, postId, postResDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
 
     @DeleteMapping("/post/{postId}")
-    public ResponseEntity<MessageDto> delete(@PathVariable Long postId) {
-        postService.deletePost(postId);
+    public ResponseEntity<MessageDto> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId) throws Exception {
+        postService.deletePost(authorizationHeader, postId);
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("delete success"));
     }
 
