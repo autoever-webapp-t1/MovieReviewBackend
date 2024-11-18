@@ -108,7 +108,7 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
-
+//리뷰 하나를 가지고 올 때 reviewId로 하는게 아닌, movieId로 수정
     // 리뷰 하나 조회
     @GetMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable("reviewId") Long reviewId) {
@@ -121,8 +121,6 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
-
-
 
     // 모든 리뷰 조회
     /*@GetMapping("/movie/{id}/review")
