@@ -27,18 +27,20 @@ public class PageResponseDto<E> {
         int page = pageRequestDto.getPage(); // 현재 페이지
         this.totalPage = (int) Math.ceil((double) total / size); // 전체 페이지 수
 
-        int start = ((page - 1) / 10) * 10 + 1; // 시작 페이지 번호
+        // 페이지 번호 계산
+        int start = Math.max(1, ((page - 1) / 10) * 10 + 1); // 시작 페이지 번호
         int end = Math.min(start + 9, totalPage); // 끝 페이지 번호
 
         this.pageNumList = IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList());
 
         // 이전, 다음 페이지 버튼 활성화 여부
-        this.prev = start >= 1;
-        this.next = end <= totalPage;
+        this.prev = page > 1; // page가 1보다 크면 prev 버튼 활성화
+        this.next = page < totalPage; // page가 totalPage보다 작으면 next 버튼 활성화
+
 
         // 이전, 다음 페이지 번호 설정
-        this.prevPage = this.prev ? start - 1 : 0;
-        this.nextPage = this.next ? end + 1 : 0;
+        this.prevPage = this.prev ? page - 1 : 0; // prev는 현재 페이지 - 1
+        this.nextPage = this.next ? page + 1 : page + 1; // next는 현재 페이지 + 1
 
         // 현재 페이지
         this.current = page;
