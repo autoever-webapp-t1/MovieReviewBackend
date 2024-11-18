@@ -1,5 +1,6 @@
 package com.movie.MovieReview.review.dto;
 
+import com.movie.MovieReview.movie.dto.MovieCardDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -42,5 +43,10 @@ public class PageResponseDto<E> {
 
         this.totalPage = this.pageNumList.size();
         this.current = pageRequestDto.getPage();
+    }
+
+    // MovieCardDto 전용 빌더 메서드
+    public static PageResponseDto<MovieCardDto> withSearch(List<MovieCardDto> dtoList, PageRequestDto pageRequestDto, long total) {
+        return new PageResponseDto<>(dtoList, pageRequestDto, total);
     }
 }
