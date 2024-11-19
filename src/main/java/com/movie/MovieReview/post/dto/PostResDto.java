@@ -34,6 +34,7 @@ public class PostResDto implements PostDtoInterface{
                 .content(post.getContent())
                 .commentCnt(post.getCommentCnt())
                 .liked(post.isLiked())
+                .textContent(post.getTextContent())
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
