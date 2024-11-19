@@ -72,7 +72,6 @@ public class OauthController {
 
     @PostMapping("/login/oauth/kakao")
     public ResponseEntity<?> login(@RequestBody OauthRequestDto oauthRequestDto) {
-        System.out.println("살려줘 ㅅㅂ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         JwtWithMemberDto jwtWithMemberDto = oauthService.loginWithKakao(oauthRequestDto.getAccessToken(), oauthRequestDto.getRefreshToken());
 
         String jwtToken = jwtWithMemberDto.getJwtToken();
@@ -81,10 +80,6 @@ public class OauthController {
         System.out.println("OauthController jwtToken??????? : "+ jwtToken);
 
         System.out.println("OauthController memberDto??????? : "+ memberDto);
-
-        //boolean isExisted = memberRepository.findById(memberDto.getMemberId()).isPresent();
-
-        //System.out.println("OauthController isExisted??????? : "+ isExisted);
 
         MemberDto dto = MemberDto.builder()
                 .memberId(memberDto.getMemberId())

@@ -52,66 +52,68 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieCardDto> allMovies = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
 
-        Request request = new Request.Builder()
-                .url(TMDB_API_URL + TopRatedUrl + 1 + "&region=KR")
-                .get()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", AUTH_TOKEN)
-                .build();
+        for(int page = 1; page <= 2; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + TopRatedUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN)
+                    .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new Exception("Unexpected code " + response);
-            }
-
-            String jsonResponse = response.body().string();
-            log.info("MovieServiceImpl: " + jsonResponse);
-
-            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
-
-            for (JsonElement resultElement : resultsArray) {
-                JsonObject movieObject = resultElement.getAsJsonObject();
-
-                Long id = movieObject.get("id").getAsLong();
-                String title = movieObject.get("title").getAsString();
-                String overview = movieObject.get("overview").getAsString();
-                String posterPath = movieObject.get("poster_path").getAsString();
-                String releaseDate = movieObject.get("release_date").getAsString();
-
-                // 장르 ID 리스트를 String으로 변환
-                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
-                List<Integer> genreIdsList = new ArrayList<>();
-                for (JsonElement genreElement : genreIdsArray) {
-                    genreIdsList.add(genreElement.getAsInt());
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
                 }
-                String genreIds = genreIdsList.toString();
 
-                // score 초기화
-                Map<String, Object> score = Map.of(
-                        "avgActorSkill", 0.0,
-                        "avgDirectorSkill", 0.0,
-                        "avgLineSkill", 0.0,
-                        "avgMusicSkill", 0.0,
-                        "avgSceneSkill", 0.0,
-                        "avgStorySkill", 0.0,
-                        "totalAverageSkill", 0.0
-                );
-                // myScore 초기화
-                Map<String, Object> myScore = null;
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: " + jsonResponse);
 
-                try {
-                    score = reviewService.getAverageSkillsByMovieId(id);
-                    myScore = reviewService.getLatestReviewSkills(memberId, id);
-                } catch (Exception e) {
-                    log.warn("Review data not found for movie ID: {}", id, e);
-                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                    myScore = null;
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
+
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = null;
 //                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
-                }
+                    }
 
-                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
-                allMovies.add(movieCardDto);
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
@@ -122,68 +124,70 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieCardDto> allMovies = new ArrayList<>();
         String NowPlayingUrl = "now_playing?language=ko-KR&page=";
 
-        Request request = new Request.Builder()
-                .url(TMDB_API_URL + NowPlayingUrl + 1 + "&region=KR")
-                .get()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", AUTH_TOKEN)
-                .build();
+        for(int page = 1; page <= 2; page++){
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN)
+                    .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new Exception("Unexpected code " + response);
-            }
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
 
-            String jsonResponse = response.body().string();
-            log.info("MovieServiceImpl: " + jsonResponse);
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: " + jsonResponse);
 
-            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
 
-            for (JsonElement resultElement : resultsArray) {
-                JsonObject movieObject = resultElement.getAsJsonObject();
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
 
-                Long id = movieObject.get("id").getAsLong();
-                String title = getJsonString(movieObject, "title");
-                String overview = getJsonString(movieObject, "overview");
-                String posterPath = getJsonString(movieObject, "poster_path");
-                String releaseDate = getJsonString(movieObject, "release_date");
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = getJsonString(movieObject, "title");
+                    String overview = getJsonString(movieObject, "overview");
+                    String posterPath = getJsonString(movieObject, "poster_path");
+                    String releaseDate = getJsonString(movieObject, "release_date");
 
-                // 장르 ID 리스트를 String으로 변환
-                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
-                List<Integer> genreIdsList = new ArrayList<>();
-                if (genreIdsArray != null) {
-                    for (JsonElement genreElement : genreIdsArray) {
-                        genreIdsList.add(genreElement.getAsInt());
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    if (genreIdsArray != null) {
+                        for (JsonElement genreElement : genreIdsArray) {
+                            genreIdsList.add(genreElement.getAsInt());
+                        }
                     }
-                }
-                String genreIds = genreIdsList.toString();
+                    String genreIds = genreIdsList.toString();
 
-                // score 초기화
-                Map<String, Object> score = Map.of(
-                        "avgActorSkill", 0.0,
-                        "avgDirectorSkill", 0.0,
-                        "avgLineSkill", 0.0,
-                        "avgMusicSkill", 0.0,
-                        "avgSceneSkill", 0.0,
-                        "avgStorySkill", 0.0,
-                        "totalAverageSkill", 0.0
-                );
-                // myScore 초기화
-                Map<String, Object> myScore = null;
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
 
-                try {
-                    score = reviewService.getAverageSkillsByMovieId(id);
-                    myScore = reviewService.getLatestReviewSkills(memberId, id);
-                } catch (Exception e) {
-                    log.warn("Review data not found for movie ID: {}", id, e);
-                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                    myScore = null;
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = null;
 //                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
-                }
+                    }
 
-                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
-                allMovies.add(movieCardDto);
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
@@ -204,65 +208,67 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieCardDto> allMovies = new ArrayList<>();
         String NowPlayingUrl = "upcoming?language=ko-KR&page=";
 
-        Request request = new Request.Builder()
-                .url(TMDB_API_URL + NowPlayingUrl + 1 + "&region=KR")
-                .get()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", AUTH_TOKEN )
-                .build();
+        for(int page = 1; page <= 2; page++){
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN )
+                    .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new Exception("Unexpected code " + response);
-            }
-
-            String jsonResponse = response.body().string();
-            log.info("MovieServiceImpl: " + jsonResponse);
-
-            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
-
-            for (JsonElement resultElement : resultsArray) {
-                JsonObject movieObject = resultElement.getAsJsonObject();
-
-                Long id = movieObject.get("id").getAsLong();
-                String title = movieObject.get("title").getAsString();
-                String overview = movieObject.get("overview").getAsString();
-                String posterPath = movieObject.get("poster_path").getAsString();
-                String releaseDate = movieObject.get("release_date").getAsString();
-
-                // 장르 ID 리스트를 String으로 변환
-                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
-                List<Integer> genreIdsList = new ArrayList<>();
-                for (JsonElement genreElement : genreIdsArray) {
-                    genreIdsList.add(genreElement.getAsInt());
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
                 }
-                String genreIds = genreIdsList.toString();
 
-                // score 초기화
-                Map<String, Object> score = Map.of(
-                        "avgActorSkill", 0.0,
-                        "avgDirectorSkill", 0.0,
-                        "avgLineSkill", 0.0,
-                        "avgMusicSkill", 0.0,
-                        "avgSceneSkill", 0.0,
-                        "avgStorySkill", 0.0,
-                        "totalAverageSkill", 0.0
-                );
-                // myScore 초기화
-                Map<String, Object> myScore = null;
-                try {
-                    score = reviewService.getAverageSkillsByMovieId(id);
-                    myScore = reviewService.getLatestReviewSkills(memberId, id);
-                } catch (Exception e) {
-                    log.warn("Review data not found for movie ID: {}", id, e);
-                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                    myScore = null;
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: " + jsonResponse);
+
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = null;
 //                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0);
-                }
+                    }
 
-                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
-                allMovies.add(movieCardDto);
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
@@ -273,65 +279,67 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieCardDto> allMovies = new ArrayList<>();
         String PopularUrl = "popular?language=ko-KR&page=";
 
-        Request request = new Request.Builder()
-                .url(TMDB_API_URL + PopularUrl + 1 + "&region=KR")
-                .get()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", AUTH_TOKEN )
-                .build();
+        for(int page = 1; page <=2; page++){
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + PopularUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN )
+                    .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new Exception("Unexpected code " + response);
-            }
-
-            String jsonResponse = response.body().string();
-            log.info("MovieServiceImpl: " + jsonResponse);
-
-            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
-
-            for (JsonElement resultElement : resultsArray) {
-                JsonObject movieObject = resultElement.getAsJsonObject();
-
-                Long id = movieObject.get("id").getAsLong();
-                String title = movieObject.get("title").getAsString();
-                String overview = movieObject.get("overview").getAsString();
-                String posterPath = movieObject.get("poster_path").getAsString();
-                String releaseDate = movieObject.get("release_date").getAsString();
-
-                // 장르 ID 리스트를 String으로 변환
-                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
-                List<Integer> genreIdsList = new ArrayList<>();
-                for (JsonElement genreElement : genreIdsArray) {
-                    genreIdsList.add(genreElement.getAsInt());
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
                 }
-                String genreIds = genreIdsList.toString();
 
-                // score 초기화
-                Map<String, Object> score = Map.of(
-                        "avgActorSkill", 0.0,
-                        "avgDirectorSkill", 0.0,
-                        "avgLineSkill", 0.0,
-                        "avgMusicSkill", 0.0,
-                        "avgSceneSkill", 0.0,
-                        "avgStorySkill", 0.0,
-                        "totalAverageSkill", 0.0
-                );
-                // myScore 초기화
-                Map<String, Object> myScore = null;
-                try {
-                    score = reviewService.getAverageSkillsByMovieId(id);
-                    myScore = reviewService.getLatestReviewSkills(memberId, id);
-                } catch (Exception e) {
-                    log.warn("Review data not found for movie ID: {}", id, e);
-                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
-                    myScore = null;
+                String jsonResponse = response.body().string();
+                log.info("MovieServiceImpl: " + jsonResponse);
+
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+                for (JsonElement resultElement : resultsArray) {
+                    JsonObject movieObject = resultElement.getAsJsonObject();
+
+                    Long id = movieObject.get("id").getAsLong();
+                    String title = movieObject.get("title").getAsString();
+                    String overview = movieObject.get("overview").getAsString();
+                    String posterPath = movieObject.get("poster_path").getAsString();
+                    String releaseDate = movieObject.get("release_date").getAsString();
+
+                    // 장르 ID 리스트를 String으로 변환
+                    JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+                    List<Integer> genreIdsList = new ArrayList<>();
+                    for (JsonElement genreElement : genreIdsArray) {
+                        genreIdsList.add(genreElement.getAsInt());
+                    }
+                    String genreIds = genreIdsList.toString();
+
+                    // score 초기화
+                    Map<String, Object> score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
+                    // myScore 초기화
+                    Map<String, Object> myScore = null;
+                    try {
+                        score = reviewService.getAverageSkillsByMovieId(id);
+                        myScore = reviewService.getLatestReviewSkills(memberId, id);
+                    } catch (Exception e) {
+                        log.warn("Review data not found for movie ID: {}", id, e);
+                        score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0,  "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                        myScore = null;
 //                        myScore = Map.of("actorSkill", 0, "directorSkill", 0, "lineSkill", 0, "musicSkill", 0, "sceneSkill", 0,  "storySkill", 0, "avgSkill", 0.0);
-                }
+                    }
 
-                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
-                allMovies.add(movieCardDto);
+                    MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+                    allMovies.add(movieCardDto);
+                }
             }
         }
         return allMovies;
