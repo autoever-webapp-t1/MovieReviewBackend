@@ -40,8 +40,7 @@ public class Post extends BaseTimeEntity {
     @Setter
     private int commentCnt;
 
-    @Lob
-    @Column(name = "text_content", nullable = false)
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String textContent;
 
     // thumbnail
