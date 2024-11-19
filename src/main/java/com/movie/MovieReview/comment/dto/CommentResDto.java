@@ -25,6 +25,7 @@ public class CommentResDto {
                 .memberId(comment.getWriter().getMemberId())
                 .createdAt(comment.getCreatedDate())
                 .updatedAt(comment.getModifiedDate())
+                .profile(comment.getWriter().getProfile())
                 .build();
     }
 }
