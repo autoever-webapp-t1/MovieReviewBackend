@@ -26,6 +26,7 @@ public class PostResDto implements PostDtoInterface{
 
     public static PostResDto entityToResDto(Post post) {
         return PostResDto.builder()
+                .memberId(post.getWriter().getMemberId())
                 .postId(post.getPostId())
                 .mainImgUrl(post.getMainImgUrl())
                 .nickname(post.getWriter().getNickname())
