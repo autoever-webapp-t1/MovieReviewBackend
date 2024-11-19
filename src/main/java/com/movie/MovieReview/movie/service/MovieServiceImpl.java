@@ -414,10 +414,136 @@ public class MovieServiceImpl implements  MovieService{
         return allMovies;
     }
 
+//    @Override
+//    public MovieDetailsDto getMovieDetails(Long id) throws Exception {
+//        log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
+//        String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=credits%2Cvideos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
+//
+//        Request request = new Request.Builder()
+//                .url(MovieDetailUrl)
+//                .get()
+//                .addHeader("accept", "application/json")
+//                .addHeader("Authorization", AUTH_TOKEN)
+//                .build();
+//
+//        try (Response response = client.newCall(request).execute()) {
+//            if (response.isSuccessful() && response.body() != null) {
+//                String jsonResponse = response.body().string();
+//
+//                // 영화 상세정보 뽑아내기
+//                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+//                String title = jsonObject.get("title").getAsString();
+//                int runtime = jsonObject.get("runtime").getAsInt();
+//                String overview = jsonObject.get("overview").getAsString();
+//                String releaseDate = jsonObject.get("release_date").getAsString();
+//                String posterPath = jsonObject.get("poster_path").getAsString();
+//                String backdropPath = jsonObject.get("backdrop_path").getAsString();
+//                //Double totalAverageSkill = jsonObject.get("totalAverageSkill").getAsDouble();
+//
+//                // 이미지 리스트 설정
+//                List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
+//                MovieDetailsDto.Images images = new MovieDetailsDto.Images();
+//                images.setPoster_path(posterPath);
+//                images.setBackdrop_path(backdropPath);
+//                imagesList.add(images);
+//
+//                // 장르 리스트 설정
+//                List<MovieDetailsDto.Genres> genres = new ArrayList<>();
+//                jsonObject.getAsJsonArray("genres").forEach(genreElement -> {
+//                    JsonObject genreObject = genreElement.getAsJsonObject();
+//                    MovieDetailsDto.Genres genre = new MovieDetailsDto.Genres();
+//                    genre.setId(genreObject.get("id").getAsInt());
+//                    genre.setName(genreObject.get("name").getAsString());
+//                    genres.add(genre);
+//                });
+//
+//                // 비디오 리스트 설정
+//                List<MovieDetailsDto.Videos> videosList = new ArrayList<>();
+//                jsonObject.getAsJsonObject("videos").getAsJsonArray("results").forEach(videoElement -> {
+//                    JsonObject videoObject = videoElement.getAsJsonObject();
+//                    MovieDetailsDto.Videos video = new MovieDetailsDto.Videos();
+//                    video.setKey(videoObject.get("key").getAsString());
+//                    video.setType(videoObject.get("type").getAsString());
+//                    videosList.add(video);
+//                });
+//
+//                // credit 리스트 설정 배우 상위 10명
+//                List<MovieDetailsDto.Credits> credits = new ArrayList<>();
+//                JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
+//                JsonArray crewArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("crew");
+//
+//                // 배우 기본 10명(10명 안되면 전체 배우 가져옴)
+//                int castCount = Math.min(10, castArray.size());
+//                for (int i = 0; i < castArray.size(); i++) {
+//                    if (i >= castCount) break;
+//
+//                    JsonObject creditObject = castArray.get(i).getAsJsonObject();
+//                    MovieDetailsDto.Credits credit = new MovieDetailsDto.Credits();
+//
+//                    credit.setType(creditObject.has("known_for_department") && !creditObject.get("known_for_department").isJsonNull()
+//                            ? creditObject.get("known_for_department").getAsString()
+//                            : "Unknown");
+//
+//                    credit.setName(creditObject.has("name") && !creditObject.get("name").isJsonNull()
+//                            ? creditObject.get("name").getAsString()
+//                            : "Unknown");
+//
+//                    credit.setProfile(creditObject.has("profile_path") && !creditObject.get("profile_path").isJsonNull()
+//                            ? creditObject.get("profile_path").getAsString()
+//                            : null);
+//
+//                    credits.add(credit);
+//                }
+//
+//                // 감독 1명 배우 10명
+//                for (int i = 0; i < crewArray.size(); i++) {
+//                    JsonObject crewObject = crewArray.get(i).getAsJsonObject();
+//
+//                    if (crewObject.has("job") && !crewObject.get("job").isJsonNull() && "Director".equals(crewObject.get("job").getAsString())) {
+//                        MovieDetailsDto.Credits director = new MovieDetailsDto.Credits();
+//
+//                        director.setType("Director");
+//                        director.setName(crewObject.has("name") && !crewObject.get("name").isJsonNull()
+//                                ? crewObject.get("name").getAsString()
+//                                : "Unknown");
+//
+//                        director.setProfile(crewObject.has("profile_path") && !crewObject.get("profile_path").isJsonNull()
+//                                ? crewObject.get("profile_path").getAsString()
+//                                : null);
+//
+//                        credits.add(director); // 감독 정보를 배우 리스트에 추가
+//                        break;
+//                    }
+//                }
+//
+//                // recommendations 리스트
+//                List<MovieDetailsDto.Recommends> recommends = new ArrayList<>();
+//                jsonObject.getAsJsonObject("recommendations").getAsJsonArray("results").forEach(recommendsElement -> {
+//                    JsonObject recommendsObject = recommendsElement.getAsJsonObject();
+//                    MovieDetailsDto.Recommends recommend = new MovieDetailsDto.Recommends();
+//                    recommend.setId(recommendsObject.get("id").getAsLong());
+//                    recommends.add(recommend);
+//                });
+//
+//
+//                // JSON 문자열로 변환
+//                String imagesJson = gson.toJson(imagesList);
+//                String videosJson = gson.toJson(videosList);
+//                String genresJson = gson.toJson(genres);
+//
+//
+//                MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
+//                return movieDetailsDto; //화면에 보여주기
+//            } else {
+//                throw new IOException("Unexpected response code: " + response.code());
+//            }
+//        }
+//    }
+
     @Override
     public MovieDetailsDto getMovieDetails(Long id) throws Exception {
         log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
-        String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=credits%2Cvideos%2Crecommendations&language=ko-KR";//detail & videos & recommendations
+        String MovieDetailUrl = TMDB_API_URL + id + "?append_to_response=credits%2Cvideos%2Crecommendations&language=ko-KR"; // detail & videos & recommendations
 
         Request request = new Request.Builder()
                 .url(MovieDetailUrl)
@@ -432,13 +558,13 @@ public class MovieServiceImpl implements  MovieService{
 
                 // 영화 상세정보 뽑아내기
                 JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-                String title = jsonObject.get("title").getAsString();
-                int runtime = jsonObject.get("runtime").getAsInt();
-                String overview = jsonObject.get("overview").getAsString();
-                String releaseDate = jsonObject.get("release_date").getAsString();
-                String posterPath = jsonObject.get("poster_path").getAsString();
-                String backdropPath = jsonObject.get("backdrop_path").getAsString();
-                //Double totalAverageSkill = jsonObject.get("totalAverageSkill").getAsDouble();
+
+                String title = jsonObject.has("title") && !jsonObject.get("title").isJsonNull() ? jsonObject.get("title").getAsString() : "Unknown";
+                int runtime = jsonObject.has("runtime") && !jsonObject.get("runtime").isJsonNull() ? jsonObject.get("runtime").getAsInt() : 0;
+                String overview = jsonObject.has("overview") && !jsonObject.get("overview").isJsonNull() ? jsonObject.get("overview").getAsString() : "No overview available";
+                String releaseDate = jsonObject.has("release_date") && !jsonObject.get("release_date").isJsonNull() ? jsonObject.get("release_date").getAsString() : "Unknown";
+                String posterPath = jsonObject.has("poster_path") && !jsonObject.get("poster_path").isJsonNull() ? jsonObject.get("poster_path").getAsString() : null;
+                String backdropPath = jsonObject.has("backdrop_path") && !jsonObject.get("backdrop_path").isJsonNull() ? jsonObject.get("backdrop_path").getAsString() : null;
 
                 // 이미지 리스트 설정
                 List<MovieDetailsDto.Images> imagesList = new ArrayList<>();
@@ -449,28 +575,32 @@ public class MovieServiceImpl implements  MovieService{
 
                 // 장르 리스트 설정
                 List<MovieDetailsDto.Genres> genres = new ArrayList<>();
-                jsonObject.getAsJsonArray("genres").forEach(genreElement -> {
-                    JsonObject genreObject = genreElement.getAsJsonObject();
-                    MovieDetailsDto.Genres genre = new MovieDetailsDto.Genres();
-                    genre.setId(genreObject.get("id").getAsInt());
-                    genre.setName(genreObject.get("name").getAsString());
-                    genres.add(genre);
-                });
+                if (jsonObject.has("genres") && !jsonObject.get("genres").isJsonNull()) {
+                    jsonObject.getAsJsonArray("genres").forEach(genreElement -> {
+                        JsonObject genreObject = genreElement.getAsJsonObject();
+                        MovieDetailsDto.Genres genre = new MovieDetailsDto.Genres();
+                        genre.setId(genreObject.has("id") && !genreObject.get("id").isJsonNull() ? genreObject.get("id").getAsInt() : 0);
+                        genre.setName(genreObject.has("name") && !genreObject.get("name").isJsonNull() ? genreObject.get("name").getAsString() : "Unknown");
+                        genres.add(genre);
+                    });
+                }
 
                 // 비디오 리스트 설정
                 List<MovieDetailsDto.Videos> videosList = new ArrayList<>();
-                jsonObject.getAsJsonObject("videos").getAsJsonArray("results").forEach(videoElement -> {
-                    JsonObject videoObject = videoElement.getAsJsonObject();
-                    MovieDetailsDto.Videos video = new MovieDetailsDto.Videos();
-                    video.setKey(videoObject.get("key").getAsString());
-                    video.setType(videoObject.get("type").getAsString());
-                    videosList.add(video);
-                });
+                if (jsonObject.has("videos") && !jsonObject.get("videos").isJsonNull()) {
+                    jsonObject.getAsJsonObject("videos").getAsJsonArray("results").forEach(videoElement -> {
+                        JsonObject videoObject = videoElement.getAsJsonObject();
+                        MovieDetailsDto.Videos video = new MovieDetailsDto.Videos();
+                        video.setKey(videoObject.has("key") && !videoObject.get("key").isJsonNull() ? videoObject.get("key").getAsString() : "Unknown");
+                        video.setType(videoObject.has("type") && !videoObject.get("type").isJsonNull() ? videoObject.get("type").getAsString() : "Unknown");
+                        videosList.add(video);
+                    });
+                }
 
                 // credit 리스트 설정 배우 상위 10명
                 List<MovieDetailsDto.Credits> credits = new ArrayList<>();
-                JsonArray castArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("cast");
-                JsonArray crewArray = jsonObject.getAsJsonObject("credits").getAsJsonArray("crew");
+                JsonArray castArray = jsonObject.has("credits") && !jsonObject.get("credits").isJsonNull() ? jsonObject.getAsJsonObject("credits").getAsJsonArray("cast") : new JsonArray();
+                JsonArray crewArray = jsonObject.has("credits") && !jsonObject.get("credits").isJsonNull() ? jsonObject.getAsJsonObject("credits").getAsJsonArray("crew") : new JsonArray();
 
                 // 배우 기본 10명(10명 안되면 전체 배우 가져옴)
                 int castCount = Math.min(10, castArray.size());
@@ -518,22 +648,22 @@ public class MovieServiceImpl implements  MovieService{
 
                 // recommendations 리스트
                 List<MovieDetailsDto.Recommends> recommends = new ArrayList<>();
-                jsonObject.getAsJsonObject("recommendations").getAsJsonArray("results").forEach(recommendsElement -> {
-                    JsonObject recommendsObject = recommendsElement.getAsJsonObject();
-                    MovieDetailsDto.Recommends recommend = new MovieDetailsDto.Recommends();
-                    recommend.setId(recommendsObject.get("id").getAsLong());
-                    recommends.add(recommend);
-                });
-
+                if (jsonObject.has("recommendations") && !jsonObject.get("recommendations").isJsonNull()) {
+                    jsonObject.getAsJsonObject("recommendations").getAsJsonArray("results").forEach(recommendsElement -> {
+                        JsonObject recommendsObject = recommendsElement.getAsJsonObject();
+                        MovieDetailsDto.Recommends recommend = new MovieDetailsDto.Recommends();
+                        recommend.setId(recommendsObject.has("id") && !recommendsObject.get("id").isJsonNull() ? recommendsObject.get("id").getAsLong() : 0);
+                        recommends.add(recommend);
+                    });
+                }
 
                 // JSON 문자열로 변환
                 String imagesJson = gson.toJson(imagesList);
                 String videosJson = gson.toJson(videosList);
                 String genresJson = gson.toJson(genres);
 
-
                 MovieDetailsDto movieDetailsDto = new MovieDetailsDto(id, title, overview, releaseDate, runtime, imagesJson, videosJson, genresJson, credits, recommends);
-                return movieDetailsDto; //화면에 보여주기
+                return movieDetailsDto; // 화면에 보여주기
             } else {
                 throw new IOException("Unexpected response code: " + response.code());
             }
@@ -608,9 +738,10 @@ public class MovieServiceImpl implements  MovieService{
                     JsonObject movieObject = movieElement.getAsJsonObject();
                     Long movieId = movieObject.get("id").getAsLong();
 
-                    if(!movieRepository.existsById(movieId)){
-                        PopularMoviesId.add(movieId);
-                    }
+//                    if(!movieRepository.existsById(movieId)){
+//                        PopularMoviesId.add(movieId);
+//                    }
+                    PopularMoviesId.add(movieId);
 
                     // db에 저장
                     TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
@@ -618,7 +749,6 @@ public class MovieServiceImpl implements  MovieService{
                 });
             }
         }
-
         return PopularMoviesId;
     }
 
@@ -661,8 +791,6 @@ public class MovieServiceImpl implements  MovieService{
 
         return NowPlayingId;
     }
-
-
 
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception {
         List<MovieDetailsDto> movieDetailsList = new ArrayList<>();
