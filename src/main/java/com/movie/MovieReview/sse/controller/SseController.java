@@ -58,7 +58,7 @@ public class SseController {
 
     @PostMapping("/notify")
     public void notify(@RequestBody MessageDto messageDto) {
-        sseService.setMessage(messageDto);
+        sseService.send(messageDto);
     }
 
 

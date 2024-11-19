@@ -21,10 +21,9 @@ public class SseService {
 //    private final Set<SseEmitter> emitters = new CopyOnWriteArraySet<>();
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final LinkedBlockingQueue<MessageDto> messageQueue = new LinkedBlockingQueue<>();
-    private SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-
 
     public SseEmitter subscribe(Long memberId) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         emitters.put(memberId, emitter);
         try {
             emitter.send(SseEmitter.event()
@@ -34,9 +33,9 @@ public class SseService {
             emitter.completeWithError(e);
         }
 
-        emitter.onCompletion(()->emitters.remove(emitter));
-        emitter.onTimeout(()->emitters.remove(emitter));
-        emitter.onError((e)->emitters.remove(emitter));
+        emitter.onCompletion(()->emitters.remove(memberId));
+        emitter.onTimeout(()->emitters.remove(memberId));
+        emitter.onError((e)->emitters.remove(memberId));
 
         return emitter;
     }
@@ -57,6 +56,15 @@ public class SseService {
 //
 //        return emitter;
 //    }
+
+    public void send(MessageDto messageDto) {
+        try {
+            for(SseEmitter emitter : emitters.values()) {
+                emitter.send(SseEmitter.event().name("message").data(messageDto));
+            }
+        } catch (Exception e) {
+        }
+    }
 
     public void setMessage(MessageDto messageDto) {
         messageQueue.offer(messageDto);
