@@ -82,12 +82,12 @@ public class SseService {
         }
     }
     //어워즈 기간 종료 시 결과 알림
-    public void broadcast(String message) {
+    public void broadcast(MessageDto messageDto) {
         Iterator<SseEmitter> iterator = emitters.values().iterator();
         while (iterator.hasNext()) {
             SseEmitter emitter = iterator.next();
             try {
-                emitter.send(SseEmitter.event().name("AWARDS_NOTIFICATION").data(message));
+                emitter.send(SseEmitter.event().name("AWARDS_NOTIFICATION").data(messageDto));
             } catch (IOException e) {
                 iterator.remove();
             }

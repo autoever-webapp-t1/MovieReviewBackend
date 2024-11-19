@@ -29,8 +29,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
-//    @Value("${spring.cloud.aws.region.static}")
-//    private String region;
 
     @Bean
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration)
