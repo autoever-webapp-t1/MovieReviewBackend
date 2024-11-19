@@ -746,6 +746,15 @@ public class MovieServiceImpl implements  MovieService{
                     // db에 저장
                     TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
                     topRatedMovieIdRepository.save(topRatedMovieIdEntity);
+
+                    MovieDetailsDto movieDetails = null;
+                    try {
+                        movieDetails = getMovieDetails(movieId);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                    movieRepository.save(toEntity(movieDetails)); // DB에 저장
                 });
             }
         }
@@ -755,7 +764,58 @@ public class MovieServiceImpl implements  MovieService{
     @Override
     public List<Long> SaveNowPlayingId() throws Exception {
         List<Long> NowPlayingId = new ArrayList<>();
-        String NowPlayingUrl = "upcoming?language=ko-KR&page=";
+        String NowPlayingUrl = "now_playing?language=ko-KR&page=";
+
+        for (int page = 1; page <= 2; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
+
+                String jsonResponse = response.body().string();
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+
+                // results 배열에서 영화 ID 뽑기
+                jsonObject.getAsJsonArray("results").forEach(movieElement -> {
+                    JsonObject movieObject = movieElement.getAsJsonObject();
+                    Long movieId = movieObject.get("id").getAsLong();
+
+//                    if(!movieRepository.existsById(movieId)){
+//                        NowPlayingId.add(movieId);
+//                    }
+
+                    NowPlayingId.add(movieId);
+
+                    // db에 저장
+                    TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
+                    topRatedMovieIdRepository.save(topRatedMovieIdEntity);
+
+                    MovieDetailsDto movieDetails = null;
+                    try {
+                        movieDetails = getMovieDetails(movieId);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                    movieRepository.save(toEntity(movieDetails)); // DB에 저장
+                });
+            }
+        }
+
+        return NowPlayingId;
+    }
+
+    @Override
+    public List<Long> SaveUpComingId() throws Exception {
+        List<Long> TopRatedMoviesId = new ArrayList<>();
+        String NowPlayingUrl = "now_playing?language=ko-KR&page=";
 
         for (int page = 1; page <= 2; page++) {
             Request request = new Request.Builder()
@@ -779,7 +839,7 @@ public class MovieServiceImpl implements  MovieService{
                     Long movieId = movieObject.get("id").getAsLong();
 
                     if(!movieRepository.existsById(movieId)){
-                        NowPlayingId.add(movieId);
+                        TopRatedMoviesId.add(movieId);
                     }
 
                     // db에 저장
@@ -789,7 +849,7 @@ public class MovieServiceImpl implements  MovieService{
             }
         }
 
-        return NowPlayingId;
+        return TopRatedMoviesId;
     }
 
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception {
@@ -992,8 +1052,6 @@ public class MovieServiceImpl implements  MovieService{
         List<MovieDetailsDto.Recommends> recommendDtos = movieDetailEntity.getRecommendations().stream()
                 .map(recommend -> new MovieDetailsDto.Recommends(recommend.getRecommendationId()))
                 .collect(Collectors.toList());
-
-
 
         MovieDetailsDto.builder()
                 .id(movieDetailEntity.getId())
