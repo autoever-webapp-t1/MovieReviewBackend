@@ -1,6 +1,7 @@
 package com.movie.MovieReview.review.dto;
 
 import com.movie.MovieReview.movie.dto.MovieCardDto;
+import com.movie.MovieReview.post.dto.PostResDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -48,5 +49,10 @@ public class PageResponseDto<E> {
     // MovieCardDto 전용 빌더 메서드
     public static PageResponseDto<MovieCardDto> withSearch(List<MovieCardDto> dtoList, PageRequestDto pageRequestDto, long total) {
         return new PageResponseDto<>(dtoList, pageRequestDto, total);
+    }
+
+    // PostResDto
+    public static PageResponseDto<PostResDto> withSearchPost(List<PostResDto> dtoList, PageRequestDto pageRequestDto, long total) {
+        return new PageResponseDto<>(dtoList,pageRequestDto,total);
     }
 }
