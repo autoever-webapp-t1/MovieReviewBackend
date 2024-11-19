@@ -2,9 +2,11 @@ package com.movie.MovieReview.awards.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @Builder
 public class AwardsDto {
@@ -25,4 +27,6 @@ public class AwardsDto {
     private LocalDateTime endDateTime;
 
     private Long topMovieId;
+
+    private String NextAwardName;
 }
