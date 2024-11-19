@@ -1,16 +1,14 @@
 package com.movie.MovieReview.post.controller;
 
+import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
-import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.service.PostServiceImpl;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
-import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostServiceImpl postService;
+    private final JwtTokenService jwtTokenService;
 
     @PostMapping("/post")
     public ResponseEntity<PostResDto> create(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PostDto postDto) throws Exception {
@@ -31,7 +30,7 @@ public class PostController {
 
     @PatchMapping("/post/{postId}")
     public ResponseEntity<PostResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody PostDto postDto) throws Exception {
-        PostResDto updatedDto = postService.updatePost(authorizationHeader, postId, postDto);
+        PostResDto updatedDto = postService.updatePost(postId, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
 
@@ -68,9 +67,41 @@ public class PostController {
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> getFiltered(@QuerydslPredicate(root = Post.class) Predicate predicate, Pageable pageable) {
-        return ResponseEntity.ok(postService.findAll(predicate, pageable));
-    }
 
+
+    @GetMapping("/post/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션
+    public ResponseEntity<?> getKeywordResult(
+            @PathVariable("keyword") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        try {
+            // 헤더에서 JWT 토큰 추출
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
+            }
+
+            String token = authorizationHeader.substring(7); // JWT 토큰 뽑아내기
+
+            // 토큰 유효성 검사
+            if (!jwtTokenService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
+            }
+
+            // 토큰에서 memberId 추출
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+
+
+            PageRequestDto pageRequestDto = PageRequestDto.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
+            PageResponseDto<PostResDto> response = postService.findAll(memberId, keyword, pageRequestDto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

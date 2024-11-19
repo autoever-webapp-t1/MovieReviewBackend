@@ -3,26 +3,24 @@ package com.movie.MovieReview.post.service;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.member.service.JwtTokenService;
-import com.movie.MovieReview.post.dto.PostDetailDto;
+
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
 import com.movie.MovieReview.post.exception.NoPostsFoundException;
 import com.movie.MovieReview.post.exception.PostNotFoundException;
-import com.movie.MovieReview.post.repository.PagingAndSortingRepository;
 import com.movie.MovieReview.post.repository.PostRepository;
 import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
-import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
-    PagingAndSortingRepository pagingAndSortingRepository;
     private final JwtTokenService jwtTokenService;
     private final MemberRepository memberRepository;
 
@@ -98,16 +95,9 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception {
-        Long memberId = getLoginMember(authorizationHeader);
-        Optional<MemberEntity> member = memberRepository.findById(memberId);
-        Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
-        if (targetPost.getWriter().equals(member)) {
-            throw new RuntimeException("접근 권한이 없습니다");
-        }
-        targetPost.update(postDto);
-
-        postRepository.save(targetPost);
+    public PostResDto updatePost(Long postId, PostDto postDto) throws Exception {
+        Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException("대상 포스트가 없습니다."));
+        targetPost.update(postDto.getTitle(),postDto.getContent(),postDto.getMainImgUrl());
         return PostResDto.entityToResDto(targetPost);
     }
 
@@ -138,8 +128,21 @@ public class PostServiceImpl implements PostService{
     }
 
 
+
     @Override
-    public Page<Post> findAll(Predicate predicate, Pageable pageable) {
-        return pagingAndSortingRepository.findAll(predicate, pageable);
+    public PageResponseDto<PostResDto> findAll(Long memberId, String title, PageRequestDto pageRequestDto) {
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
+
+        // 제목으로 검색해서 page로 list return
+        Page<Post> searchPage = postRepository.findByTitleContaining(title, pageable);
+        List<PostResDto> postList = searchPage.getContent().stream()
+                .map(entity -> {
+                    PostResDto dto = PostResDto.entityToResDto(entity);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        System.out.println("PostList"+postList);
+        // PageResponseDto에 withSearch() 메서드를 사용하여 반환
+        return PageResponseDto.<PostResDto>withSearchPost(postList, pageRequestDto, searchPage.getTotalElements());
     }
 }

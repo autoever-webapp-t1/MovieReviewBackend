@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
+@CrossOrigin("*")
 public class MemberController {
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
@@ -41,7 +42,7 @@ public class MemberController {
         return memberDto;
     }
 
-    @PutMapping("/{memberId}/nickname")
+    @PutMapping("/nickname")
     public ResponseEntity<?> updateNickname(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam String newname) {

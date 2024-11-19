@@ -16,12 +16,12 @@ public class HeartController {
     private final HeartService heartService;
     @PostMapping
     public ResponseEntity<MessageDto> insert(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody HeartRequestDto heartRequestDto) throws Exception {
-        heartService.insert(authorizationHeader, heartRequestDto);
+        heartService.insert(authorizationHeader, postId, heartRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("insert success"));
     }
     @DeleteMapping
     public ResponseEntity<MessageDto> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody HeartRequestDto heartRequestDto) throws Exception {
-        heartService.delete(authorizationHeader, heartRequestDto);
+        heartService.delete(authorizationHeader, postId, heartRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(MessageDto.msg("delete success"));
     }
 }
