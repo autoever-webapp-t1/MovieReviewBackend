@@ -40,25 +40,25 @@ public class HeartService {
     }
 
     @Transactional
-    public void insert(String authorizationHeader, HeartRequestDto heartRequestDto) throws Exception {
+    public void insert(String authorizationHeader, Long postId, HeartRequestDto heartRequestDto) throws Exception {
         MemberEntity member =getLoginMember(authorizationHeader);
-        Post post = postRepository.findById(heartRequestDto.getPostId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new NotFoundException("Could not found post id: " + heartRequestDto.getPostId()));
         if(heartRepository.findByMemberAndPost(member,post).isPresent()) {
             throw new Exception();
         }
         Heart heart = Heart.builder()
-                .post(post)
                 .member(member)
+                .post(post)
                 .build();
         heartRepository.save(heart);
         postRepository.incrementLikeCount(post.getPostId());
     }
     @Transactional
-    public void delete(String authorizationHeader, HeartRequestDto heartRequestDto) throws Exception {
+    public void delete(String authorizationHeader, Long postId, HeartRequestDto heartRequestDto) throws Exception {
         MemberEntity member = getLoginMember(authorizationHeader);
 
-        Post post = postRepository.findById(heartRequestDto.getPostId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new NotFoundException("Could not found board id : " + heartRequestDto.getPostId()));
         Heart heart = heartRepository.findByMemberAndPost(member,post)
                 .orElseThrow(()->new NotFoundException("Could not found heart id"));
