@@ -4,8 +4,10 @@ import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "heart")
 public class Heart {
     @Id
