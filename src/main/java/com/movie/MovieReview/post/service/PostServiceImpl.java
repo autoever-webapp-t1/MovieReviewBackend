@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
 
 
-        if (memberId != post.getWriter().getMemberId()) {
+        if (post.getWriter() == null || !memberId.equals(post.getWriter().getMemberId()))  {
             throw new RuntimeException("접근 권한이 없습니다");
         }
         postRepository.delete(post);
