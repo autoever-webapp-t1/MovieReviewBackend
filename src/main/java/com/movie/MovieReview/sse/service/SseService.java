@@ -72,14 +72,14 @@ public class SseService {
 
     // 게시글에 댓글 달렸을 때 알람 기능 구현
     public void sendNotification(Long memberId, String message) {
-//        SseEmitter emitter1 = emitters.get(memberId);
-//        if (emitter1 != null) {
-//            try {
-//                emitter.send(SseEmitter.event().name("NEW_COMMENT").data(message));
-//            } catch (IOException e) {
-//                emitters.remove(memberId);
-//            }
-//        }
+        SseEmitter emitter1 = emitters.get(memberId);
+        if (emitter1 != null) {
+            try {
+                emitter1.send(SseEmitter.event().name("NEW_COMMENT").data(message));
+            } catch (IOException e) {
+                emitters.remove(memberId);
+            }
+        }
     }
     //어워즈 기간 종료 시 결과 알림
     public void broadcast(String message) {

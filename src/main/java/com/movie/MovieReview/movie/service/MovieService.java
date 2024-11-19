@@ -22,6 +22,11 @@ public interface MovieService {
 
     public MovieDetailsDto getMovieDetails(Long id) throws Exception; //영화상세정보 가져오기
     public List<Long> SaveTopRatedId() throws Exception; //TopRated ID들 저장
+
+    List<Long> SavePopularId() throws Exception;
+
+    List<Long> SaveNowPlayingId() throws Exception;
+
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception; //TopRated 상세정보들 TMDB에서 가지고 와서 DB에 저장
     public MovieDetailsDto getTopRatedMovieDetailsInDB(Long movieId, Long memberId) throws Exception; //DB에서 영화 상세정보 ID로 검색
     public MovieDetailsDto getTopRatedMovieDetailsInDBForAwards(Long movieId) throws Exception; //위와 동일. 어워즈를 위해 memberId없는 버전 제공

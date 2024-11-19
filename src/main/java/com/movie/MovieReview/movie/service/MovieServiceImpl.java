@@ -414,7 +414,6 @@ public class MovieServiceImpl implements  MovieService{
         return allMovies;
     }
 
-
     @Override
     public MovieDetailsDto getMovieDetails(Long id) throws Exception {
         log.info("MovieServiceImpl: 지금 영화 데이터 TMDB에서 가져오는 중");
@@ -545,6 +544,8 @@ public class MovieServiceImpl implements  MovieService{
     public List<Long> SaveTopRatedId() throws Exception {
         List<Long> TopRatedMoviesId = new ArrayList<>();
         String TopRatedUrl = "top_rated?language=ko-KR&page=";
+        String PopularUrl = "popular?language=ko-KR&page=";
+        String NowPlayingUrl = "upcoming?language=ko-KR&page=";
 
         for (int page = 1; page <= 500; page++) {
             Request request = new Request.Builder()
@@ -566,7 +567,10 @@ public class MovieServiceImpl implements  MovieService{
                 jsonObject.getAsJsonArray("results").forEach(movieElement -> {
                     JsonObject movieObject = movieElement.getAsJsonObject();
                     Long movieId = movieObject.get("id").getAsLong();
-                    TopRatedMoviesId.add(movieId);
+
+                    if(!movieRepository.existsById(movieId)){
+                        TopRatedMoviesId.add(movieId);
+                    }
 
                     // db에 저장
                     TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
@@ -574,8 +578,92 @@ public class MovieServiceImpl implements  MovieService{
                 });
             }
         }
+
         return TopRatedMoviesId;
     }
+
+    @Override
+    public List<Long> SavePopularId() throws Exception {
+        List<Long> PopularMoviesId = new ArrayList<>();
+        String PopularUrl = "popular?language=ko-KR&page=";
+
+        for (int page = 1; page <= 2; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + PopularUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
+
+                String jsonResponse = response.body().string();
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+
+                // results 배열에서 영화 ID 뽑기
+                jsonObject.getAsJsonArray("results").forEach(movieElement -> {
+                    JsonObject movieObject = movieElement.getAsJsonObject();
+                    Long movieId = movieObject.get("id").getAsLong();
+
+                    if(!movieRepository.existsById(movieId)){
+                        PopularMoviesId.add(movieId);
+                    }
+
+                    // db에 저장
+                    TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
+                    topRatedMovieIdRepository.save(topRatedMovieIdEntity);
+                });
+            }
+        }
+
+        return PopularMoviesId;
+    }
+
+    @Override
+    public List<Long> SaveNowPlayingId() throws Exception {
+        List<Long> NowPlayingId = new ArrayList<>();
+        String NowPlayingUrl = "upcoming?language=ko-KR&page=";
+
+        for (int page = 1; page <= 2; page++) {
+            Request request = new Request.Builder()
+                    .url(TMDB_API_URL + NowPlayingUrl + page + "&region=KR")
+                    .get()
+                    .addHeader("accept", "application/json")
+                    .addHeader("Authorization", AUTH_TOKEN)
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new Exception("Unexpected code " + response);
+                }
+
+                String jsonResponse = response.body().string();
+                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+
+                // results 배열에서 영화 ID 뽑기
+                jsonObject.getAsJsonArray("results").forEach(movieElement -> {
+                    JsonObject movieObject = movieElement.getAsJsonObject();
+                    Long movieId = movieObject.get("id").getAsLong();
+
+                    if(!movieRepository.existsById(movieId)){
+                        NowPlayingId.add(movieId);
+                    }
+
+                    // db에 저장
+                    TopRatedMovieIdEntity topRatedMovieIdEntity = new TopRatedMovieIdEntity(movieId);
+                    topRatedMovieIdRepository.save(topRatedMovieIdEntity);
+                });
+            }
+        }
+
+        return NowPlayingId;
+    }
+
+
+
     public List<MovieDetailsDto> getTopRatedMovieDetails() throws Exception {
         List<MovieDetailsDto> movieDetailsList = new ArrayList<>();
 

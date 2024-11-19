@@ -16,7 +16,7 @@ public interface AwardsService {
 
     public List<AwardsEntity> getPastAwards();
 
-    public Long updateAwardsStatusAndTopMovie(); //return 일등 영화 계산 후 movieId
+    public AwardsDto updateAwardsStatusAndTopMovie(); //return 일등 영화 계산 후 movieId
     public  List<AwardsPastListDto> getPastAwardsDetails(); //과거 어워즈 모든 기록 제공
     public AwardsDto getCurrentAwards();
 

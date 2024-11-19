@@ -60,6 +60,4 @@ public class SseController {
     public void notify(@RequestBody MessageDto messageDto) {
         sseService.send(messageDto);
     }
-
-
 }

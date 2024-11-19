@@ -76,64 +76,77 @@ public class AwardsServiceImpl implements AwardsService{
 
     @Override
     @Transactional
-    public Long updateAwardsStatusAndTopMovie() {
+    public AwardsDto updateAwardsStatusAndTopMovie() {
         // 1. status가 1인 AwardsEntity 조회
-        List<AwardsEntity> activeAwards = awardsRepository.findByStatus(1);
-        log.info("############################Active awards count: {}", activeAwards.size());
+        List<AwardsEntity> awardsList = awardsRepository.findByStatus(1);
+
+        AwardsEntity awards = awardsList.get(0);
+
+        AwardsDto awardsDto = AwardsDto.builder()
+                .awardsId(awards.getAwardsId())
+                .awardName(awards.getAwardName())
+                .nominated1(awards.getNominated1())
+                .nominated2(awards.getNominated2())
+                .nominated3(awards.getNominated3())
+                .nominated4(awards.getNominated4())
+                .startDateTime(awards.getStartDateTime())
+                .endDateTime(awards.getEndDateTime())
+                .topMovieId(awards.getTopMovieId())
+                .build();
 
         Long topMovieId = null;
 
-        for (AwardsEntity awards : activeAwards) {
-            // 2. AwardsEntity에서 기간 가져오기
-            LocalDateTime startDate = awards.getStartDateTime();
-            LocalDateTime endDate = awards.getEndDateTime();
-            log.info("############################Processing AwardsEntity ID: {}, Start Date: {}, End Date: {}",
-                    awards.getAwardsId(), startDate, endDate);
+        // 2. AwardsEntity에서 기간 가져오기
+        LocalDateTime startDate = awards.getStartDateTime();
+        LocalDateTime endDate = awards.getEndDateTime();
+        log.info("############################Processing AwardsEntity ID: {}, Start Date: {}, End Date: {}",
+                awards.getAwardsId(), startDate, endDate);
 
-            // 3. nominated 영화들의 `awardsTotalAverageSkill` 계산 및 비교
-            List<Long> nominatedMovieIds = Arrays.asList(
-                    awards.getNominated1(),
-                    awards.getNominated2(),
-                    awards.getNominated3(),
-                    awards.getNominated4()
-            );
-            log.info("############################Nominated Movie IDs: {}", nominatedMovieIds);
+        // 3. nominated 영화들의 `awardsTotalAverageSkill` 계산 및 비교
+        List<Long> nominatedMovieIds = Arrays.asList(
+                awards.getNominated1(),
+                awards.getNominated2(),
+                awards.getNominated3(),
+                awards.getNominated4()
+        );
+        log.info("############################Nominated Movie IDs: {}", nominatedMovieIds);
 
-            MovieDetailEntity topMovie = null;
-            double highestSkill = -1;
+        MovieDetailEntity topMovie = null;
+        double highestSkill = -1;
 
-            for (Long movieId : nominatedMovieIds) {
-                // 4. 영화의 `awardsTotalAverageSkill` 계산
-                Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, startDate, endDate);
-                log.info("############################Movie ID: {}, Average Skills: {}", movieId, avgSkills);
+        for (Long movieId : nominatedMovieIds) {
+            // 4. 영화의 `awardsTotalAverageSkill` 계산
+            Map<String, Object> avgSkills = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, startDate, endDate);
+            log.info("############################Movie ID: {}, Average Skills: {}", movieId, avgSkills);
 
-                if (!avgSkills.isEmpty()) {
-                    double totalAverageSkill = (double) avgSkills.getOrDefault("totalAverageSkill", 0.0);
-                    log.info("############################Movie ID: {}, Total Average Skill: {}", movieId, totalAverageSkill);
+            if (!avgSkills.isEmpty()) {
+                double totalAverageSkill = (double) avgSkills.getOrDefault("totalAverageSkill", 0.0);
+                log.info("############################Movie ID: {}, Total Average Skill: {}", movieId, totalAverageSkill);
 
-                    // 가장 높은 평균값의 영화 찾기
-                    if (totalAverageSkill > highestSkill) {
-                        highestSkill = totalAverageSkill;
-                        topMovie = movieRepository.findById(movieId)
-                                .orElseThrow(() -> new EntityNotFoundException("############################Movie not found with id: " + movieId));
-                        log.info("############################New Top Movie Found: ID: {}, Skill: {}", topMovie.getId(), highestSkill);
-                    }
+                // 가장 높은 평균값의 영화 찾기
+                if (totalAverageSkill > highestSkill) {
+                    highestSkill = totalAverageSkill;
+                    topMovie = movieRepository.findById(movieId)
+                            .orElseThrow(() -> new EntityNotFoundException("############################Movie not found with id: " + movieId));
+                    log.info("############################New Top Movie Found: ID: {}, Skill: {}", topMovie.getId(), highestSkill);
                 }
             }
-
-            // 5. AwardsEntity에 topMovieId 설정 및 상태 업데이트
-            if (topMovie != null) {
-                awards.setTopMovieId(topMovie.getId());
-                topMovieId = awards.getTopMovieId();
-                log.info("############################Top Movie for Awards ID: {} is Movie ID: {}", awards.getAwardsId(), topMovie.getId());
-            } else {
-                log.info("############################No Top Movie Found for Awards ID: {}", awards.getAwardsId());
-            }
-
-            awards.setStatus(0); // 상태를 0으로 변경
-            awardsRepository.save(awards); // 변경 사항 저장
-            log.info("############################AwardsEntity ID: {} status updated to 0", awards.getAwardsId());
         }
+
+        // 5. AwardsEntity에 topMovieId 설정 및 상태 업데이트
+        if (topMovie != null) {
+            awards.setTopMovieId(topMovie.getId());
+            topMovieId = awards.getTopMovieId();
+            log.info("############################Top Movie for Awards ID: {} is Movie ID: {}", awards.getAwardsId(), topMovie.getId());
+        } else {
+            log.info("############################No Top Movie Found for Awards ID: {}", awards.getAwardsId());
+        }
+
+        awards.setStatus(0); // 상태를 0으로 변경
+        awardsRepository.save(awards); // 변경 사항 저장
+        log.info("############################AwardsEntity ID: {} status updated to 0", awards.getAwardsId());
+
+
         // 상태가 2인 항목 중 하나를 1로 변경
         List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
         if (!futureAwards.isEmpty()) {
@@ -142,7 +155,7 @@ public class AwardsServiceImpl implements AwardsService{
             awardsRepository.save(nextAward);
             log.info("############################Award ID: {} status updated from 2 to 1", nextAward.getAwardsId());
         }
-        return topMovieId;
+        return awardsDto;
     }
 
     // 과거 어워즈 기록 조회
