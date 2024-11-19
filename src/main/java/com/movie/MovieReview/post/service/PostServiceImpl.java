@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,10 +46,9 @@ public class PostServiceImpl implements PostService{
         return Long.valueOf(jwtTokenService.getPayload(token));
     }
 
-    private MemberEntity getLoginMember(String authorizationHeader) throws Exception {
+    private Long getLoginMember(String authorizationHeader) throws Exception {
         Long memberId = extractMemberId(authorizationHeader);
-        return memberRepository.findById(memberId)
-                .orElseThrow(()->new RuntimeException("member not found"));
+        return memberId;
     }
 
     @Override
@@ -64,7 +64,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception {
-        MemberEntity member = getLoginMember(authorizationHeader);
+        Long memberId = getLoginMember(authorizationHeader);
+        MemberEntity member = memberRepository.findById(memberId).orElseThrow();
         String title = postDto.getTitle();
         String content = postDto.getContent();
         String mainImgUrl = postDto.getMainImgUrl();
@@ -84,9 +85,11 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional
     public void deletePost(String authorizationHeader, Long postId) throws Exception {
-        MemberEntity member = getLoginMember(authorizationHeader);
+        Long memberId = getLoginMember(authorizationHeader);
         Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
-        if (!post.getWriter().equals(member)) {
+
+
+        if (memberId != post.getWriter().getMemberId()) {
             throw new RuntimeException("접근 권한이 없습니다");
         }
         postRepository.delete(post);
@@ -95,14 +98,15 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional
     public PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception {
-        MemberEntity member = getLoginMember(authorizationHeader);
+        Long memberId = getLoginMember(authorizationHeader);
+        Optional<MemberEntity> member = memberRepository.findById(memberId);
         Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
-        if (!targetPost.getWriter().equals(member)) {
+        if (targetPost.getWriter().equals(member)) {
             throw new RuntimeException("접근 권한이 없습니다");
         }
         targetPost.update(postDto);
 
-        Post updatedPost = postRepository.save(targetPost);
+        postRepository.save(targetPost);
         return PostResDto.entityToResDto(targetPost);
     }
 
@@ -137,36 +141,4 @@ public class PostServiceImpl implements PostService{
     public Page<Post> findAll(Predicate predicate, Pageable pageable) {
         return pagingAndSortingRepository.findAll(predicate, pageable);
     }
-
-
-    public PostDetailDto postDetailDto(Post post) {
-        return PostDetailDto.builder()
-                .postId(post.getPostId())
-                .memberId(post.getWriter().getMemberId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .nickname(post.getWriter().getNickname())
-                .likesCount(post.getLikesCount())
-                .liked(post.isLiked())
-                .createdDate(post.getCreatedDate())
-                .modifiedDate(post.getModifiedDate())
-                .build();
-    }
-
-    public PostResDto postResDto(Post post) {
-        return PostResDto.builder()
-                .postId(post.getPostId())
-                .memberId(post.getWriter().getMemberId())
-                .nickname(post.getWriter().getNickname())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .commentCnt(post.getCommentCnt())
-                .liked(post.isLiked())
-                .likesCount(post.getLikesCount())
-                .profileImage(post.getWriter().getProfile())
-                .createdDate(post.getCreatedDate())
-                .modifiedDate(post.getModifiedDate())
-                .build();
-    }
-
 }
