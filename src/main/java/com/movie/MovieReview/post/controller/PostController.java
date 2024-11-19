@@ -46,9 +46,9 @@ public class PostController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostDetailDto> getPost(@PathVariable Long postId) {
-        PostDetailDto postDetailDto = postService.getPost(postId);
-        return ResponseEntity.status(HttpStatus.OK).body(postDetailDto);
+    public ResponseEntity<PostResDto> getPost(@PathVariable Long postId) {
+        PostResDto postResDto = postService.getPost(postId);
+        return ResponseEntity.status(HttpStatus.OK).body(postResDto);
     }
 
     @GetMapping("/posts")

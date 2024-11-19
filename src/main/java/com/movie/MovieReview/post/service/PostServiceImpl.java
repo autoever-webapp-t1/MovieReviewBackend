@@ -109,9 +109,9 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostDetailDto getPost(Long postId) {
+    public PostResDto getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
-        return postDetailDto(post);
+        return PostResDto.entityToResDto(post);
     }
 
     @Override
