@@ -82,18 +82,6 @@ public class AwardsServiceImpl implements AwardsService{
 
         AwardsEntity awards = awardsList.get(0);
 
-        AwardsDto awardsDto = AwardsDto.builder()
-                .awardsId(awards.getAwardsId())
-                .awardName(awards.getAwardName())
-                .nominated1(awards.getNominated1())
-                .nominated2(awards.getNominated2())
-                .nominated3(awards.getNominated3())
-                .nominated4(awards.getNominated4())
-                .startDateTime(awards.getStartDateTime())
-                .endDateTime(awards.getEndDateTime())
-                .topMovieId(awards.getTopMovieId())
-                .build();
-
         Long topMovieId = null;
 
         // 2. AwardsEntity에서 기간 가져오기
@@ -136,11 +124,22 @@ public class AwardsServiceImpl implements AwardsService{
         // 5. AwardsEntity에 topMovieId 설정 및 상태 업데이트
         if (topMovie != null) {
             awards.setTopMovieId(topMovie.getId());
-            topMovieId = awards.getTopMovieId();
             log.info("############################Top Movie for Awards ID: {} is Movie ID: {}", awards.getAwardsId(), topMovie.getId());
         } else {
             log.info("############################No Top Movie Found for Awards ID: {}", awards.getAwardsId());
         }
+
+        AwardsDto awardsDto = AwardsDto.builder()
+                .awardsId(awards.getAwardsId())
+                .awardName(awards.getAwardName())
+                .nominated1(awards.getNominated1())
+                .nominated2(awards.getNominated2())
+                .nominated3(awards.getNominated3())
+                .nominated4(awards.getNominated4())
+                .startDateTime(awards.getStartDateTime())
+                .endDateTime(awards.getEndDateTime())
+                .topMovieId(awards.getTopMovieId())
+                .build();
 
         awards.setStatus(0); // 상태를 0으로 변경
         awardsRepository.save(awards); // 변경 사항 저장

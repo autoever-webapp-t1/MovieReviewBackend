@@ -16,9 +16,9 @@ public interface PostService {
     Post findByPostId(Long postId);
     PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception;
     void deletePost(String authorizationHeader,Long postId) throws Exception;
-    PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postResDto) throws Exception;
+    PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception;
     List<PostResDto> findPostByMemberId(Long memberId);
-    PostResDto getPost(String authorizationHeader, Long postId) throws Exception;
+    PostResDto getPost(Long postId) throws Exception;
     PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto);
     Page<Post> findAll(Predicate predicate, Pageable pageable);
 }

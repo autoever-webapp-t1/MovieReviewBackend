@@ -22,7 +22,7 @@ public class PostDetailDto{
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private String profileImage;
-    private String thumbnail;
+    private String mainImgUrl;
     private String textContent;
     private int commentCnt;
 }

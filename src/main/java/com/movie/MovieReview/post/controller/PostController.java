@@ -30,8 +30,8 @@ public class PostController {
     }
 
     @PatchMapping("/post/{postId}")
-    public ResponseEntity<PostResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody PostResDto postResDto) throws Exception {
-        PostResDto updatedDto = postService.updatePost(authorizationHeader, postId, postResDto);
+    public ResponseEntity<PostResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody PostDto postDto) throws Exception {
+        PostResDto updatedDto = postService.updatePost(authorizationHeader, postId, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
 
@@ -42,8 +42,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResDto> getPost(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId) throws Exception {
-        PostResDto postResDto = postService.getPost(authorizationHeader, postId);
+    public ResponseEntity<PostResDto> getPost(@PathVariable Long postId) throws Exception {
+        PostResDto postResDto = postService.getPost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(postResDto);
     }
 
