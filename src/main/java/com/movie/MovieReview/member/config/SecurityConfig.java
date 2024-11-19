@@ -53,7 +53,8 @@ public class SecurityConfig {
     public SecurityFilterChain configure(final HttpSecurity http) throws Exception {
         return http.cors(withDefaults()).csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests(
-                        (authorize) -> authorize.requestMatchers("/**").permitAll().requestMatchers("/user/**")
+                        (authorize) -> authorize.requestMatchers("/**").permitAll()
+                                .requestMatchers("/user/**")
                                 .hasAuthority(MemberRole.USER.getRole()).anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable()) // 로그인 폼 미사용
