@@ -1,6 +1,7 @@
 package com.movie.MovieReview.movie.service;
 
 import com.google.gson.*;
+import com.movie.MovieReview.awards.dto.AwardsAllScoreDto;
 import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.repository.AwardsRepository;
 import com.movie.MovieReview.movie.dto.*;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -985,6 +987,70 @@ public class MovieServiceImpl implements  MovieService{
         }
         movieDetailsDto.setScore(score);
         movieDetailsDto.setMyScore(myScore);
+
+        // 어워즈 관련 데이터 DTO 생성
+//        AwardsAllScoreDto awardsAllScoreDto;
+
+        List<AwardsEntity> nominatedList = awardsRepository.findByStatus(1); //어차피 하나임
+
+        // movieId와 일치하는 어워즈를 찾아서 해당 어워즈 정보를 처리
+        for (AwardsEntity awardsEntity : nominatedList) {
+            // nominated1, nominated2, nominated3, nominated4 중 하나라도 movieId와 일치하는지 확인
+            if (awardsEntity.getNominated1().equals(movieId) ||
+                    awardsEntity.getNominated2().equals(movieId) ||
+                    awardsEntity.getNominated3().equals(movieId) ||
+                    awardsEntity.getNominated4().equals(movieId)) {
+
+                // 어워즈 관련 데이터 DTO 설정
+                LocalDateTime awardStartDate = awardsEntity.getStartDateTime();
+                LocalDateTime awardEndDate = awardsEntity.getEndDateTime();
+
+                // awardsScore 초기화
+                Map<String, Object> awardsScore = Map.of(
+                        "avgActorSkillWithAwards", 0.0,
+                        "avgDirectorSkillWithAwards", 0.0,
+                        "avgLineSkillWithAwards", 0.0,
+                        "avgMusicSkillWithAwards", 0.0,
+                        "avgSceneSkillWithAwards", 0.0,
+                        "avgStorySkillWithAwards", 0.0,
+                        "totalAverageSkillWithAwards", 0.0
+                );
+
+                // awardsMyScore 초기화
+                Map<String, Object> awardsMyScore = null;
+
+                try {
+                    // 어워즈 기간에 대한 점수 데이터 가져오기
+                    awardsScore = reviewService.getAverageSkillsByMovieIdAndDateRange(movieId, awardStartDate, awardEndDate);
+                    awardsMyScore = reviewService.getAwardsReviewSkills(memberId, movieId, awardStartDate, awardEndDate);
+
+                    // awardsMyScore가 비어 있는 경우 null로 처리
+                    if (awardsMyScore == null || awardsMyScore.isEmpty()) {
+                        awardsMyScore = null;
+                    }
+                } catch (Exception e) {
+                    log.warn("Awards review data not found for movie ID: {} and member ID: {}", movieId, memberId, e);
+                    awardsScore = Map.of(
+                            "avgActorSkillWithAwards", 0.0,
+                            "avgDirectorSkillWithAwards", 0.0,
+                            "avgLineSkillWithAwards", 0.0,
+                            "avgMusicSkillWithAwards", 0.0,
+                            "avgSceneSkillWithAwards", 0.0,
+                            "avgStorySkillWithAwards", 0.0,
+                            "totalAverageSkillWithAwards", 0.0
+                    );
+                    awardsMyScore = null; // 데이터가 없으므로 null로 설정
+                }
+
+// 어워즈 관련 score 두 개 값 넣어주기
+                AwardsAllScoreDto awardsAllScoreDto = new AwardsAllScoreDto(movieId, awardsScore, awardsMyScore);
+
+
+                // 결과를 movieDetailsDto에 설정
+                movieDetailsDto.setAwardsAllScoreDto(awardsAllScoreDto);
+                break;  // 일치하는 어워즈를 찾은 후에는 더 이상 반복할 필요 없음
+            }
+        }
 
         // awardsNames 초기화
         List<String> awardsNames = List.of();

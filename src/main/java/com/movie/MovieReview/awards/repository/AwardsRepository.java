@@ -6,10 +6,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AwardsRepository extends JpaRepository<AwardsEntity, Long> {
-    List<AwardsEntity> findByStatus(int status);
+    List<AwardsEntity> findByStatus(int status); //for past
+
+//    Optional<AwardsEntity> findByStatusCurrent(int status); //for current
 
     List<AwardsEntity> findByStatusOrderByAwardsIdDesc(int status);
 

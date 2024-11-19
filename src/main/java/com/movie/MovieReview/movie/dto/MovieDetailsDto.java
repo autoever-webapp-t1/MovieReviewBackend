@@ -1,5 +1,7 @@
 package com.movie.MovieReview.movie.dto;
 
+import com.movie.MovieReview.awards.dto.AwardsAllScoreDto;
+import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +32,8 @@ public class MovieDetailsDto {
 
     private List<String> awardsNames; // 수상 경력 있으면 awardsName 보여주기
 
+
+    private AwardsAllScoreDto awardsAllScoreDto;
 
     public MovieDetailsDto(Long id, String title, String overview, String release_date, int runtime, String images,
                            String videos, String genres, List<Credits> credits, List<Recommends> recommendations) {

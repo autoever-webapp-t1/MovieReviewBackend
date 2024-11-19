@@ -35,12 +35,12 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     Map<String, Object> findAverageSkillsByMovieId(@Param("movieId") Long movieId);
 
     @Query("SELECT new map(" +
-            "AVG(r.actorSkill) as avgActorSkill, " +
-            "AVG(r.directorSkill) as avgDirectorSkill, " +
-            "AVG(r.lineSkill) as avgLineSkill, " +
-            "AVG(r.musicSkill) as avgMusicSkill, " +
-            "AVG(r.sceneSkill) as avgSceneSkill, " +
-            "AVG(r.storySkill) as avgStorySkill) " +
+            "AVG(r.actorSkill) as avgActorSkillWithAwards, " +
+            "AVG(r.directorSkill) as avgDirectorSkillWithAwards, " +
+            "AVG(r.lineSkill) as avgLineSkillWithAwards, " +
+            "AVG(r.musicSkill) as avgMusicSkillWithAwards, " +
+            "AVG(r.sceneSkill) as avgSceneSkillWithAwards, " +
+            "AVG(r.storySkill) as avgStorySkillWithAwards) " +
             "FROM ReviewEntity r " +
             "WHERE r.movie.id = :id " +
             "AND ((r.createdDate BETWEEN :startDate AND :endDate) " +
@@ -51,12 +51,12 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT new map(" +
-            "r.actorSkill as actorSkill, " +
-            "r.directorSkill as directorSkill, " +
-            "r.lineSkill as lineSkill, " +
-            "r.musicSkill as musicSkill, " +
-            "r.sceneSkill as sceneSkill, " +
-            "r.storySkill as storySkill) " +
+            "r.actorSkill as myActorSkill, " +
+            "r.directorSkill as myDirectorSkill, " +
+            "r.lineSkill as myLineSkill, " +
+            "r.musicSkill as myMusicSkill, " +
+            "r.sceneSkill as mySceneSkill, " +
+            "r.storySkill as myStorySkill) " +
             "FROM ReviewEntity r " +
             "WHERE r.member.id = :memberId AND r.movie.id = :movieId " +
             "ORDER BY r.createdDate DESC")
@@ -69,5 +69,26 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     List<ReviewEntity> findAllReviewsByMemberIdAndMovieId(
             @Param("memberId") Long memberId,
             @Param("movieId") Long movieId);
+
+    @Query("SELECT new map(" +
+            "r.actorSkill as myActorSkillWithMyAwards, " +
+            "r.directorSkill as myDirectorSkillWithMyAwards, " +
+            "r.lineSkill as myLineSkillWithMyAwards, " +
+            "r.musicSkill as myMusicSkillWithMyAwards, " +
+            "r.sceneSkill as mySceneSkillWithMyAwards, " +
+            "r.storySkill as myStorySkillWithMyAwards) " +
+            "FROM ReviewEntity r " +
+            "WHERE r.member.id = :memberId " +
+            "AND r.movie.id = :movieId " +
+            "AND r.createdDate BETWEEN :startDate AND :endDate " +
+            "AND r.modifiedDate BETWEEN :startDate AND :endDate")
+    Optional<Map<String, Object>> findReviewByMemberIdAndMovieIdAndCreatedDateAndModifiedDateBetween(
+            @Param("memberId") Long memberId,
+            @Param("movieId") Long movieId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
+
+
 }
 

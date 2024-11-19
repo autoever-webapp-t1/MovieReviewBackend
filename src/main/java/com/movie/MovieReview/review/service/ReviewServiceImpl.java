@@ -207,12 +207,12 @@ public class ReviewServiceImpl implements ReviewService {
         // 결과가 비어 있는 경우 빈 Map 반환
         if (avgSkills == null || avgSkills.isEmpty()) {
             avgSkills = new HashMap<>();
-            avgSkills.put("avgActorSkill", 0.0);
-            avgSkills.put("avgDirectorSkill", 0.0);
-            avgSkills.put("avgLineSkill", 0.0);
-            avgSkills.put("avgMusicSkill", 0.0);
-            avgSkills.put("avgSceneSkill", 0.0);
-            avgSkills.put("avgStorySkill", 0.0);
+            avgSkills.put("avgActorSkillWithAwards", 0.0);
+            avgSkills.put("avgDirectorSkillWithAwards", 0.0);
+            avgSkills.put("avgLineSkillWithAwards", 0.0);
+            avgSkills.put("avgMusicSkillWithAwards", 0.0);
+            avgSkills.put("avgSceneSkillWithAwards", 0.0);
+            avgSkills.put("avgStorySkillWithAwards", 0.0);
         }
 
         // 평균값들을 더해 전체 평균 계산
@@ -228,7 +228,7 @@ public class ReviewServiceImpl implements ReviewService {
         // Movie 엔티티의 awardsTotalAverageSkill 업데이트
         updateMovieAwardsTotalAverageSkill(movieId, roundedTotalAvg);
 
-        avgSkills.put("totalAverageSkill", roundedTotalAvg);
+        avgSkills.put("totalAverageSkillWithAwards", roundedTotalAvg);
         return avgSkills;
     }
 
@@ -269,10 +269,48 @@ public class ReviewServiceImpl implements ReviewService {
         double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
 
         // avgSkill 값 추가
-        mySkills.put("avgSkill", roundedTotalAvg);
+        mySkills.put("myAvgSkill", roundedTotalAvg);
 
         return mySkills;
     }
+    //for awards
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> getAwardsReviewSkills(Long memberId, Long movieId, LocalDateTime awardStartDate, LocalDateTime awardEndDate) {
+        // 최신 리뷰 한 건 조회
+        Optional<Map<String, Object>> result = reviewRepository.findReviewByMemberIdAndMovieIdAndCreatedDateAndModifiedDateBetween(
+                memberId, movieId, awardStartDate, awardEndDate);
+
+        // 결과가 비어 있는 경우 null 반환
+        if (result.isEmpty()) {
+            log.warn("No review found for member ID: {} and movie ID: {}", memberId, movieId);
+            return null;
+        }
+
+        // 결과가 존재하는 경우 처리
+        Map<String, Object> mySkills = result.get();
+
+        // 평균값들을 더해 전체 평균 계산
+        double totalAvg = mySkills.values().stream()
+                .filter(Objects::nonNull) // null 값 제외
+                .mapToInt(value -> (int) value)
+                .average()
+                .orElse(Double.NaN);
+
+        // 모든 값이 null인 경우 null 반환
+        if (Double.isNaN(totalAvg)) {
+            mySkills.put("avgSkillWithMyAwards", null);
+        } else {
+            // 소수점 둘째 자리까지 반올림
+            double roundedTotalAvg = Math.round(totalAvg * 100.0) / 100.0;
+
+            // avgSkillWithMyAwards 값 추가
+            mySkills.put("avgSkillWithMyAwards", roundedTotalAvg);
+        }
+
+        return mySkills;
+    }
+
 
     @Override
     @Transactional(readOnly = true)
