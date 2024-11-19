@@ -3,13 +3,9 @@ package com.movie.MovieReview.Heart.entity;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.post.entity.Post;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 @Table(name = "heart")
 public class Heart {
     @Id
