@@ -44,7 +44,7 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             "FROM ReviewEntity r " +
             "WHERE r.movie.id = :id " +
             "AND ((r.createdDate BETWEEN :startDate AND :endDate) " +
-            "OR (r.modifiedDate BETWEEN :startDate AND :endDate))")
+            "AND (r.modifiedDate BETWEEN :startDate AND :endDate))")
     Map<String, Object> findAverageSkillsByMovieIdWithinDateRange(
             @Param("id") Long movieId,
             @Param("startDate") LocalDateTime startDate,
