@@ -162,7 +162,7 @@ public class AwardsServiceImpl implements AwardsService{
     @Transactional
     public List<AwardsPastListDto> getPastAwardsDetails() {
         //List<AwardsEntity> pastAwards = awardsRepository.findByStatus(0);
-        List<AwardsEntity> pastAwards = awardsRepository.findByStatusOrderByIdDesc(0);
+        List<AwardsEntity> pastAwards = awardsRepository.findByStatusOrderByAwardsIdDesc(0);
         return pastAwards.stream().map(award -> {
             List<Long> nominatedMovies = List.of(
                     award.getNominated1(),

@@ -11,7 +11,7 @@ import java.util.List;
 public interface AwardsRepository extends JpaRepository<AwardsEntity, Long> {
     List<AwardsEntity> findByStatus(int status);
 
-    List<AwardsEntity> findByStatusOrderByIdDesc(int status);
+    List<AwardsEntity> findByStatusOrderByAwardsIdDesc(int status);
 
     List<AwardsEntity> findByTopMovieId(@Param("topMovieId") Long topMovieId);
 }
