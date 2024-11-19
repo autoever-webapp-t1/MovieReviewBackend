@@ -365,6 +365,19 @@ public class ReviewServiceImpl implements ReviewService {
                         reviewEntity.getStorySkill() + reviewEntity.getLineSkill()) / 6) * 100
         ) / 100.0;
 
+        Long movieId = reviewEntity.getMovie().getId();
+        Optional<MovieDetailEntity> movieDetailOptional = movieRepository.findById(movieId);
+        if (movieDetailOptional.isEmpty()) {
+            log.info("ReviewServiceImpl ?????????????? movieDetail null값" );
+            return null;
+        }
+
+        MovieDetailEntity movieDetail = movieDetailOptional.get();
+
+        int endIndex = movieDetail.getImages().indexOf(",", 17);
+        String profile_path = movieDetail.getImages().substring(17,endIndex-1);
+
+
         return ReviewDetailDto.builder()
                 .reviewId(reviewEntity.getReviewId())
                 .nickname(reviewEntity.getMember().getNickname())
@@ -384,6 +397,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .storySkill(reviewEntity.getStorySkill())
                 .lineSkill(reviewEntity.getLineSkill())
                 .avgSkill(avgSkill)
+                .poster_path(profile_path)
                 .build();
     }
 

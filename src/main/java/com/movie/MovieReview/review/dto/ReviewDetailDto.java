@@ -37,4 +37,6 @@ public class ReviewDetailDto {
     private int lineSkill;
 
     private double avgSkill;
+
+    private String poster_path;
 }
