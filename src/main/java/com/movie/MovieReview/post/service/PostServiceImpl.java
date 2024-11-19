@@ -120,7 +120,7 @@ public class PostServiceImpl implements PostService{
     public PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto) {
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1, pageRequestDto.getSize());
         Page<Post> postPage = postRepository.findAll(pageable);
-        List<PostResDto> posts = postPage.getContent().stream().map(this::postResDto)
+        List<PostResDto> posts = postPage.getContent().stream().map(PostResDto::entityToResDto)
                 .collect(Collectors.toList());
         if (posts.isEmpty()) {
             throw new NoPostsFoundException("게시글이 없습니다.");
