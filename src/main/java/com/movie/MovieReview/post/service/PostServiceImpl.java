@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,7 +123,7 @@ public class PostServiceImpl implements PostService{
     }
 
     public PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto) {
-        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1, pageRequestDto.getSize());
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1, pageRequestDto.getSize(), Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<Post> postPage = postRepository.findAll(pageable);
         List<PostResDto> posts = postPage.getContent().stream().map(PostResDto::entityToResDto)
                 .collect(Collectors.toList());
