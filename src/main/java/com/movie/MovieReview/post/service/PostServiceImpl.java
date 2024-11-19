@@ -66,9 +66,9 @@ public class PostServiceImpl implements PostService{
     public PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception {
         MemberEntity member = getLoginMember(authorizationHeader);
         String title = postDto.getTitle();
-        String content = postDto.content();
-        String mainImgUrl = postDto.mainImgUrl();
-        String textContent = postDto.textContent();
+        String content = postDto.getContent();
+        String mainImgUrl = postDto.getMainImgUrl();
+        String textContent = postDto.getTextContent();
         Post post = Post.builder()
                 .writer(member)
                 .title(title)
@@ -94,7 +94,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postDto) throws Exception {
+    public PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception {
         MemberEntity member = getLoginMember(authorizationHeader);
         Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
         if (!targetPost.getWriter().equals(member)) {
@@ -116,24 +116,6 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
         return PostResDto.entityToResDto(post);
     }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto) {
-//        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1,pageRequestDto.getSize());
-//        Page<Post> postPage =  postRepository.findAll(pageable);
-//        List<PostDetailDto> posts = postPage.getContent().stream()
-//                .map(this::postDetailDto)
-//                .collect(Collectors.toList());
-//        if (posts.isEmpty()) {
-//            throw new NoPostsFoundException("게시글이 없습니다.");
-//        }
-//        return PageResponseDto.<PostDetailDto>withAll()
-//                .dtoList(posts)
-//                .pageRequestDto(pageRequestDto)
-//                .total(postPage.getTotalElements())
-//                .build();
-//    }
 
     public PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto) {
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1, pageRequestDto.getSize());
