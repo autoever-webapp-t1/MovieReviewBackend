@@ -108,7 +108,8 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
-//리뷰 하나를 가지고 올 때 reviewId로 하는게 아닌, movieId로 수정
+
+    //리뷰 하나를 가지고 올 때 reviewId로 하는게 아닌, movieId로 수정
     // 리뷰 하나 조회
     @GetMapping("/movie/{id}/review/{reviewId}")
     public ResponseEntity<?> getReview(@PathVariable("reviewId") Long reviewId) {
@@ -222,4 +223,17 @@ public class ReviewController {
         List<MovieCardDto> movieCards = reviewService.getMovieCardDtosByMemberId(memberId);
         return ResponseEntity.ok(movieCards);
     }
+
+    //내가 평가한 영화라면 내가 평가한 myScore 값도 반환하기 위해 List<MovieCardDto> 로 반환
+//    @GetMapping("/movie/top-actor-skill")
+//    public ResponseEntity<?> getTopMoviesByActorSkill(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
+//        try{
+//            Long memberId = extractMemberId(authorizationHeader);
+//            List<MovieCardDto> movieCards = reviewService.getTop20MoviesByAvgActorSkillWithMyscore(memberId);
+//            return ResponseEntity.ok(movieCards);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
+//        }
+//    }
 }

@@ -20,12 +20,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    private CommentRepository commentRepository;
-    private MemberRepository memberRepository;
-    private PostRepository postRepository;
-    private PostServiceImpl postService;
+    private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
+    private final PostServiceImpl postService;
     private final SseService sseService;
     private final JwtTokenService jwtTokenService;
+
     private Long extractMemberId(String authorizationHeader) throws Exception {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("클라이언트에서 헤더 토큰 오류!!!!!");
@@ -78,7 +79,7 @@ public class CommentServiceImpl implements CommentService {
         postRepository.save(post);
         Long postOwnerId = post.getWriter().getMemberId();
         if (!postOwnerId.equals(member.getMemberId())) {
-            sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
+            //sseService.sendNotification(member.getMemberId(),"새 댓글이 달렸습니다.");
         }
         return CommentResDto.entityToResDto(comment);
     }
