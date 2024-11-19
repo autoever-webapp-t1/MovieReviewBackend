@@ -43,8 +43,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResDto> getPost(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId) throws Exception {
-        PostResDto postResDto = postService.getPost(authorizationHeader, postId);
+    public ResponseEntity<PostResDto> getPost(@PathVariable Long postId) throws Exception {
+        PostResDto postResDto = postService.getPost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(postResDto);
     }
 

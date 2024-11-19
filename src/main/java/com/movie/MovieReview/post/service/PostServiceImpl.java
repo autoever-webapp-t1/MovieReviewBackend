@@ -67,9 +67,13 @@ public class PostServiceImpl implements PostService{
         MemberEntity member = getLoginMember(authorizationHeader);
         String title = postDto.getTitle();
         String content = postDto.content();
+        String mainImgUrl = postDto.mainImgUrl();
+        String textContent = postDto.textContent();
         Post post = Post.builder()
                 .writer(member)
                 .title(title)
+                .mainImgUrl(mainImgUrl)
+                .textContent(textContent)
                 .content(content)
                 .build();
 
@@ -108,8 +112,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostResDto getPost(String authorizationHeader, Long postId) throws Exception {
-        MemberEntity member = getLoginMember(authorizationHeader);
+    public PostResDto getPost(Long postId) throws Exception {
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
         return PostResDto.entityToResDto(post);
     }
