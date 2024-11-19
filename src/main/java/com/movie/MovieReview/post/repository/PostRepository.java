@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long>{
-    Optional<Post> findById(Long postId);
+//    Optional<Post> findById(Long postId);
 
     @Modifying
     @Transactional
@@ -23,6 +23,4 @@ public interface PostRepository extends JpaRepository<Post,Long>{
     @Transactional
     @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
     void decrementLikeCount(@Param("postId") Long postId);
-
-
 }
