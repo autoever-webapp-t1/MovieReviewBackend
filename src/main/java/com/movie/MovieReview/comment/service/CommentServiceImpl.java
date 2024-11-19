@@ -49,20 +49,27 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteComment(String authorizationHeader, Long commentId) throws Exception {
-        if (commentRepository.findById(commentId) != null) {
-            commentRepository.delete(commentRepository.getReferenceById(commentId));
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new CommentNotFoundException("comment not found"));
-            MemberEntity member = getLoginMember(authorizationHeader);
-            if (!comment.getWriter().equals(member)) {
-                throw new RuntimeException("no permisson");
-            }
-            Post post = comment.getPost();
-            post.deleteComment(comment);
-            commentRepository.delete(comment);
-            postRepository.save(post);
+        // 댓글 존재 여부 확인
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("comment not found"));
+
+        // 로그인된 회원 정보 가져오기
+        MemberEntity member = getLoginMember(authorizationHeader);
+
+        // 댓글 작성자와 로그인한 회원이 동일한지 확인
+        if (!comment.getWriter().equals(member)) {
+            throw new RuntimeException("no permission");
         }
+
+        // 게시물에서 댓글 삭제
+        Post post = comment.getPost();
+        post.deleteComment(comment);
+
+        // 댓글 삭제
+        commentRepository.delete(comment);
+        postRepository.save(post);  // 수정된 post 객체 저장
     }
+
 
     @Override
     @Transactional
@@ -86,11 +93,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentResDto updateComment(Long commentId, CommentResDto commentResDto) {
+    public CommentResDto updateComment(Long commentId, CommentReqDto commentReqDto) {
         Comment target = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("대상 댓글이 없습니다."));
-        target.update(commentResDto);
-        Comment updated = commentRepository.save(target);
+        target.updateContent(commentReqDto.getContent());
+        //commentRepository.save(target);
         return CommentResDto.entityToResDto(target);
     }
 
