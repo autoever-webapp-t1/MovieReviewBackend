@@ -148,10 +148,10 @@ public class MovieController {
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
     public List<Long> SaveTopRatedId(){
         try{
-            System.out.println("++++++++++++++++++++++++++++== : "+movieService.SavePopularId());
-            return movieService.SavePopularId();
-            //movieService.SaveNowPlayingId();
-            //return movieService.SaveTopRatedId();
+            movieService.SaveTopRatedId(); //500페이지
+            movieService.SaveUpComingId(); //2페이지
+            movieService.SavePopularId(); //2페이지
+            return movieService.SaveNowPlayingId(); //2페이지
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -189,6 +189,15 @@ public class MovieController {
             System.out.println("**********************MovieController 리뷰 리스트?????????");
             //영화 상세정보
             MovieDetailsDto movieDetails = movieService.getTopRatedMovieDetailsInDB(id, memberId);
+
+            System.out.println("8888888888888888888888888888888888888 : "+movieDetails.getCredits().size());
+
+            // 크레딧 갯수 제한
+            if (movieDetails.getCredits().size() > 11) {
+                movieDetails.setCredits(movieDetails.getCredits().subList(0, 11)); // 크레딧 리스트를 11개로 제한
+            }
+
+
             System.out.println("**********************MovieController 리뷰 리스트?????????");
             //사용자가 해당 영화에 쓴 리뷰
             List<ReviewEntity> reviews = reviewRepository.findAllReviewsByMemberIdAndMovieId(memberId,id);
@@ -200,6 +209,7 @@ public class MovieController {
                     .toList();
 
             MovieWithReviewsDto response = new MovieWithReviewsDto(movieDetails, reviewDtos);
+
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
