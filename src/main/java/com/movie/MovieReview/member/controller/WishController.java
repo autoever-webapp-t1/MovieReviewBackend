@@ -5,6 +5,7 @@ import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.member.service.WishService;
 import com.movie.MovieReview.member.service.WishServiceImpl;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/wish")
+@RequiredArgsConstructor
 public class WishController {
 
-    @Autowired
-    private WishService wishService;
+    private final WishService wishService;
 
-    @Autowired
-    private JwtTokenService jwtTokenService;
+    private final JwtTokenService jwtTokenService;
 
     //JWTToken에서 memberId추출
     private Long extractMemberId(String authorizationHeader) throws Exception {

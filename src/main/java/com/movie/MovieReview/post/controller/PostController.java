@@ -8,6 +8,7 @@ import com.movie.MovieReview.review.dto.PageRequestDto;
 import com.movie.MovieReview.review.dto.PageResponseDto;
 import com.movie.global.dto.MessageDto;
 import com.querydsl.core.types.Predicate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
@@ -15,14 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class PostController {
-    private final PostServiceImpl postService;
-    public PostController(PostServiceImpl postService) {
-        this.postService = postService;
-    }
 
+    private final PostServiceImpl postService;
 
     @PostMapping("/post")
     public ResponseEntity<PostResDto> create(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PostDto postDto) throws Exception {
@@ -70,7 +69,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity getFiltered(@QuerydslPredicate(root = Post.class) Predicate predicate, Pageable pageable) {
+    public ResponseEntity<?> getFiltered(@QuerydslPredicate(root = Post.class) Predicate predicate, Pageable pageable) {
         return ResponseEntity.ok(postService.findAll(predicate, pageable));
     }
 

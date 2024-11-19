@@ -3,7 +3,6 @@ import com.movie.MovieReview.comment.service.CommentService;
 import com.movie.MovieReview.comment.dto.CommentReqDto;
 import com.movie.MovieReview.comment.dto.CommentResDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.movie.global.dto.MessageDto;
