@@ -6,11 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 @RequiredArgsConstructor
 @Service
+@CrossOrigin("*")
 public class S3Upload {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
