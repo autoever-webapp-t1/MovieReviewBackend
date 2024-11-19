@@ -41,7 +41,7 @@ public class MemberController {
         return memberDto;
     }
 
-    @PutMapping("/{memberId}/nickname")
+    @PutMapping("/nickname")
     public ResponseEntity<?> updateNickname(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam String newname) {
