@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -298,13 +300,30 @@ public class ReviewServiceImpl implements ReviewService {
             // score가 비어있으면 기본 값 설정
             avgSkills = (avgSkills == null || avgSkills.isEmpty()) ? new HashMap<>() : avgSkills;
 
+            String profileImage = review.getMovie().getImages();
+
+            int endIndex = profileImage.indexOf(",", 17);
+            String poster_path = profileImage.substring(17,endIndex-1);
+
+            List<Integer> ids = new ArrayList<>();
+
+            Pattern pattern = Pattern.compile("\"id\":(\\d+)");
+            Matcher matcher = pattern.matcher(review.getMovie().getGenres());
+
+            while (matcher.find()) {
+                ids.add(Integer.parseInt(matcher.group(1)));
+            }
+
+            String genres = ids.toString();
+
+
             MovieCardDto movieCardDto = MovieCardDto.builder()
                     .id(review.getMovie().getId())
                     .title(review.getMovie().getTitle())
                     .overview(review.getMovie().getOverview())
-                    .poster_path(review.getMovie().getImages())
+                    .poster_path(poster_path)
                     .release_date(review.getMovie().getRelease_date())
-                    .genre_ids(review.getMovie().getGenres())
+                    .genre_ids(genres)
                     .score(avgSkills)
                     .myScore(mySkills)
                     .build();
