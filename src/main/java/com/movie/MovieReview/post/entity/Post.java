@@ -80,13 +80,9 @@ public class Post extends BaseTimeEntity {
         }
     }
 
-    public void update(PostDto dto) {
-        if(this.postId!= dto.getPostId()) {
-            throw new IllegalArgumentException("게시글 수정 실패. 잘못된 id가 입력되었습니다.");
-        }
-        if(dto.getTitle() != null)
-            this.title = dto.getTitle();
-        if (dto.getContent() != null)
-            this.content = dto.getContent();
+    public void update(String title, String content, String mainImgUrl) {
+      this.title = title;
+      this.content = content;
+      this.mainImgUrl = mainImgUrl;
     }
 }

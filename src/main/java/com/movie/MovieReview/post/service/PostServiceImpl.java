@@ -97,12 +97,11 @@ public class PostServiceImpl implements PostService{
     @Transactional
     public PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception {
         Long memberId = getLoginMember(authorizationHeader);
-        Optional<MemberEntity> member = memberRepository.findById(memberId);
         Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
-        if (targetPost.getWriter().equals(member)) {
+        if (targetPost.getWriter()==null || !memberId.equals(targetPost.getWriter().getMemberId())) {
             throw new RuntimeException("접근 권한이 없습니다");
         }
-        targetPost.update(postDto);
+        targetPost.update(postDto.getTitle(),postDto.getContent(),postDto.getMainImgUrl());
 
         postRepository.save(targetPost);
         return PostResDto.entityToResDto(targetPost);
@@ -142,10 +141,6 @@ public class PostServiceImpl implements PostService{
 
         // 제목으로 검색해서 page로 list return
         Page<Post> searchPage = postRepository.findByTitleContaining(title, pageable);
-        System.out.println("post:"+ postRepository.findByTitleContaining(title,pageable));
-        System.out.println("???????? searchPage:"+searchPage);
-        System.out.println("^^^^^^^^  searchttile"+title);
-
         List<PostResDto> postList = searchPage.getContent().stream()
                 .map(entity -> {
                     PostResDto dto = PostResDto.entityToResDto(entity);
