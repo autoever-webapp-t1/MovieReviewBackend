@@ -67,6 +67,37 @@ public class PostController {
         }
     }
 
+    @GetMapping("/post/myPost")
+    public ResponseEntity<?> getMyPostResult(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("클라이언트에서 헤더 토큰 오류!!!!!");
+            }
+            String token = authorizationHeader.substring(7);
+            // 토큰 유효성 검사
+            if (!jwtTokenService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰!!!!");
+            }
+
+            // 토큰에서 memberId 추출
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(token));
+
+
+            PageRequestDto pageRequestDto = PageRequestDto.builder()
+                    .page(page)
+                    .size(size)
+                    .build();
+            PageResponseDto<PostResDto> response = postService.findPostByMember(memberId, pageRequestDto);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 
     @GetMapping("/post/search/{keyword}") //키워드 포함되어 있는 거 모두 검색 with 페이지네이션

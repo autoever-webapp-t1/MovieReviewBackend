@@ -27,10 +27,10 @@ public class PostResDto {
 
     public static PostResDto entityToResDto(Post post) {
         return PostResDto.builder()
-                .memberId(post.getWriter().getMemberId())
+                .memberId(post.getMember().getMemberId())
                 .postId(post.getPostId())
                 .mainImgUrl(post.getMainImgUrl())
-                .nickname(post.getWriter().getNickname())
+                .nickname(post.getMember().getNickname())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .commentCnt(post.getCommentCnt())
@@ -39,7 +39,7 @@ public class PostResDto {
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
-                .profileImage(post.getWriter().getProfile())
+                .profileImage(post.getMember().getProfile())
                 .build();
     }
 

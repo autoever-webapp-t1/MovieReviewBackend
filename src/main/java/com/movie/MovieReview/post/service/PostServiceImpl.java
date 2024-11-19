@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,7 +67,7 @@ public class PostServiceImpl implements PostService{
         String mainImgUrl = postDto.getMainImgUrl();
         String textContent = postDto.getTextContent();
         Post post = Post.builder()
-                .writer(member)
+                .member(member)
                 .title(title)
                 .mainImgUrl(mainImgUrl)
                 .textContent(textContent)
@@ -87,7 +85,7 @@ public class PostServiceImpl implements PostService{
         Post post = postRepository.findById(postId).orElseThrow(()->new PostNotFoundException());
 
 
-        if (post.getWriter() == null || !memberId.equals(post.getWriter().getMemberId()))  {
+        if (post.getMember() == null || !memberId.equals(post.getMember().getMemberId()))  {
             throw new RuntimeException("접근 권한이 없습니다");
         }
         postRepository.delete(post);
@@ -102,8 +100,16 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<PostResDto> findPostByMemberId(Long memberId) {
-        return List.of();
+    public PageResponseDto<PostResDto> findPostByMember(Long memberId, PageRequestDto pageRequestDto) {
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
+        Page<Post> myPostPage = postRepository.findByMember_MemberId(memberId,pageable);
+        List<PostResDto> postList = myPostPage.getContent().stream()
+                .map(entity->{
+                    PostResDto dto = PostResDto.entityToResDto(entity);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return PageResponseDto.<PostResDto>withSearchPost(postList,pageRequestDto, myPostPage.getTotalElements());
     }
 
     @Override
@@ -132,7 +138,6 @@ public class PostServiceImpl implements PostService{
     @Override
     public PageResponseDto<PostResDto> findAll(Long memberId, String title, PageRequestDto pageRequestDto) {
         PageRequest pageable = PageRequest.of(pageRequestDto.getPage() - 1, pageRequestDto.getSize());
-
         // 제목으로 검색해서 page로 list return
         Page<Post> searchPage = postRepository.findByTitleContaining(title, pageable);
         List<PostResDto> postList = searchPage.getContent().stream()

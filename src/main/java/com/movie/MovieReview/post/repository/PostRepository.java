@@ -26,4 +26,5 @@ public interface PostRepository extends JpaRepository<Post,Long>{
     void decrementLikeCount(@Param("postId") Long postId);
 
     Page<Post> findByTitleContaining(String title, Pageable pageable);
+    Page<Post> findByMember_MemberId(Long memberId, Pageable pageable);
 }
