@@ -14,8 +14,8 @@ public class AwardPageController {
     private final AdminServiceImpl adminService;
 
     @PostMapping("/add")
-    public AwardsEntity addMoviesToAward(@RequestBody AwardAddMoviesDto dto) throws Exception {
-        AwardsEntity award = adminService.addAwardWithMovies(dto);
+    public AwardsEntity addMoviesToAward(@RequestHeader("Authorization") String authorizationHeader, @RequestBody AwardAddMoviesDto dto) throws Exception {
+        AwardsEntity award = adminService.addAwardWithMovies(authorizationHeader, dto);
         return award;
     }
 }
