@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 @RequiredArgsConstructor
 @RestController
+
 public class UploadController{
     private final S3Upload s3Upload;
     @PostMapping("/api/upload")

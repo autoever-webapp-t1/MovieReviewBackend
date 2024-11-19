@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostResDto implements PostDtoInterface{
+public class PostResDto {
     private Long postId;
     private Long memberId;
     private String nickname;
@@ -42,50 +42,4 @@ public class PostResDto implements PostDtoInterface{
                 .build();
     }
 
-    public String getNickname() {return nickname;}
-    public boolean getIsLiked() {return liked;}
-    @Override
-    public Long getPostId() {
-        return postId;
-    }
-
-    @Override
-    public String title() {
-        return title;
-    }
-
-    @Override
-    public String content() {
-        return content;
-    }
-
-    @Override
-    public boolean liked() {
-        return liked;
-    }
-
-    @Override
-    public String mainImgUrl() {
-        return mainImgUrl;
-    }
-
-    @Override
-    public String textContent() {
-        return textContent;
-    }
-
-    @Override
-    public Integer likesCount() {
-        return likesCount;
-    }
-
-    @Override
-    public LocalDateTime createdDate() {
-        return createdDate;
-    }
-
-    @Override
-    public LocalDateTime modifiedDate() {
-        return modifiedDate;
-    }
 }
