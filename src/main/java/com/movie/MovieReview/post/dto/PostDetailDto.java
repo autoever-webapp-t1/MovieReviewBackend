@@ -1,6 +1,5 @@
 package com.movie.MovieReview.post.dto;
 
-import com.movie.MovieReview.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +22,7 @@ public class PostDetailDto{
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private String profileImage;
+    private String thumbnail;
+    private String textContent;
     private int commentCnt;
 }

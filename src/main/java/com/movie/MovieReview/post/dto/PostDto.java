@@ -10,13 +10,30 @@ import java.time.LocalDateTime;
         private Long postId;
         private String title;
         private String content;
+        private String mainImgUrl;
         private boolean liked;
         private Integer likesCount;
-        public PostDto(Long postId, String title, String content) {
+        private String textContent;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
+        public PostDto(Long postId, String title, String content, String mainImgUrl, String textContent) {
             this.postId = postId;
             this.title = title;
             this.content = content;
+            this.mainImgUrl = mainImgUrl;
+            this.textContent = textContent;
         }
+
+        @Override
+        public String mainImgUrl() {
+            return mainImgUrl;
+        }
+
+        @Override
+        public String textContent() {
+            return textContent;
+        }
+
         @Override
         public Long getPostId() {
             return postId;
@@ -39,10 +56,10 @@ import java.time.LocalDateTime;
         }
         @Override
         public LocalDateTime createdDate() {
-            return null;
+            return createdDate;
         }
         @Override
         public LocalDateTime modifiedDate() {
-            return null;
+            return modifiedDate;
         }
     }

@@ -1,7 +1,6 @@
 package com.movie.MovieReview.post.service;
 
 import com.movie.MovieReview.member.entity.MemberEntity;
-import com.movie.MovieReview.member.entity.UserPrincipal;
 import com.movie.MovieReview.member.repository.MemberRepository;
 import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.post.dto.PostDetailDto;
@@ -109,28 +108,45 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostResDto getPost(Long postId) {
+    public PostResDto getPost(String authorizationHeader, Long postId) throws Exception {
+        MemberEntity member = getLoginMember(authorizationHeader);
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post not found"));
         return PostResDto.entityToResDto(post);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto) {
-        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1,pageRequestDto.getSize());
-        Page<Post> postPage =  postRepository.findAll(pageable);
-        List<PostDetailDto> posts = postPage.getContent().stream()
-                .map(this::postDetailDto)
+//    @Override
+//    @Transactional(readOnly = true)
+//    public PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto) {
+//        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1,pageRequestDto.getSize());
+//        Page<Post> postPage =  postRepository.findAll(pageable);
+//        List<PostDetailDto> posts = postPage.getContent().stream()
+//                .map(this::postDetailDto)
+//                .collect(Collectors.toList());
+//        if (posts.isEmpty()) {
+//            throw new NoPostsFoundException("게시글이 없습니다.");
+//        }
+//        return PageResponseDto.<PostDetailDto>withAll()
+//                .dtoList(posts)
+//                .pageRequestDto(pageRequestDto)
+//                .total(postPage.getTotalElements())
+//                .build();
+//    }
+
+    public PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto) {
+        PageRequest pageable = PageRequest.of(pageRequestDto.getPage()-1, pageRequestDto.getSize());
+        Page<Post> postPage = postRepository.findAll(pageable);
+        List<PostResDto> posts = postPage.getContent().stream().map(this::postResDto)
                 .collect(Collectors.toList());
         if (posts.isEmpty()) {
             throw new NoPostsFoundException("게시글이 없습니다.");
         }
-        return PageResponseDto.<PostDetailDto>withAll()
+        return PageResponseDto.<PostResDto>withAll()
                 .dtoList(posts)
                 .pageRequestDto(pageRequestDto)
                 .total(postPage.getTotalElements())
                 .build();
     }
+
 
     @Override
     public Page<Post> findAll(Predicate predicate, Pageable pageable) {
@@ -147,6 +163,22 @@ public class PostServiceImpl implements PostService{
                 .nickname(post.getWriter().getNickname())
                 .likesCount(post.getLikesCount())
                 .liked(post.isLiked())
+                .createdDate(post.getCreatedDate())
+                .modifiedDate(post.getModifiedDate())
+                .build();
+    }
+
+    public PostResDto postResDto(Post post) {
+        return PostResDto.builder()
+                .postId(post.getPostId())
+                .memberId(post.getWriter().getMemberId())
+                .nickname(post.getWriter().getNickname())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .commentCnt(post.getCommentCnt())
+                .liked(post.isLiked())
+                .likesCount(post.getLikesCount())
+                .profileImage(post.getWriter().getProfile())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();
