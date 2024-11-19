@@ -20,7 +20,7 @@ public interface PostService {
     void deletePost(String authorizationHeader,Long postId) throws Exception;
     PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postResDto) throws Exception;
     List<PostResDto> findPostByMemberId(Long memberId);
-    PostDetailDto getPost(Long postId);
+    PostResDto getPost(Long postId);
     PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto);
     Page<Post> findAll(Predicate predicate, Pageable pageable);
 }
