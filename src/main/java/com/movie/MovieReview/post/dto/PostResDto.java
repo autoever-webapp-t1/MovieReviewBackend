@@ -26,9 +26,6 @@ public class PostResDto {
     private String textContent;
 
     public static PostResDto entityToResDto(Post post) {
-        System.out.println("Post ID: " + post.getPostId());
-        System.out.println("MainImgUrl: " + post.getMainImgUrl());
-        System.out.println("TextContent: " + post.getTextContent());
         return PostResDto.builder()
                 .memberId(post.getWriter().getMemberId())
                 .postId(post.getPostId())
