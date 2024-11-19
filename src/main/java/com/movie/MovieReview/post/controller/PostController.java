@@ -30,7 +30,7 @@ public class PostController {
 
     @PatchMapping("/post/{postId}")
     public ResponseEntity<PostResDto> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId, @RequestBody PostDto postDto) throws Exception {
-        PostResDto updatedDto = postService.updatePost(authorizationHeader, postId, postDto);
+        PostResDto updatedDto = postService.updatePost(postId, postDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
 
