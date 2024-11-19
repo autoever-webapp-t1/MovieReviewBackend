@@ -48,7 +48,7 @@ public class WishController {
         }
     }
 //    회원의 wishlist 조회
-    @GetMapping("/member/{memberId}")
+    @GetMapping("/member")
     public ResponseEntity<?> getWishlistByMemberId(@RequestHeader("Authorization") String authorizationHeader) {
         try{
             Long memberId = extractMemberId(authorizationHeader);
