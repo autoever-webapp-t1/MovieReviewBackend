@@ -95,15 +95,9 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @Transactional
-    public PostResDto updatePost(String authorizationHeader, Long postId, PostDto postDto) throws Exception {
-        Long memberId = getLoginMember(authorizationHeader);
-        Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException());
-        if (targetPost.getWriter()==null || !memberId.equals(targetPost.getWriter().getMemberId())) {
-            throw new RuntimeException("접근 권한이 없습니다");
-        }
+    public PostResDto updatePost(Long postId, PostDto postDto) throws Exception {
+        Post targetPost = postRepository.findById(postId).orElseThrow(()-> new PostNotFoundException("대상 포스트가 없습니다."));
         targetPost.update(postDto.getTitle(),postDto.getContent(),postDto.getMainImgUrl());
-
-        postRepository.save(targetPost);
         return PostResDto.entityToResDto(targetPost);
     }
 
