@@ -16,7 +16,7 @@ public class PostResDto implements PostDtoInterface{
     private Integer commentCnt;
     private boolean liked;
     private Integer likesCount;
-    private String profile_image;
+    private String profileImage;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -31,7 +31,7 @@ public class PostResDto implements PostDtoInterface{
                 .likesCount(post.getLikesCount())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
-                .profile_image(post.getWriter().getProfile())
+                .profileImage(post.getWriter().getProfile())
                 .build();
     }
 
