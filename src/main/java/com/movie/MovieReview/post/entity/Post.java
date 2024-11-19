@@ -7,7 +7,6 @@ import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +38,25 @@ public class Post extends BaseTimeEntity {
     @Setter
     private int commentCnt;
 
+    @Lob
+    @Column(name = "text_content", nullable = false)
+    private String textContent;
+
+    // thumbnail
+    private String mainImgUrl;
+
     @OrderBy("commentId desc")
     @JsonIgnoreProperties({"post"})
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Post(MemberEntity writer, String title, String content) {
+    public Post(MemberEntity writer, String title, String content, String mainImgUrl, String textContent) {
         this.writer = writer;
         this.title = title;
         this.content = content;
+        this.mainImgUrl = mainImgUrl;
+        this.textContent = textContent;
     }
 
     public void addComment(Comment comment) {

@@ -8,4 +8,6 @@ public interface PostDtoInterface {
     Integer likesCount();
     LocalDateTime createdDate();
     LocalDateTime modifiedDate();
+    String mainImgUrl();
+    String textContent();
 }

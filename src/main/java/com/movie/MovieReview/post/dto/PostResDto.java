@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PostResDto implements PostDtoInterface{
     private Long postId;
@@ -19,10 +21,13 @@ public class PostResDto implements PostDtoInterface{
     private String profileImage;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private String mainImgUrl;
+    private String textContent;
 
     public static PostResDto entityToResDto(Post post) {
         return PostResDto.builder()
                 .postId(post.getPostId())
+                .mainImgUrl(post.getMainImgUrl())
                 .nickname(post.getWriter().getNickname())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -55,6 +60,16 @@ public class PostResDto implements PostDtoInterface{
     @Override
     public boolean liked() {
         return liked;
+    }
+
+    @Override
+    public String mainImgUrl() {
+        return mainImgUrl;
+    }
+
+    @Override
+    public String textContent() {
+        return textContent;
     }
 
     @Override

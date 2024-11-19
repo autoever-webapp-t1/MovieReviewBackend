@@ -1,6 +1,5 @@
 package com.movie.MovieReview.post.controller;
 
-import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
@@ -14,8 +13,6 @@ import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -46,8 +43,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResDto> getPost(@PathVariable Long postId) {
-        PostResDto postResDto = postService.getPost(postId);
+    public ResponseEntity<PostResDto> getPost(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long postId) throws Exception {
+        PostResDto postResDto = postService.getPost(authorizationHeader, postId);
         return ResponseEntity.status(HttpStatus.OK).body(postResDto);
     }
 
@@ -60,7 +57,7 @@ public class PostController {
                     .page(page)
                     .size(size)
                     .build();
-            PageResponseDto<PostDetailDto> response = postService.getAllPosts(pageRequestDto);
+            PageResponseDto<PostResDto> response = postService.getAllPosts(pageRequestDto);
             if (response==null) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT)
                         .body("게시글이 없습니다.");

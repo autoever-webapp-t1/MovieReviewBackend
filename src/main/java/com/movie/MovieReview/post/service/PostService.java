@@ -1,6 +1,5 @@
 package com.movie.MovieReview.post.service;
 
-import com.movie.MovieReview.post.dto.PostDetailDto;
 import com.movie.MovieReview.post.dto.PostDto;
 import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.MovieReview.post.entity.Post;
@@ -10,7 +9,6 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -20,7 +18,7 @@ public interface PostService {
     void deletePost(String authorizationHeader,Long postId) throws Exception;
     PostResDto updatePost(String authorizationHeader, Long postId, PostResDto postResDto) throws Exception;
     List<PostResDto> findPostByMemberId(Long memberId);
-    PostResDto getPost(Long postId);
-    PageResponseDto<PostDetailDto> getAllPosts(PageRequestDto pageRequestDto);
+    PostResDto getPost(String authorizationHeader, Long postId) throws Exception;
+    PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto);
     Page<Post> findAll(Predicate predicate, Pageable pageable);
 }
