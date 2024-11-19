@@ -3,8 +3,6 @@ package com.movie.MovieReview.post.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.movie.MovieReview.comment.entity.Comment;
 import com.movie.MovieReview.member.entity.MemberEntity;
-import com.movie.MovieReview.post.dto.PostDto;
-import com.movie.MovieReview.post.dto.PostResDto;
 import com.movie.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,7 +21,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity writer;
+    private MemberEntity member;
 
     @Column(nullable = false)
     private String title;
@@ -52,8 +50,8 @@ public class Post extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Post(MemberEntity writer, String title, String content, String mainImgUrl, String textContent) {
-        this.writer = writer;
+    public Post(MemberEntity member, String title, String content, String mainImgUrl, String textContent) {
+        this.member = member;
         this.title = title;
         this.content = content;
         this.mainImgUrl = mainImgUrl;

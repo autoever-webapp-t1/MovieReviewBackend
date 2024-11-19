@@ -14,7 +14,7 @@ public interface PostService {
     PostResDto createPost(String authorizationHeader, PostDto postDto) throws Exception;
     void deletePost(String authorizationHeader,Long postId) throws Exception;
     PostResDto updatePost(Long postId, PostDto postDto) throws Exception;
-    List<PostResDto> findPostByMemberId(Long memberId);
+    PageResponseDto<PostResDto> findPostByMember(Long memberId, PageRequestDto pageRequestDto);
     PostResDto getPost(Long postId) throws Exception;
     PageResponseDto<PostResDto> getAllPosts(PageRequestDto pageRequestDto);
     PageResponseDto<PostResDto> findAll(Long memberId, String title, PageRequestDto pageRequestDto);
