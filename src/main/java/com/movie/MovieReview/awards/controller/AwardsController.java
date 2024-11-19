@@ -1,8 +1,6 @@
 package com.movie.MovieReview.awards.controller;
 
-import com.movie.MovieReview.awards.dto.AwardsMovieCardDto;
 import com.movie.MovieReview.awards.dto.AwardsPastListDto;
-import com.movie.MovieReview.awards.entity.AwardsEntity;
 import com.movie.MovieReview.awards.service.AwardsService;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import lombok.RequiredArgsConstructor;

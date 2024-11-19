@@ -189,14 +189,6 @@ public class ReviewController {
         return ResponseEntity.ok(totalAvgSkills); // totalAverageSkill 포함된 avgSkills 반환
     }
 
-
-    //member의 모든 리뷰 조회
-    /*@GetMapping("/user/{memberId}/reviews")
-    public ResponseEntity<List<MyReviewsDto>> getMemberReviews(@PathVariable Long memberId) {
-        List<MyReviewsDto> reviews = reviewService.getMemberReviews(memberId);
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
-    }*/
-
     //mypage에서 리뷰 리스트 보여주는거
     @GetMapping("/user/reviews")
     public ResponseEntity<PageResponseDto<ReviewDetailDto>> getAllReviewsByMemberId(
@@ -223,17 +215,4 @@ public class ReviewController {
         List<MovieCardDto> movieCards = reviewService.getMovieCardDtosByMemberId(memberId);
         return ResponseEntity.ok(movieCards);
     }
-
-    //내가 평가한 영화라면 내가 평가한 myScore 값도 반환하기 위해 List<MovieCardDto> 로 반환
-//    @GetMapping("/movie/top-actor-skill")
-//    public ResponseEntity<?> getTopMoviesByActorSkill(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
-//        try{
-//            Long memberId = extractMemberId(authorizationHeader);
-//            List<MovieCardDto> movieCards = reviewService.getTop20MoviesByAvgActorSkillWithMyscore(memberId);
-//            return ResponseEntity.ok(movieCards);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("반환 값 오류!!!!");
-//        }
-//    }
 }

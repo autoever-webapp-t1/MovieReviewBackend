@@ -37,18 +37,12 @@ public class PageResponseDto<E> {
         this.prev = page > 1; // page가 1보다 크면 prev 버튼 활성화
         this.next = page < totalPage; // page가 totalPage보다 작으면 next 버튼 활성화
 
-
         // 이전, 다음 페이지 번호 설정
         this.prevPage = this.prev ? page - 1 : 0; // prev는 현재 페이지 - 1
         this.nextPage = this.next ? page + 1 : page + 1; // next는 현재 페이지 + 1
 
         // 현재 페이지
         this.current = page;
-
-        // 디버깅 로그
-        System.out.println("Start: " + start + ", End: " + end);
-        System.out.println("Prev: " + this.prev + ", Next: " + this.next);
-        System.out.println("PrevPage: " + this.prevPage + ", NextPage: " + this.nextPage);
     }
 
     // MovieCardDto 전용 빌더 메서드

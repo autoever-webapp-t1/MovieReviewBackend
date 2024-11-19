@@ -50,9 +50,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 
-    //ReviewEntity findTopByMemberIdAndMovieIdOrderByCreatedDateDesc(Long memberId, Long movieId);
-    //Optional<ReviewEntity> findTopByMemberAndMovieOrderByCreatedDateDesc(MemberEntity member, MovieDetailEntity movie);
-
     @Query("SELECT new map(" +
             "r.actorSkill as actorSkill, " +
             "r.directorSkill as directorSkill, " +
@@ -72,55 +69,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     List<ReviewEntity> findAllReviewsByMemberIdAndMovieId(
             @Param("memberId") Long memberId,
             @Param("movieId") Long movieId);
-
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.actorSkill) as avgActorSkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.actorSkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgActorSkill(Pageable pageable);
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.directorSkill) as avgDirectorSkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.directorSkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgDirectorSkill(Pageable pageable);
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.lineSkill) as avgLineSkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.lineSkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgLineSkill(Pageable pageable);
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.musicSkill) as avgMusicSkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.musicSkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgMusicSkill(Pageable pageable);
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.sceneSkill) as avgSceneSkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.sceneSkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgSceneSkill(Pageable pageable);
-
-    @Query("SELECT new map(" +
-            "r.movie.id as movieId, " +
-            "AVG(r.storySkill) as avgStorySkill) " +
-            "FROM ReviewEntity r " +
-            "GROUP BY r.movie.id " +
-            "ORDER BY AVG(r.storySkill) DESC")
-    List<Map<String, Object>> findTop20MoviesByAvgStorySkill(Pageable pageable);
-
 }
 

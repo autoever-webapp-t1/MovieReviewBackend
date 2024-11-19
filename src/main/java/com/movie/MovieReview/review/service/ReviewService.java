@@ -33,14 +33,6 @@ public interface ReviewService {
     public Map<String, Object> getAverageSkillsByMovieIdAndDateRange(Long movieId, LocalDateTime startDate, LocalDateTime endDate); //어워즈 기간동안 영화 하나의 모든 리뷰의 skill 값 통계 + totalAvgSkill
 
     ReviewDetailDto toDto(ReviewEntity reviewEntity);
-
-    //각각의 skill에 대한 top 20개 영화 조회
-//    public List<MovieCardDto> getTop20MoviesByAvgActorSkillWithMyscore(Long memberId);
-//    public List<MovieCardDto> getTop20MoviesByAvgDirectorSkillWithMyscore(Long memberId);
-//    public List<MovieCardDto> getTop20MoviesByAvgLineSkillWithMyscore(Long memberId);
-//    public List<MovieCardDto> getTop20MoviesByAvgMusicSkillWithMyscore(Long memberId);
-//    public List<MovieCardDto> getTop20MoviesByAvgSceneSkillWithMyscore(Long memberId);
-//    public List<MovieCardDto> getTop20MoviesByAvgStorySkillWithMyscore(Long memberId);
 }
 
 
