@@ -75,7 +75,7 @@ public class SseService {
         SseEmitter emitter1 = emitters.get(memberId);
         if (emitter1 != null) {
             try {
-                emitter.send(SseEmitter.event().name("NEW_COMMENT").data(message));
+                emitter1.send(SseEmitter.event().name("NEW_COMMENT").data(message));
             } catch (IOException e) {
                 emitters.remove(memberId);
             }
