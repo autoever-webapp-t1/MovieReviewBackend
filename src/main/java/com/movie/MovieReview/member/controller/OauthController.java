@@ -25,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin( origins = "http://localhost:5173/", allowCredentials = "true")
+@CrossOrigin( origins = "http://localhost:5173", allowCredentials = "true")
 @Log4j2
 public class OauthController {
     private final OauthService oauthService;
