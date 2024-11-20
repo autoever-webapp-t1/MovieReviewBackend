@@ -21,6 +21,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -347,6 +348,74 @@ public class MovieServiceImpl implements  MovieService{
         return allMovies;
     }
 
+//    @Override
+//    public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception {
+//        List<MovieCardDto> allMovies = new ArrayList<>();
+//        String RecommendUrl = movieId + "/recommendations?language=ko-KR&page=1";
+//
+//        Request request = new Request.Builder()
+//                .url(TMDB_API_URL + RecommendUrl + "&region=KR")
+//                .get()
+//                .addHeader("accept", "application/json")
+//                .addHeader("Authorization", AUTH_TOKEN)
+//                .build();
+//
+//        try (Response response = client.newCall(request).execute()) {
+//            if (!response.isSuccessful()) {
+//                throw new Exception("Unexpected code " + response);
+//            }
+//
+//            String jsonResponse = response.body().string();
+//            log.info("MovieServiceImpl: " + jsonResponse);
+//
+//            JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
+//            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+//
+//            for (JsonElement resultElement : resultsArray) {
+//                JsonObject movieObject = resultElement.getAsJsonObject();
+//
+//                Long id = movieObject.get("id").getAsLong();
+//                String title = movieObject.get("title").getAsString();
+//                String overview = movieObject.get("overview").getAsString();
+//                String posterPath = movieObject.get("poster_path").getAsString();
+//                String releaseDate = movieObject.get("release_date").getAsString();
+//
+//                // 장르 ID list -> String
+//                JsonArray genreIdsArray = movieObject.getAsJsonArray("genre_ids");
+//                List<Integer> genreIdsList = new ArrayList<>();
+//                for (JsonElement genreElement : genreIdsArray) {
+//                    genreIdsList.add(genreElement.getAsInt());
+//                }
+//                String genreIds = genreIdsList.toString();
+//
+//                // score 초기화
+//                Map<String, Object> score = Map.of(
+//                        "avgActorSkill", 0.0,
+//                        "avgDirectorSkill", 0.0,
+//                        "avgLineSkill", 0.0,
+//                        "avgMusicSkill", 0.0,
+//                        "avgSceneSkill", 0.0,
+//                        "avgStorySkill", 0.0,
+//                        "totalAverageSkill", 0.0
+//                );
+//                // myScore 초기화
+//                Map<String, Object> myScore = null;
+//                try {
+//                    score = reviewService.getAverageSkillsByMovieId(id);
+//                    myScore = reviewService.getLatestReviewSkills(memberId, id);
+//                } catch (Exception e) {
+//                    log.warn("Review data not found for movie ID: {}", id, e);
+//                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+//                    myScore = null;
+//                }
+//
+//                MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
+//                allMovies.add(movieCardDto);
+//            }
+//        }
+//
+//        return allMovies;
+//    }
     @Override
     public List<MovieCardDto> getRecommendMovies(Long movieId, Long memberId) throws Exception {
         List<MovieCardDto> allMovies = new ArrayList<>();
@@ -373,7 +442,15 @@ public class MovieServiceImpl implements  MovieService{
             for (JsonElement resultElement : resultsArray) {
                 JsonObject movieObject = resultElement.getAsJsonObject();
 
+                // 영화 ID 가져오기
                 Long id = movieObject.get("id").getAsLong();
+
+                // DB에 없는 ID는 건너뛰기
+                if (movieRepository.findById(id).isEmpty()) {
+                    continue;
+                }
+
+                // 영화 정보 파싱
                 String title = movieObject.get("title").getAsString();
                 String overview = movieObject.get("overview").getAsString();
                 String posterPath = movieObject.get("poster_path").getAsString();
@@ -404,10 +481,19 @@ public class MovieServiceImpl implements  MovieService{
                     myScore = reviewService.getLatestReviewSkills(memberId, id);
                 } catch (Exception e) {
                     log.warn("Review data not found for movie ID: {}", id, e);
-                    score = Map.of("avgActorSkill", 0.0, "avgDirectorSkill", 0.0, "avgLineSkill", 0.0, "avgMusicSkill", 0.0, "avgSceneSkill", 0.0, "avgStorySkill", 0.0, "totalAverageSkill", 0.0);
+                    score = Map.of(
+                            "avgActorSkill", 0.0,
+                            "avgDirectorSkill", 0.0,
+                            "avgLineSkill", 0.0,
+                            "avgMusicSkill", 0.0,
+                            "avgSceneSkill", 0.0,
+                            "avgStorySkill", 0.0,
+                            "totalAverageSkill", 0.0
+                    );
                     myScore = null;
                 }
 
+                // MovieCardDto 생성 및 리스트에 추가
                 MovieCardDto movieCardDto = new MovieCardDto(id, title, overview, posterPath, releaseDate, genreIds, score, myScore);
                 allMovies.add(movieCardDto);
             }
@@ -415,6 +501,7 @@ public class MovieServiceImpl implements  MovieService{
 
         return allMovies;
     }
+
 
 //    @Override
 //    public MovieDetailsDto getMovieDetails(Long id) throws Exception {
