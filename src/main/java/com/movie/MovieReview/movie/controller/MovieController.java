@@ -4,6 +4,7 @@ import com.movie.MovieReview.member.service.JwtTokenService;
 import com.movie.MovieReview.movie.dto.MovieCardDto;
 import com.movie.MovieReview.movie.dto.MovieDetailsDto;
 import com.movie.MovieReview.movie.dto.MovieWithReviewsDto;
+import com.movie.MovieReview.movie.repository.MovieRepository;
 import com.movie.MovieReview.movie.service.MovieRecommendService;
 import com.movie.MovieReview.movie.service.MovieService;
 import com.movie.MovieReview.review.dto.PageRequestDto;
@@ -34,6 +35,7 @@ public class MovieController {
     private final ReviewService reviewService;
     private final JwtTokenService jwtTokenService;
     private final ReviewRepository reviewRepository;
+    private final MovieRepository movieRepository;
 
     //JWTToken에서 memberId추출
     private Long extractMemberId(String authorizationHeader) throws Exception {
