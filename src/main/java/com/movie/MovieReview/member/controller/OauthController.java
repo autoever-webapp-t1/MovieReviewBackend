@@ -97,6 +97,7 @@ public class OauthController {
 
         AwardsDto awardsDto = awardsService.getCurrentAwards(); //현재 시상식 정보
 
+
         System.out.println("OauthController awardsDto??????? : "+ awardsDto);
 
         MemberAwardsResponseDto responseDto = MemberAwardsResponseDto.builder()
