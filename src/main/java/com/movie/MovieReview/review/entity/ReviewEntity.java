@@ -1,11 +1,14 @@
 package com.movie.MovieReview.review.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.movie.MovieReview.member.entity.MemberEntity;
 import com.movie.MovieReview.movie.entity.MovieDetailEntity;
 import com.movie.MovieReview.review.dto.ReviewDetailDto;
 import com.movie.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -14,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Table(name = "review")
-public class ReviewEntity extends BaseTimeEntity {
+public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
@@ -28,6 +31,10 @@ public class ReviewEntity extends BaseTimeEntity {
     private MemberEntity member;
 
     private String content;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime modifiedDate;
 
     @Builder.Default
     @Column(nullable = false)
@@ -55,6 +62,18 @@ public class ReviewEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private int lineSkill;
 
+    @PrePersist // 엔티티가 처음 생성될 때 호출
+    public void prePersist() {
+        this.createdDate = LocalDateTime.now(); // 현재 시간으로 초기화
+        this.modifiedDate = LocalDateTime.now(); // 생성 시 수정 날짜도 초기화
+    }
+
+    @PreUpdate // 엔티티가 업데이트될 때 호출
+    public void preUpdate() {
+        this.modifiedDate = LocalDateTime.now(); // 수정 시간 업데이트
+    }
+
+
     // 좋아요 상태 토글 메서드
     public void toggleLikeHeart() {
         if (this.myHeart) {
@@ -78,4 +97,6 @@ public class ReviewEntity extends BaseTimeEntity {
         this.storySkill = dto.getStorySkill();
         this.lineSkill = dto.getLineSkill();
     }
+
+
 }
