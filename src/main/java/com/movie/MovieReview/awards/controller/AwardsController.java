@@ -17,10 +17,10 @@ import java.util.List;
 public class AwardsController {
     private final AwardsService awardsService;
 
-    @GetMapping("/{awardId}") //nominated된 영화들 4개 정보 보여줌
-    public List<MovieDetailsDto> getAwardMovieDetails(@PathVariable("awardId") Long awardId) {
+    @GetMapping("") //현재 status 1인 값 nominated된 영화들 4개 정보 보여줌
+    public List<MovieDetailsDto> getAwardMovieDetails() {
         try {
-            return awardsService.getNominatedMoviesDetails(awardId);
+            return awardsService.getNominatedMoviesDetails();
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
