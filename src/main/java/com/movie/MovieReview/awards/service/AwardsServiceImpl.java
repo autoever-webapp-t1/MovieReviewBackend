@@ -148,18 +148,32 @@ public class AwardsServiceImpl implements AwardsService{
 
         String NextAwardName = "";
 
+        AwardsEntity nextAward = null;
         // 상태가 2인 항목 중 하나를 1로 변경
         List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
         if (!futureAwards.isEmpty()) {
-            AwardsEntity nextAward = futureAwards.get(0);
+            nextAward = futureAwards.get(0);
             nextAward.setStatus(1);
             awardsRepository.save(nextAward);
             NextAwardName = nextAward.getAwardName();
             log.info("############################Award ID: {} status updated from 2 to 1", nextAward.getAwardsId());
         }
-        awardsDto.setNextAwardName(NextAwardName);
+        //awardsDto.setNextAwardName(NextAwardName);
 
-        return awardsDto;
+        assert nextAward != null;
+        AwardsDto aw = AwardsDto.builder()
+                .awardsId(nextAward.getAwardsId())
+                .awardName(nextAward.getAwardName())
+                .nominated1(nextAward.getNominated1())
+                .nominated2(nextAward.getNominated2())
+                .nominated3(nextAward.getNominated3())
+                .nominated4(nextAward.getNominated4())
+                .startDateTime(nextAward.getStartDateTime())
+                .endDateTime(nextAward.getEndDateTime())
+                .topMovieId(nextAward.getTopMovieId())
+                .build();
+
+        return aw;
     }
 
     // 과거 어워즈 기록 조회
@@ -236,7 +250,7 @@ public class AwardsServiceImpl implements AwardsService{
 
     @Override
     public AwardsDto getCurrentAwards(){
-        List<AwardsEntity> awards = awardsRepository.findByStatus(2);
+        List<AwardsEntity> awards = awardsRepository.findByStatus(1);
 
         if (awards.isEmpty()) {
             throw new RuntimeException("No awards found with status 1");
