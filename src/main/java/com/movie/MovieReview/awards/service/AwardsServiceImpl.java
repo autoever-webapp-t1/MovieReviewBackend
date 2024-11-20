@@ -30,9 +30,10 @@ public class AwardsServiceImpl implements AwardsService{
     private final ReviewService reviewService;
 
     @Override
-    public List<MovieDetailsDto> getNominatedMoviesDetails(Long awardId) throws Exception {
-        AwardsEntity award = awardsRepository.findById(awardId)
-                .orElseThrow(() -> new RuntimeException("Award not found"));
+    public List<MovieDetailsDto> getNominatedMoviesDetails() throws Exception {
+        List<AwardsEntity> awards = awardsRepository.findByStatus(1);
+        AwardsEntity award = awards.get(0);
+
 
         // nominated1, nominated2, nominated3, nominated4 무비 아이디 가져오기
         List<Long> movieIds = Arrays.asList(award.getNominated1(), award.getNominated2(), award.getNominated3(), award.getNominated4());

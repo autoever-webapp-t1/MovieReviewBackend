@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public interface AwardsService {
-    public List<MovieDetailsDto> getNominatedMoviesDetails(Long awardId) throws Exception;
+    public List<MovieDetailsDto> getNominatedMoviesDetails() throws Exception;
 
 //    public void changeStatus();
 
