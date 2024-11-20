@@ -236,7 +236,7 @@ public class AwardsServiceImpl implements AwardsService{
 
     @Override
     public AwardsDto getCurrentAwards(){
-        List<AwardsEntity> awards = awardsRepository.findByStatus(1);
+        List<AwardsEntity> awards = awardsRepository.findByStatus(2);
 
         if (awards.isEmpty()) {
             throw new RuntimeException("No awards found with status 1");
