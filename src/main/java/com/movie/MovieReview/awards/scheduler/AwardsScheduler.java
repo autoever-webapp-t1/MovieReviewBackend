@@ -23,7 +23,8 @@ public class AwardsScheduler {
 //    @Scheduled(cron = "0 0 0 * * MON")
     //서버 키자마자 2 -> 1, 1 -> 0
 //    @Scheduled(fixedRate = 5000) // for test
-    @Scheduled(fixedRate = 60000) // for test
+    //@Scheduled(fixedRate = 60000) // for test
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void updateAwardsStatus() {
 //        awardsService.changeStatus();
         try {
