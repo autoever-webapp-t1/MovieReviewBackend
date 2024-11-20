@@ -245,6 +245,15 @@ public class AwardsServiceImpl implements AwardsService{
         //현재 진행중인 어워즈 가져오기
         AwardsEntity awardEntity = awards.get(0);
 
+        String NextAwardName = "";
+
+        List<AwardsEntity> futureAwards = awardsRepository.findByStatus(2);
+        if (!futureAwards.isEmpty()) {
+            AwardsEntity nextAward = futureAwards.get(0);
+            NextAwardName = nextAward.getAwardName();
+            log.info("############################Award ID: {} status updated from 2 to 1", nextAward.getAwardsId());
+        }
+
         AwardsDto awardsDto = AwardsDto.builder()
                 .awardsId(awardEntity.getAwardsId())
                 .awardName(awardEntity.getAwardName())
@@ -254,6 +263,7 @@ public class AwardsServiceImpl implements AwardsService{
                 .nominated4(awardEntity.getNominated4())
                 .startDateTime(awardEntity.getStartDateTime())
                 .endDateTime(awardEntity.getEndDateTime())
+                .NextAwardName(NextAwardName)
                 .build();
 
         return awardsDto;
