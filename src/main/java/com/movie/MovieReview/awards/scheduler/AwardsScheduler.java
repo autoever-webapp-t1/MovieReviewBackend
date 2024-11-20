@@ -24,7 +24,7 @@ public class AwardsScheduler {
     //서버 키자마자 2 -> 1, 1 -> 0
 //    @Scheduled(fixedRate = 5000) // for test
     //@Scheduled(fixedRate = 60000) // for test
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     //@Scheduled(cron = "*/30 * * * * ?")
     public void updateAwardsStatus() {
 //        awardsService.changeStatus();
