@@ -150,9 +150,9 @@ public class MovieController {
     @GetMapping("/SaveTopRatedId") //topRated 영화들 id값만 db에 저장
     public List<Long> SaveTopRatedId(){
         try{
-            movieService.SaveTopRatedId(); //500페이지
+            //movieService.SaveTopRatedId(); //500페이지
             movieService.SaveUpComingId(); //2페이지
-            movieService.SavePopularId(); //2페이지
+            //movieService.SavePopularId(); //2페이지
             return movieService.SaveNowPlayingId(); //2페이지
         } catch (Exception e) {
             throw new RuntimeException(e);
